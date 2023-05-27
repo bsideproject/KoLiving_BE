@@ -1,10 +1,16 @@
-###### 15기 5팀 BE Repository
+# 15기 5팀 BE
 
 `실행 명령어`
+
 ~~~
 ./gradlew bootJar
 ~~~
+
+
 ---
+
+
+
 `기술스택`
 - Java 17
 - Spring Boot 3.0.4
