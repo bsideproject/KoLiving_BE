@@ -3,7 +3,7 @@
 `실행 명령어`
 
 ~~~
-./gradlew bootJar
+./gradlew bootRun
 ~~~
 
 
