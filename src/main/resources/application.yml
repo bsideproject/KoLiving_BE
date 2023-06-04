@@ -1,0 +1,16 @@
+# Open API (swagger)
+springdoc:
+  version: 1.0.0
+  swagger-ui:
+    operations-sorter: alpha
+    tags-sorter: alpha
+    path: /swagger
+  api-docs:
+    path: /swagger/json
+    groups:
+      enabled: true
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  packages-to-scan: com.koliving.api
+  cache:
+    disabled: true
