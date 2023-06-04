@@ -1,3 +1,6 @@
+server:
+  default-locale: en
+
 # Open API (swagger)
 springdoc:
   version: 1.0.0
