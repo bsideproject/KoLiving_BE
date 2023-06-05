@@ -24,3 +24,12 @@ springdoc:
   packages-to-scan: com.koliving.api
   cache:
     disabled: true
+
+logging:
+  level:
+    root: info
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{35} - %msg%n"
+  file:
+    name: app
+    path: log
