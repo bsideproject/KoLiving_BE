@@ -1,6 +1,13 @@
 server:
   default-locale: en
 
+spring:
+  sql:
+    init:
+      mode: always
+      schema-locations: data/database.sql
+      data-locations: data/data.sql
+
 # Open API (swagger)
 springdoc:
   version: 1.0.0
