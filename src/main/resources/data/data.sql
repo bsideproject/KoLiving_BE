@@ -1,4 +1,4 @@
-INSERT INTO LANGUAGES (LOCALE, MESSAGE_KEY, MESSAGE_CONTENT) VALUES
+INSERT INTO LANGUAGE (LOCALE, MESSAGE_KEY, MESSAGE_CONTENT) VALUES
      ('en', 'home_welcome','Welcome'),
      ('ko', 'home_welcome','환영합니다'),
      ('en', 'auth_email_subject','Confirm your email'),
