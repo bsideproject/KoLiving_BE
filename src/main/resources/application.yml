@@ -7,6 +7,10 @@ spring:
       mode: always
       schema-locations: data/database.sql
       data-locations: data/data.sql
+  jpa:
+    properties:
+      hibernate:
+        physical_naming_strategy: com.koliving.api.config.CustomNamingStrategy
 
 # Open API (swagger)
 springdoc:
