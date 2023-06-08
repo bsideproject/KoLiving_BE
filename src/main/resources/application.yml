@@ -14,6 +14,9 @@ spring:
   mail:
     properties:
       mail.auth.validity-period: 30
+  thymeleaf:
+    mode: HTML
+    encoding: UTF-8
 
 # Open API (swagger)
 springdoc:
