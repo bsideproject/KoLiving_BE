@@ -32,6 +32,9 @@ public class User {
 
     private String description;
 
+    @Enumerated(EnumType.STRING)
+    private SignUpStatus signUpStatus;
+
     @CreationTimestamp
     private LocalDateTime createdDate;
 
@@ -41,6 +44,7 @@ public class User {
     @Builder
     public User(String email) {
         this.email = email;
+        this.signUpStatus = SignUpStatus.PASSWORD_VERIFICATION_PENDING;
     }
 
 }
