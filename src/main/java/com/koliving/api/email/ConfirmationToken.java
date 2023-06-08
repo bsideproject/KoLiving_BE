@@ -31,7 +31,7 @@ public class ConfirmationToken {
     private LocalDateTime expiresAt;
 
     @Transient
-    @Value("${auth.email.validity-period:30}")
+    @Value("${spring.mail.properties.mail.auth.validity-period:30}")
     private long validityPeriod;
     private boolean isResended;
     private boolean isConfirmed;

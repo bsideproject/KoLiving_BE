@@ -11,6 +11,9 @@ spring:
     properties:
       hibernate:
         physical_naming_strategy: com.koliving.api.config.CustomNamingStrategy
+  mail:
+    properties:
+      mail.auth.validity-period: 30
 
 # Open API (swagger)
 springdoc:
