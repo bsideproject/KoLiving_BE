@@ -13,7 +13,9 @@ public class EmailTemplateUtil {
 
     private final TemplateEngine templateEngine;
 
-    public String generateEmail(String templateName, Map<String, Object> args) {
+    public String generateEmail(MailType type, Map<String, Object> args) {
+        String templateName = type.getTemplateName();
+
         Context context = new Context();
         context.setVariables(args);
 
