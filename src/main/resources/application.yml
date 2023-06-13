@@ -19,8 +19,8 @@ spring:
   sql:
     init:
       mode: always
-      schema-locations: data/database.sql
-      data-locations: data/data.sql
+      schema-locations: sql/schema.sql
+      data-locations: sql/data.sql
   mail:
     properties:
       mail.auth.validity-period: 30
