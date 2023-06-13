@@ -15,14 +15,14 @@
                     <div style="text-align: center;">
                         <div style="max-width: 630px; width: 100%; margin: 0px; vertical-align: top; padding: 15px 15px 15px 15px; box-sizing: border-box; display: inline-block;">
                             <div style="padding: 0 0; text-align: center; margin: 0px; width: 100%; box-sizing: border-box; clear: both;">
-                                <div><h1><img th:src="${button-image-path}"/></h1></div>
-                                <div style="margin-top: 30px;"><span style="font-size: 1.43em; font-weight: 500;" th:text="${subtitle}">아래 링크를 클릭하셔서 인증을 진행하세요</span></div>
+                                <div><h1><img th:src="${button-image-src}"/></h1></div>
+                                <div style="margin-top: 30px;"><span style="font-size: 1.43em; font-weight: 500;" th:text="${subtitle}">Click the link below to proceed with authentication</span></div>
                                 <div style="margin-top: 30px;">
-                                    <div th:style="'background-color: ${buttonColor}'" style="background-color:#FF8E00; padding: 13px 35px 13px 35px; border-radius: 5px; text-align: center">
-                                        <a th:href="${auth-email-link}" target="_blank" style="font-size: 1.2em; font-weight: normal; color: #ffffff; text-decoration: none; cursor: pointer;">이동하기</a>
+                                    <div th:style="'background-color: ${button-background-color}'" style="background-color:#FF8E00; padding: 13px 35px 13px 35px; border-radius: 5px; text-align: center">
+                                        <a th:href="${auth-email-link}" target="_blank" style="font-size: 1.2em; font-weight: normal; color: #ffffff; text-decoration: none; cursor: pointer;">Click</a>
                                     </div>
                                 </div>
-                                <div style="margin-top: 30px;"><span style="font-size: 1em; color: #999999;">또는 아래 링크를 복사해 브라우저에 붙여 넣으세요</span></div>
+                                <div style="margin-top: 30px;"><span style="font-size: 1em; color: #999999;">If the button doesn't work, copy and paste the link below into url</span></div>
                                 <div style="margin-top: 5px;">
                                     <a th:href="${auth-email-link}" target="_blank" style="color:#999999">https://koliving.com</a><br/><br/>
                                 </div>

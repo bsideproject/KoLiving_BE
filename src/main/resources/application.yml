@@ -22,8 +22,20 @@ spring:
       schema-locations: sql/schema.sql
       data-locations: sql/data.sql
   mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
     properties:
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.writetimeout: 5000
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
       mail.auth.validity-period: 30
+  thymeleaf:
+    mode: HTML
+    encoding: UTF-8
 
 # Open API (swagger)
 springdoc:
