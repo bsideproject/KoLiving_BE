@@ -1,4 +1,4 @@
-package com.koliving.api.email;
+package com.koliving.api.registeration.token;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
