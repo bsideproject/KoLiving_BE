@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -41,17 +42,15 @@ public class EmailService implements IEmailService {
             String title = "KOLIVING";
             String subtitle = messageSource.getMessage("auth_email_subtitle", null, currentLocale);
             String buttonBackgroundColor = "#FF8E00";
-            String buttonImageSrc = "image/email-logo.svg";
 
             Map<String, Object> variables = new HashMap<>();
             variables.put("title", title);
             variables.put("subtitle", subtitle);
             variables.put("auth-email-link", link);
             variables.put("button-background-color", buttonBackgroundColor);
-            variables.put("button-image-src", buttonImageSrc);
 
             MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             String mailContent = emailTemplateUtil.generateEmail(type, variables);
             String subject = messageSource.getMessage("auth_email_subject", null, currentLocale);
 
@@ -59,6 +58,8 @@ public class EmailService implements IEmailService {
             helper.setTo(to);
             helper.setText(mailContent, true);
             helper.setFrom(mailHost);
+
+            helper.addInline("logo", new ClassPathResource("static/image/logo-black.jpg"));
 
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
