@@ -41,10 +41,12 @@ public class EmailService implements IEmailService {
 
             String title = "KOLIVING";
             String subtitle = messageSource.getMessage("auth_email_subtitle", null, currentLocale);
+            String linkGuidance = messageSource.getMessage("auth_email_link_guidance", null, currentLocale);
 
             Map<String, Object> variables = new HashMap<>();
             variables.put("title", title);
             variables.put("subtitle", subtitle);
+            variables.put("linkGuidance", linkGuidance);
             variables.put("authEmailLink", link);
 
             MimeMessage mimeMessage = mailSender.createMimeMessage();
