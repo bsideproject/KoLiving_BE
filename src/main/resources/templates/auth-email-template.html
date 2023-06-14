@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title th:value="${title}">KoLiving</title>
+    <title th:value="${title}"></title>
 </head>
 <body>
 <div style="margin: 0px auto; width: 94%;max-width: 630px; background: #ffffff; border-style: none; box-sizing: border-box;">
@@ -15,16 +15,21 @@
                     <div style="text-align: center;">
                         <div style="max-width: 630px; width: 100%; margin: 0px; vertical-align: top; padding: 15px 15px 15px 15px; box-sizing: border-box; display: inline-block;">
                             <div style="padding: 0 0; text-align: center; margin: 0px; width: 100%; box-sizing: border-box; clear: both;">
-                                <div><h1><img src="cid:logo"/></h1></div>
-                                <div style="margin-top: 30px;"><span style="font-size: 1.43em; font-weight: 500;" th:text="${subtitle}">Click the link below to proceed with authentication</span></div>
+                                <h1><img src="cid:logo"/></h1>
                                 <div style="margin-top: 30px;">
-                                    <div th:style="'background-color: ${button-background-color}'" style="background-color:#FF8E00; padding: 13px 35px 13px 35px; border-radius: 5px; text-align: center">
-                                        <a th:href="${auth-email-link}" target="_blank" style="font-size: 1.2em; font-weight: normal; color: #ffffff; text-decoration: none; cursor: pointer;">Click</a>
+                                    <span style="font-size: 1.43em; font-weight: 500;" th:text="${subtitle}"/>
+                                </div>
+                                <div style="margin-top: 30px;">
+                                    <div style="background-color:#FF8E00; padding: 13px 35px 13px 35px; border-radius: 5px; text-align: center">
+                                        <a th:href="${authEmailLink}" target="_blank" style="font-size: 1.2em; font-weight: normal; color: #ffffff; text-decoration: none; cursor: pointer;" th:text="Click"/>
                                     </div>
                                 </div>
-                                <div style="margin-top: 30px;"><span style="font-size: 1em; color: #999999;">If the button doesn't work, copy and paste the link below into url</span></div>
+                                <div style="margin-top: 30px;">
+                                    <span style="font-size: 1em; color: #999999;" />
+                                </div>
                                 <div style="margin-top: 5px;">
-                                    <a th:href="${auth-email-link}" target="_blank" style="color:#999999">https://koliving.com</a><br/><br/>
+                                    <a th:href="${authEmailLink}" target="_blank" style="color:#999999">link</a>
+                                    <br/><br/>
                                 </div>
                             </div>
                         </div>

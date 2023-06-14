@@ -41,13 +41,11 @@ public class EmailService implements IEmailService {
 
             String title = "KOLIVING";
             String subtitle = messageSource.getMessage("auth_email_subtitle", null, currentLocale);
-            String buttonBackgroundColor = "#FF8E00";
 
             Map<String, Object> variables = new HashMap<>();
             variables.put("title", title);
             variables.put("subtitle", subtitle);
-            variables.put("auth-email-link", link);
-            variables.put("button-background-color", buttonBackgroundColor);
+            variables.put("authEmailLink", link);
 
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
