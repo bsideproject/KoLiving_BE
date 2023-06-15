@@ -18,23 +18,34 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     private final IClock clock;
     private String origin;
     private String currentVersion;
+    private long validityPeriod;
 
     public ConfirmationTokenService(ConfirmationTokenRepository confirmationTokenRepository,
                                     IEmailService emailSender,
                                     IClock clock,
                                     @Value("${server.origin:http://localhost:8080}") String origin,
-                                    @Value("${server.current-version:v1}") String currentVersion
+                                    @Value("${server.current-version:v1}") String currentVersion,
+                                    @Value("${spring.mail.properties.mail.auth.validity-period:30}") long validityPeriod
                                     ) {
         this.confirmationTokenRepository = confirmationTokenRepository;
         this.emailSender = emailSender;
         this.clock = clock;
         this.origin = origin;
         this.currentVersion = currentVersion;
+        this.validityPeriod = validityPeriod;
     }
 
     @Override
     public Optional<ConfirmationToken> getToken(String token) {
         return confirmationTokenRepository.findByToken(token);
+    }
+
+    @Override
+    public ConfirmationToken createToken(String email) {
+        return ConfirmationToken.builder()
+                .email(email)
+                .validityPeriod(validityPeriod)
+                .build();
     }
 
     @Override
