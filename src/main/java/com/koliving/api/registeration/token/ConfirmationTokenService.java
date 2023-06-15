@@ -32,7 +32,7 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
 
     @Override
     public ConfirmationToken saveToken(ConfirmationToken token) {
-        return null;
+        return confirmationTokenRepository.save(token);
     }
 
     @Override
