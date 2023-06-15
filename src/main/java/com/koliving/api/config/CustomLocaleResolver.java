@@ -1,6 +1,7 @@
 package com.koliving.api.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 
@@ -22,7 +23,7 @@ public class CustomLocaleResolver extends AcceptHeaderLocaleResolver {
         Locale defaultLocale = Locale.forLanguageTag(defaultLocaleString);
 
         List<Locale> supportedLocales = Arrays.asList(Locale.ENGLISH, Locale.KOREAN);
-        String headerLang = request.getHeader("Accept-Language");
+        String headerLang = request.getHeader(HttpHeaders.ACCEPT_LANGUAGE);
         List<LanguageRange> headerLangList = LanguageRange.parse(headerLang);
         Locale adoptedLocale = Locale.lookup(headerLangList, supportedLocales);
 
