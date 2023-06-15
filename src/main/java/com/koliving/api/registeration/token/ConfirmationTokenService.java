@@ -4,6 +4,7 @@ import com.koliving.api.email.IEmailService;
 import com.koliving.api.email.MailType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -33,6 +34,7 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     }
 
     @Override
+    @Transactional
     public ConfirmationToken saveToken(ConfirmationToken token) {
         return confirmationTokenRepository.save(token);
     }
@@ -47,6 +49,7 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     }
 
     @Override
+    @Transactional
     public String authenticateToken(String token) {
         Optional<ConfirmationToken> optionalConfirmationToken = getToken(token);
         optionalConfirmationToken
