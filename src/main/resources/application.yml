@@ -1,5 +1,7 @@
 server:
   default-locale: en
+  current-version: v1
+  origin: http://localhost:8080 # TODO : 도메인 구입 후 수정
 
 spring:
   datasource:
