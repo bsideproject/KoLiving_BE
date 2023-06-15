@@ -1,6 +1,7 @@
 package com.koliving.api.registeration.token;
 
 import com.koliving.api.email.IEmailService;
+import com.koliving.api.email.MailType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +37,13 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     }
 
     @Override
-    public void sendEmail(String mail, String token) {}
+    public void sendEmail(String mail, String token) {
+        String authLinkPath = "/api/${currentVersion}/registration/confirm".replace("${currentVersion}", currentVersion);
+        String tokenValue = token;
+        String authLink = origin + authLinkPath + "?token=" + tokenValue;
+
+        emailSender.send(MailType.AUTH, mail, authLink);
+    }
 
     @Override
     public String authenticateToken(String token) {
