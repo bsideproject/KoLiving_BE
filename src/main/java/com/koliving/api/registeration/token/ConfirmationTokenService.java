@@ -27,7 +27,7 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
 
     @Override
     public Optional<ConfirmationToken> getToken(String token) {
-        return Optional.empty();
+        return confirmationTokenRepository.findByToken(token);
     }
 
     @Override
