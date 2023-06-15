@@ -1,5 +1,6 @@
 package com.koliving.api.registeration.token;
 
+import com.koliving.api.clock.IClock;
 import com.koliving.api.email.IEmailService;
 import com.koliving.api.email.MailType;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,16 +15,19 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
 
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final IEmailService emailSender;
+    private final IClock clock;
     private String origin;
     private String currentVersion;
 
     public ConfirmationTokenService(ConfirmationTokenRepository confirmationTokenRepository,
                                     IEmailService emailSender,
+                                    IClock clock,
                                     @Value("${server.origin:http://localhost:8080}") String origin,
                                     @Value("${server.current-version:v1}") String currentVersion
                                     ) {
         this.confirmationTokenRepository = confirmationTokenRepository;
         this.emailSender = emailSender;
+        this.clock = clock;
         this.origin = origin;
         this.currentVersion = currentVersion;
     }
