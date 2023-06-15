@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -31,13 +30,12 @@ public class ConfirmationToken {
     private LocalDateTime expiresAt;
 
     @Transient
-    @Value("${spring.mail.properties.mail.auth.validity-period:30}")
     private long validityPeriod;
     private boolean isResended;
     private boolean isConfirmed;
 
     @Builder
-    public ConfirmationToken(String email) {
+    public ConfirmationToken(String email, long validityPeriod) {
         this.token = UUID.randomUUID().toString();
         this.email = email;
         this.expiresAt = LocalDateTime.now().plusMinutes(validityPeriod);
