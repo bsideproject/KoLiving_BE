@@ -45,7 +45,7 @@ public class ConfirmationToken {
         this.isConfirmed = false;
     }
 
-    public void confirmed() {
+    public void confirm() {
         this.isConfirmed = true;
     }
 }
