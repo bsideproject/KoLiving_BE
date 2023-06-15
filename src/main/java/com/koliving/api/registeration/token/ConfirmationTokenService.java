@@ -84,6 +84,6 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     }
 
     private void confirmToken(ConfirmationToken confirmationToken) {
-        confirmationToken.confirmed();
+        confirmationToken.confirm();
     }
 }
