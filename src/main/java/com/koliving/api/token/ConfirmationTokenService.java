@@ -87,7 +87,7 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
 
     private boolean isNotConfirmed(ConfirmationToken confirmationToken) {
         if (confirmationToken.isConfirmed()) {
-            // TODO : 302 -> signup-password page (The token already confirmed)
+            // TODO : 401 (The token already confirmed)
             throw new IllegalStateException("token already confirmed");
         }
         return true;
