@@ -1,4 +1,4 @@
-package com.koliving.api.registeration.token;
+package com.koliving.api.token;
 
 import com.koliving.api.clock.IClock;
 import com.koliving.api.email.IEmailService;

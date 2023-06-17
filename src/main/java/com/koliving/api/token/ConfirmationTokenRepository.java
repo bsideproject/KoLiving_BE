@@ -1,4 +1,4 @@
-package com.koliving.api.registeration.token;
+package com.koliving.api.token;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

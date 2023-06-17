@@ -1,8 +1,8 @@
 package com.koliving.api.user;
 
 import com.koliving.api.event.ConfirmationTokenCreatedEvent;
-import com.koliving.api.registeration.token.ConfirmationToken;
-import com.koliving.api.registeration.token.IConfirmationTokenService;
+import com.koliving.api.token.ConfirmationToken;
+import com.koliving.api.token.IConfirmationTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
