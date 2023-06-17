@@ -55,12 +55,12 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     }
 
     @Override
-    public void sendEmail(String mail, String token) {
-        String authLinkPath = "/api/${currentVersion}/registration/confirm".replace("${currentVersion}", currentVersion);
+    public void sendEmail(String email, String token) {
+        String authLinkPath = String.format("/api/%s/signup/confirm", currentVersion);
         String tokenValue = token;
-        String authLink = origin + authLinkPath + "?token=" + tokenValue;
+        String authLink = origin + authLinkPath + "?token=" + tokenValue + "&email=" + email;
 
-        emailSender.send(MailType.AUTH, mail, authLink);
+        emailSender.send(MailType.AUTH, email, authLink);
     }
 
     @Override
@@ -77,7 +77,8 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     }
 
     private boolean isNotExpired(ConfirmationToken confirmationToken) {
-        if (isExpired(confirmationToken.getExpiresAt())) {
+        LocalDateTime expiresAt = confirmationToken.getExpiresAt();
+        if (isExpired(expiresAt)) {
             // TODO : 401 (The token has expired)
             throw new IllegalStateException("token has expired");
         }
@@ -86,7 +87,7 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
 
     private boolean isNotConfirmed(ConfirmationToken confirmationToken) {
         if (confirmationToken.isConfirmed()) {
-            // TODO : 302 -> signup-password page (The token already confirmed)
+            // TODO : 401 (The token already confirmed)
             throw new IllegalStateException("token already confirmed");
         }
         return true;
