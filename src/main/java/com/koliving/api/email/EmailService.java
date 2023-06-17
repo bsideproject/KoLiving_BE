@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailParseException;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -63,8 +66,11 @@ public class EmailService implements IEmailService {
 
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
+            log.error("failed to generate email", e);
+            throw new MailParseException("failed to generate email", e);
+        } catch (MailException e) {
             log.error("failed to send email", e);
-            throw new IllegalStateException("failed to send email");
+            throw new MailSendException("Failed to send email", e);
         }
     }
 }
