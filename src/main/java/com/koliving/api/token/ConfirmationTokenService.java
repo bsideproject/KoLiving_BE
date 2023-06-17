@@ -77,7 +77,8 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     }
 
     private boolean isNotExpired(ConfirmationToken confirmationToken) {
-        if (isExpired(confirmationToken.getExpiresAt())) {
+        LocalDateTime expiresAt = confirmationToken.getExpiresAt();
+        if (isExpired(expiresAt)) {
             // TODO : 401 (The token has expired)
             throw new IllegalStateException("token has expired");
         }
