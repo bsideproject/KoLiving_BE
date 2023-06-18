@@ -179,4 +179,26 @@ class ConfirmationTokenServiceTest {
         assertEquals(e.getMessage(), "token has expired");
         assertFalse(newToken.isConfirmed());
     }
+
+    @Test
+    @DisplayName("authenticateToken_failure_isConfirmed() : 이미 인증된 ConfirmationToken")
+    void authenticateToken_failure_isConfirmed() {
+        String testMail = "test@example.com";
+        ConfirmationToken newToken = ConfirmationToken.builder()
+                .email(testMail)
+                .validityPeriod(validityPeriod)
+                .build();
+        String newTokenValue = newToken.getToken();
+        newToken.confirm();
+
+        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(newToken));
+        when(clock.now()).thenReturn(LocalDateTime.now());
+
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
+            confirmationTokenService.authenticateToken(newTokenValue);
+        });
+        assertTrue(confirmationTokenService.getToken(anyString()).isPresent());
+        assertEquals(e.getMessage(), "token already confirmed");
+        assertTrue(newToken.isConfirmed());
+    }
 }
