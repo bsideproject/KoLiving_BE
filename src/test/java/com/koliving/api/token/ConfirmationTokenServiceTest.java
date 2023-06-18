@@ -14,6 +14,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -97,7 +98,19 @@ class ConfirmationTokenServiceTest {
     }
 
     @Test
-    void saveToken() {
+    @DisplayName("saveToken() : crudRepository save api 정상 호출")
+    void saveToken_success() {
+        String testMail = "new@test.com";
+        ConfirmationToken token = ConfirmationToken.builder()
+                .email(testMail).build();
+
+        when(confirmationTokenRepository.save(any(ConfirmationToken.class))).thenReturn(token);
+
+        ConfirmationToken result = confirmationTokenService.saveToken(token);
+
+        assertNotNull(result);
+        assertEquals(result, token);
+        verify(confirmationTokenRepository, times(1)).save(token);
     }
 
     @Test
