@@ -68,6 +68,24 @@ class ConfirmationTokenServiceTest {
     }
 
     @Test
+    @DisplayName("getToken() : token 값에 따른 행이 없음")
+    void getToken_failure() {
+
+        // 생성자 함수를 통해 token 값이 UUID.randomUUID().toString()의 응답값으로 할당됨
+        // 문자열만 구성된 token 값은 존재하지 않음
+        String nonExistentTokenValue = "invalid token value";
+        String tokenValue = nonExistentTokenValue;
+
+        when(confirmationTokenRepository.findByToken(tokenValue)).thenReturn(Optional.empty());
+
+        Optional<ConfirmationToken> result = confirmationTokenService.getToken(tokenValue);
+
+        assertTrue(result.isEmpty());
+
+        verify(confirmationTokenRepository, times(1)).findByToken(tokenValue);
+    }
+
+    @Test
     void createToken() {
     }
 
