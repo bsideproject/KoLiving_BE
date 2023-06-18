@@ -14,21 +14,21 @@ import java.util.Optional;
 public class ConfirmationTokenService implements IConfirmationTokenService {
 
     private final ConfirmationTokenRepository confirmationTokenRepository;
-    private final IEmailService emailSender;
+    private final IEmailService emailService;
     private final IClock clock;
     private String origin;
     private String currentVersion;
     private long validityPeriod;
 
     public ConfirmationTokenService(ConfirmationTokenRepository confirmationTokenRepository,
-                                    IEmailService emailSender,
+                                    IEmailService emailService,
                                     IClock clock,
                                     @Value("${server.origin:http://localhost:8080}") String origin,
                                     @Value("${server.current-version:v1}") String currentVersion,
                                     @Value("${spring.mail.properties.mail.auth.validity-period:30}") long validityPeriod
                                     ) {
         this.confirmationTokenRepository = confirmationTokenRepository;
-        this.emailSender = emailSender;
+        this.emailService = emailService;
         this.clock = clock;
         this.origin = origin;
         this.currentVersion = currentVersion;
@@ -60,7 +60,7 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
         String tokenValue = token;
         String authLink = origin + authLinkPath + "?token=" + tokenValue + "&email=" + email;
 
-        emailSender.send(MailType.AUTH, email, authLink);
+        emailService.send(MailType.AUTH, email, authLink);
     }
 
     @Override
