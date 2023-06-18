@@ -2,6 +2,7 @@ package com.koliving.api.token;
 
 import com.koliving.api.clock.IClock;
 import com.koliving.api.email.IEmailService;
+import com.koliving.api.email.MailType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ class ConfirmationTokenServiceTest {
     ConfirmationTokenRepository confirmationTokenRepository;
 
     @Mock
-    IEmailService emailService;
+    IEmailService emailSender;
 
     @Mock
     IClock clock;
@@ -41,12 +42,14 @@ class ConfirmationTokenServiceTest {
     public void setUp() {
         confirmationTokenService = new ConfirmationTokenService(
                 confirmationTokenRepository,
-                emailService,
+                emailSender,
                 clock,
                 origin,
                 currentVersion,
                 validityPeriod
         );
+
+
     }
 
     @Test
@@ -117,7 +120,16 @@ class ConfirmationTokenServiceTest {
     }
 
     @Test
-    void sendEmail() {
+    @DisplayName("sendEmail_success() : emailSender에서 sendEmail 메서드 한번 호출 확인")
+    void sendEmail_success() {
+        String email = "test@example.com";
+        String token = "testToken";
+        String authLinkPath = String.format("/api/%s/signup/confirm", currentVersion);
+        String authLink = origin + authLinkPath + "?token=" + token + "&email=" + email;
+
+        confirmationTokenService.sendEmail(email, token);
+
+        verify(emailSender).send(MailType.AUTH, email, authLink);
     }
 
     @Test
