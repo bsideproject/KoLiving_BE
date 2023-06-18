@@ -97,6 +97,9 @@ class ConfirmationTokenServiceTest {
         assertEquals(testMail, result.getEmail());
     }
 
+    // createToken_failure() 생략
+    // 컨트롤러 단에서 Java Bean Validation 기술을 사용한 유효성 검사를 수행하므로 검증 로직이 없음
+
     @Test
     @DisplayName("saveToken() : crudRepository save api 정상 호출")
     void saveToken_success() {
