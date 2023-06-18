@@ -12,9 +12,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -149,5 +152,31 @@ class ConfirmationTokenServiceTest {
 
         assertTrue(confirmationTokenService.getToken(anyString()).isPresent());
         assertEquals(newToken.isConfirmed(), true);
+    }
+
+    @Test
+    @DisplayName("authenticateToken_failure_isExpired() : ConfirmationToken 만료됨")
+    void authenticateToken_failure_isExpired() {
+        String testMail = "test@example.com";
+        ConfirmationToken newToken = ConfirmationToken.builder()
+                .email(testMail)
+                .validityPeriod(validityPeriod)
+                .build();
+        String newTokenValue = newToken.getToken();
+
+        Random rand = new Random();
+        long min = validityPeriod + 1;
+        long max = 1440L;
+        long expirationMinutes = min + ((long)(rand.nextDouble()*(max - min)));
+
+        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(newToken));
+        when(clock.now()).thenReturn(LocalDateTime.now().plusMinutes(expirationMinutes));
+
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
+            confirmationTokenService.authenticateToken(newTokenValue);
+        });
+        assertTrue(confirmationTokenService.getToken(anyString()).isPresent());
+        assertEquals(e.getMessage(), "token has expired");
+        assertFalse(newToken.isConfirmed());
     }
 }
