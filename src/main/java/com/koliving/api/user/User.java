@@ -1,11 +1,7 @@
 package com.koliving.api.user;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.koliving.api.room.Room;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -21,7 +19,11 @@ public class User {
 
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
+    @Column(name = "user_id")
     private Integer id;
+
+    @OneToMany(mappedBy = "user")
+    private List<Room> room = new ArrayList<>();
     private String email;
     private String password;
     private String firstName;
