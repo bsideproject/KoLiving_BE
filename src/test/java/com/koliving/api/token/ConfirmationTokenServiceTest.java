@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -86,7 +87,13 @@ class ConfirmationTokenServiceTest {
     }
 
     @Test
-    void createToken() {
+    @DisplayName("createToken() : 올바른 email 형식")
+    void createToken_success() {
+        String testMail = "new@test.com";
+        ConfirmationToken result = confirmationTokenService.createToken(testMail);
+
+        assertNotNull(result);
+        assertEquals(testMail, result.getEmail());
     }
 
     @Test
