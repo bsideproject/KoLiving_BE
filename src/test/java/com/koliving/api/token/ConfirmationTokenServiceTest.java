@@ -10,12 +10,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,8 +50,6 @@ class ConfirmationTokenServiceTest {
                 currentVersion,
                 validityPeriod
         );
-
-
     }
 
     @Test
@@ -133,6 +133,21 @@ class ConfirmationTokenServiceTest {
     }
 
     @Test
-    void authenticateToken() {
+    @DisplayName("authenticateToken_success() : ConfirmationToken 인증 여부 확인")
+    void authenticateToken_success() {
+        String testMail = "test@example.com";
+        ConfirmationToken newToken = ConfirmationToken.builder()
+                .email(testMail)
+                .validityPeriod(validityPeriod)
+                .build();
+
+        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(newToken));
+        when(clock.now()).thenReturn(LocalDateTime.now());
+
+        String newTokenValue = newToken.getToken();
+        confirmationTokenService.authenticateToken(newTokenValue);
+
+        assertTrue(confirmationTokenService.getToken(anyString()).isPresent());
+        assertEquals(newToken.isConfirmed(), true);
     }
 }
