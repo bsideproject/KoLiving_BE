@@ -180,11 +180,13 @@ class ConfirmationTokenServiceTest {
         String tokenValue = token.getToken();
 
         Random rand = new Random();
-        long min = validityPeriod + 1;
-        long max = 1440L;
+        long min = validityPeriod + 1;  // 범위를 넘어가는 최소값
+        long max = 1440L;               // 24시간. expiredAt 값의 범위를 검증하는데 충분한 최대값
         long expirationMinutes = min + ((long)(rand.nextDouble()*(max - min)));
 
         when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(token));
+
+        // clock.now() 의 반환값이 유효기간 만료여부의 기준이 됨
         when(clock.now()).thenReturn(LocalDateTime.now().plusMinutes(expirationMinutes));
 
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
