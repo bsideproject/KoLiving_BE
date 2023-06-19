@@ -173,26 +173,26 @@ class ConfirmationTokenServiceTest {
     @DisplayName("authenticateToken_failure_isExpired() : ConfirmationToken 만료됨")
     void authenticateToken_failure_isExpired() {
         String testMail = "test@example.com";
-        ConfirmationToken newToken = ConfirmationToken.builder()
+        ConfirmationToken token = ConfirmationToken.builder()
                 .email(testMail)
                 .validityPeriod(validityPeriod)
                 .build();
-        String newTokenValue = newToken.getToken();
+        String tokenValue = token.getToken();
 
         Random rand = new Random();
         long min = validityPeriod + 1;
         long max = 1440L;
         long expirationMinutes = min + ((long)(rand.nextDouble()*(max - min)));
 
-        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(newToken));
+        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(token));
         when(clock.now()).thenReturn(LocalDateTime.now().plusMinutes(expirationMinutes));
 
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
-            confirmationTokenService.authenticateToken(newTokenValue);
+            confirmationTokenService.authenticateToken(tokenValue);
         });
         assertTrue(confirmationTokenService.getToken(anyString()).isPresent());
         assertEquals(e.getMessage(), "token has expired");
-        assertFalse(newToken.isConfirmed());
+        assertFalse(token.isConfirmed());
     }
 
     @Test
