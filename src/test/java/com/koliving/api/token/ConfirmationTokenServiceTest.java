@@ -13,7 +13,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -100,7 +102,20 @@ class ConfirmationTokenServiceTest {
         ConfirmationToken result = confirmationTokenService.createToken(testMail);
 
         assertNotNull(result);
-        assertEquals(testMail, result.getEmail());
+
+        // UUID 형식의 토큰값이 생성되었는지 확인
+        assertDoesNotThrow(() -> {
+            String tokenValue = result.getToken();
+            UUID.fromString(tokenValue);
+        });
+        assertEquals(result.getEmail(), testMail);
+
+        // expiredAt 시간이 현재 시간으로부터 30분 이후의 시간값이 생성되었는지 확인
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime resultExpiresAt = result.getExpiresAt();
+        assertTrue(resultExpiresAt.isAfter(now) && resultExpiresAt.isBefore(now.plusMinutes(validityPeriod)));
+        assertEquals(result.isResended(), false);
+        assertEquals(result.isConfirmed(), false);
     }
 
     // createToken_failure() 생략
