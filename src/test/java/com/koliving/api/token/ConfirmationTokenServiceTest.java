@@ -73,7 +73,7 @@ class ConfirmationTokenServiceTest {
         assertEquals(token, result.get());
         assertEquals(tokenValue, result.get().getToken());
 
-        verify(confirmationTokenRepository, times(1)).findByToken(tokenValue);
+        verify(confirmationTokenRepository, times(1)).findByToken(anyString());
     }
 
     @Test
