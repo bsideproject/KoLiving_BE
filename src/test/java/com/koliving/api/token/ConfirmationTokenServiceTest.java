@@ -140,14 +140,14 @@ class ConfirmationTokenServiceTest {
     @Test
     @DisplayName("sendEmail_success() : emailSender에서 sendEmail 메서드 한번 호출 확인")
     void sendEmail_success() {
-        String email = "test@example.com";
-        String token = "testToken";
+        String recipientEmail = "test@example.com";
+        String tokenValue = UUID.randomUUID().toString();
         String authLinkPath = String.format("/api/%s/signup/confirm", currentVersion);
-        String authLink = origin + authLinkPath + "?token=" + token + "&email=" + email;
+        String authLink = origin + authLinkPath + "?token=" + tokenValue + "&email=" + recipientEmail;
 
-        confirmationTokenService.sendEmail(email, token);
+        confirmationTokenService.sendEmail(recipientEmail, tokenValue);
 
-        verify(emailSender).send(MailType.AUTH, email, authLink);
+        verify(emailSender).send(MailType.AUTH, recipientEmail, authLink);
     }
 
     @Test
