@@ -154,19 +154,19 @@ class ConfirmationTokenServiceTest {
     @DisplayName("authenticateToken_success() : ConfirmationToken 인증 여부 확인")
     void authenticateToken_success() {
         String testMail = "test@example.com";
-        ConfirmationToken newToken = ConfirmationToken.builder()
+        ConfirmationToken token = ConfirmationToken.builder()
                 .email(testMail)
                 .validityPeriod(validityPeriod)
                 .build();
+        String tokenValue = token.getToken();
 
-        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(newToken));
+        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(token));
         when(clock.now()).thenReturn(LocalDateTime.now());
 
-        String newTokenValue = newToken.getToken();
-        confirmationTokenService.authenticateToken(newTokenValue);
+        confirmationTokenService.authenticateToken(tokenValue);
 
         assertTrue(confirmationTokenService.getToken(anyString()).isPresent());
-        assertEquals(newToken.isConfirmed(), true);
+        assertEquals(token.isConfirmed(), true);
     }
 
     @Test
