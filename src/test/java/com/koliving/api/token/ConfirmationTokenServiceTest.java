@@ -201,22 +201,21 @@ class ConfirmationTokenServiceTest {
     @DisplayName("authenticateToken_failure_isConfirmed() : 이미 인증된 ConfirmationToken")
     void authenticateToken_failure_isConfirmed() {
         String testMail = "test@example.com";
-        ConfirmationToken newToken = ConfirmationToken.builder()
+        ConfirmationToken token = ConfirmationToken.builder()
                 .email(testMail)
                 .validityPeriod(validityPeriod)
                 .build();
-        String newTokenValue = newToken.getToken();
-        newToken.confirm();
 
-        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(newToken));
+        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(token));
         when(clock.now()).thenReturn(LocalDateTime.now());
 
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
-            confirmationTokenService.authenticateToken(newTokenValue);
+            String tokenValue = token.getToken();
+            confirmationTokenService.authenticateToken(tokenValue);
         });
         assertTrue(confirmationTokenService.getToken(anyString()).isPresent());
         assertEquals(e.getMessage(), "token already confirmed");
-        assertTrue(newToken.isConfirmed());
+        assertTrue(token.isConfirmed());
     }
 
     @Test
