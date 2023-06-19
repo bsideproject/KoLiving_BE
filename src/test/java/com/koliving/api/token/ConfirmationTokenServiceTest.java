@@ -70,6 +70,7 @@ class ConfirmationTokenServiceTest {
         Optional<ConfirmationToken> result = confirmationTokenService.getToken(tokenValue);
 
         assertTrue(result.isPresent());
+        assertEquals(token, result.get());
         assertEquals(tokenValue, result.get().getToken());
 
         verify(confirmationTokenRepository, times(1)).findByToken(tokenValue);
