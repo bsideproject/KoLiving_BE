@@ -210,7 +210,7 @@ class ConfirmationTokenServiceTest {
             token.confirm();            // already confirmed
             return Optional.of(token);  // not empty
         });
-        when(clock.now()).thenReturn(LocalDateTime.now());
+        when(clock.now()).thenReturn(LocalDateTime.now());  // not expired
 
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
             String tokenValue = token.getToken();
