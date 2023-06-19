@@ -206,7 +206,10 @@ class ConfirmationTokenServiceTest {
                 .validityPeriod(validityPeriod)
                 .build();
 
-        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(token));
+        when(confirmationTokenService.getToken(anyString())).thenAnswer(invocation -> {
+            token.confirm();            // already confirmed
+            return Optional.of(token);  // not empty
+        });
         when(clock.now()).thenReturn(LocalDateTime.now());
 
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
