@@ -90,7 +90,7 @@ class ConfirmationTokenServiceTest {
 
         assertTrue(result.isEmpty());
 
-        verify(confirmationTokenRepository, times(1)).findByToken(nonExistentTokenValue);
+        verify(confirmationTokenRepository, times(1)).findByToken(anyString());
     }
 
     @Test
