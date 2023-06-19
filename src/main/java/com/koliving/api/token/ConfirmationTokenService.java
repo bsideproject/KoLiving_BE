@@ -103,7 +103,8 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     }
 
     private boolean isExpired(LocalDateTime expiredAt) {
-        return expiredAt.isBefore(clock.now());
+        LocalDateTime now = clock.now();
+        return now.isAfter(expiredAt);
     }
 
     private void confirmToken(ConfirmationToken confirmationToken) {
