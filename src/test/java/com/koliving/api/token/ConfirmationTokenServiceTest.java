@@ -80,8 +80,8 @@ class ConfirmationTokenServiceTest {
     @DisplayName("getToken() : token 값에 따른 행이 없음")
     void getToken_failure() {
 
-        // 생성자 함수를 통해 token 값이 UUID.randomUUID().toString()의 응답값으로 할당됨
-        // 문자열만 구성된 token 값은 존재하지 않음
+        // 생성자 함수를 통해 UUID.randomUUID().toString() 생성값이 token 값으로 할당됨
+        // 문자열로만 구성된 token 값은 존재하지 않음 : 실패 테스트 케이스의 token 값으로 사용
         String nonExistentTokenValue = "invalid token value";
         String tokenValue = nonExistentTokenValue;
 
