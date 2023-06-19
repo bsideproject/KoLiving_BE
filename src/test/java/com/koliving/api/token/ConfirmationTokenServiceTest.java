@@ -67,7 +67,7 @@ class ConfirmationTokenServiceTest {
 
         when(confirmationTokenRepository.findByToken(tokenValue)).thenReturn(Optional.of(token));
 
-        Optional<ConfirmationToken> result = confirmationTokenService.getToken(token.getToken());
+        Optional<ConfirmationToken> result = confirmationTokenService.getToken(tokenValue);
 
         assertTrue(result.isPresent());
         assertEquals(tokenValue, result.get().getToken());
