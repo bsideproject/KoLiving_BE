@@ -147,7 +147,7 @@ class ConfirmationTokenServiceTest {
 
         confirmationTokenService.sendEmail(recipientEmail, tokenValue);
 
-        verify(emailSender).send(MailType.AUTH, recipientEmail, authLink);
+        verify(emailSender, times(1)).send(MailType.AUTH, recipientEmail, authLink);
     }
 
     @Test
