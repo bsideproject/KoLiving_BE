@@ -13,7 +13,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -67,30 +69,30 @@ class ConfirmationTokenServiceTest {
 
         when(confirmationTokenRepository.findByToken(tokenValue)).thenReturn(Optional.of(token));
 
-        Optional<ConfirmationToken> result = confirmationTokenService.getToken(token.getToken());
+        Optional<ConfirmationToken> result = confirmationTokenService.getToken(tokenValue);
 
         assertTrue(result.isPresent());
+        assertEquals(token, result.get());
         assertEquals(tokenValue, result.get().getToken());
 
-        verify(confirmationTokenRepository, times(1)).findByToken(tokenValue);
+        verify(confirmationTokenRepository, times(1)).findByToken(anyString());
     }
 
     @Test
     @DisplayName("getToken() : token 값에 따른 행이 없음")
     void getToken_failure() {
 
-        // 생성자 함수를 통해 token 값이 UUID.randomUUID().toString()의 응답값으로 할당됨
-        // 문자열만 구성된 token 값은 존재하지 않음
+        // 생성자 함수를 통해 UUID.randomUUID().toString() 생성값이 token 값으로 할당됨
+        // 문자열로만 구성된 token 값은 존재하지 않음 : 실패 테스트 케이스의 token 값으로 사용
         String nonExistentTokenValue = "invalid token value";
-        String tokenValue = nonExistentTokenValue;
 
-        when(confirmationTokenRepository.findByToken(tokenValue)).thenReturn(Optional.empty());
+        when(confirmationTokenRepository.findByToken(nonExistentTokenValue)).thenReturn(Optional.empty());
 
-        Optional<ConfirmationToken> result = confirmationTokenService.getToken(tokenValue);
+        Optional<ConfirmationToken> result = confirmationTokenService.getToken(nonExistentTokenValue);
 
         assertTrue(result.isEmpty());
 
-        verify(confirmationTokenRepository, times(1)).findByToken(tokenValue);
+        verify(confirmationTokenRepository, times(1)).findByToken(anyString());
     }
 
     @Test
@@ -100,7 +102,20 @@ class ConfirmationTokenServiceTest {
         ConfirmationToken result = confirmationTokenService.createToken(testMail);
 
         assertNotNull(result);
-        assertEquals(testMail, result.getEmail());
+
+        // UUID 형식의 토큰값이 생성되었는지 확인
+        assertDoesNotThrow(() -> {
+            String tokenValue = result.getToken();
+            UUID.fromString(tokenValue);
+        });
+        assertEquals(result.getEmail(), testMail);
+
+        // expiredAt 시간이 현재 시간으로부터 30분 이후의 시간값이 생성되었는지 확인
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime resultExpiresAt = result.getExpiresAt();
+        assertTrue(resultExpiresAt.isAfter(now) && resultExpiresAt.isBefore(now.plusMinutes(validityPeriod)));
+        assertEquals(result.isResended(), false);
+        assertEquals(result.isConfirmed(), false);
     }
 
     // createToken_failure() 생략
@@ -125,94 +140,98 @@ class ConfirmationTokenServiceTest {
     @Test
     @DisplayName("sendEmail_success() : emailSender에서 sendEmail 메서드 한번 호출 확인")
     void sendEmail_success() {
-        String email = "test@example.com";
-        String token = "testToken";
+        String recipientEmail = "test@example.com";
+        String tokenValue = UUID.randomUUID().toString();
         String authLinkPath = String.format("/api/%s/signup/confirm", currentVersion);
-        String authLink = origin + authLinkPath + "?token=" + token + "&email=" + email;
+        String authLink = origin + authLinkPath + "?token=" + tokenValue + "&email=" + recipientEmail;
 
-        confirmationTokenService.sendEmail(email, token);
+        confirmationTokenService.sendEmail(recipientEmail, tokenValue);
 
-        verify(emailSender).send(MailType.AUTH, email, authLink);
+        verify(emailSender, times(1)).send(MailType.AUTH, recipientEmail, authLink);
     }
 
     @Test
     @DisplayName("authenticateToken_success() : ConfirmationToken 인증 여부 확인")
     void authenticateToken_success() {
         String testMail = "test@example.com";
-        ConfirmationToken newToken = ConfirmationToken.builder()
+        ConfirmationToken token = ConfirmationToken.builder()
                 .email(testMail)
                 .validityPeriod(validityPeriod)
                 .build();
+        String tokenValue = token.getToken();
 
-        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(newToken));
+        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(token));
         when(clock.now()).thenReturn(LocalDateTime.now());
 
-        String newTokenValue = newToken.getToken();
-        confirmationTokenService.authenticateToken(newTokenValue);
+        confirmationTokenService.authenticateToken(tokenValue);
 
         assertTrue(confirmationTokenService.getToken(anyString()).isPresent());
-        assertEquals(newToken.isConfirmed(), true);
+        assertEquals(token.isConfirmed(), true);
     }
 
     @Test
     @DisplayName("authenticateToken_failure_isExpired() : ConfirmationToken 만료됨")
     void authenticateToken_failure_isExpired() {
         String testMail = "test@example.com";
-        ConfirmationToken newToken = ConfirmationToken.builder()
+        ConfirmationToken token = ConfirmationToken.builder()
                 .email(testMail)
                 .validityPeriod(validityPeriod)
                 .build();
-        String newTokenValue = newToken.getToken();
+        String tokenValue = token.getToken();
 
         Random rand = new Random();
-        long min = validityPeriod + 1;
-        long max = 1440L;
+        long min = validityPeriod + 1;  // 범위를 넘어가는 최소값
+        long max = 1440L;               // 24시간. expiredAt 값의 범위를 검증하는데 충분한 최대값
         long expirationMinutes = min + ((long)(rand.nextDouble()*(max - min)));
 
-        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(newToken));
+        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(token));
+
+        // clock.now() 의 반환값이 유효기간 만료여부의 기준이 됨
         when(clock.now()).thenReturn(LocalDateTime.now().plusMinutes(expirationMinutes));
 
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
-            confirmationTokenService.authenticateToken(newTokenValue);
+            confirmationTokenService.authenticateToken(tokenValue);
         });
         assertTrue(confirmationTokenService.getToken(anyString()).isPresent());
         assertEquals(e.getMessage(), "token has expired");
-        assertFalse(newToken.isConfirmed());
+        assertFalse(token.isConfirmed());
     }
 
     @Test
     @DisplayName("authenticateToken_failure_isConfirmed() : 이미 인증된 ConfirmationToken")
     void authenticateToken_failure_isConfirmed() {
         String testMail = "test@example.com";
-        ConfirmationToken newToken = ConfirmationToken.builder()
+        ConfirmationToken token = ConfirmationToken.builder()
                 .email(testMail)
                 .validityPeriod(validityPeriod)
                 .build();
-        String newTokenValue = newToken.getToken();
-        newToken.confirm();
 
-        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(newToken));
-        when(clock.now()).thenReturn(LocalDateTime.now());
+        when(confirmationTokenService.getToken(anyString())).thenAnswer(invocation -> {
+            token.confirm();            // already confirmed
+            return Optional.of(token);  // not empty
+        });
+        when(clock.now()).thenReturn(LocalDateTime.now());  // not expired
 
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
-            confirmationTokenService.authenticateToken(newTokenValue);
+            String tokenValue = token.getToken();
+            confirmationTokenService.authenticateToken(tokenValue);
         });
         assertTrue(confirmationTokenService.getToken(anyString()).isPresent());
         assertEquals(e.getMessage(), "token already confirmed");
-        assertTrue(newToken.isConfirmed());
+        assertTrue(token.isConfirmed());
     }
 
     @Test
     @DisplayName("authenticateToken_failure_not_generated_by_server() : 서버로부터 생성되지 않은 ConfirmationToken")
     void authenticateToken_failure_not_generated_by_server() {
-        String invalidToken = "invalid_token";
+        String nonExistentTokenValue = "invalid token value";
 
         when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.empty());
 
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
-            confirmationTokenService.authenticateToken(invalidToken);
+            confirmationTokenService.authenticateToken(nonExistentTokenValue);
         });
-        assertTrue(confirmationTokenService.getToken(anyString()).isEmpty());
+
         assertEquals(e.getMessage(), "token was not generated by the server");
     }
 }
