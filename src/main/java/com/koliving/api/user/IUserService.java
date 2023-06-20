@@ -7,4 +7,6 @@ public interface IUserService {
 
     User signUp(String email);
 
+    void setPassword(User user, String password);
+
 }
