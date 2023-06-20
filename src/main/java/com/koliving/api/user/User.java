@@ -66,6 +66,11 @@ public class User implements UserDetails {
         this.signUpStatus = SignUpStatus.PROFILE_INFORMATION_PENDING;
     }
 
+    public void completeSignUp() {
+        this.bEnabled = true;
+        this.signUpStatus = SignUpStatus.COMPLETED;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String role = userRole.name();

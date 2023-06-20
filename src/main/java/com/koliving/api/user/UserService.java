@@ -50,4 +50,14 @@ public class UserService implements IUserService, UserDetailsService {
         String encodedPassword = passwordEncoder.encode(password);
         user.setPassword(encodedPassword);
     }
+
+    @Override
+    @Transactional
+    public void completeSignUp(User user) {
+        user.completeSignUp();
+        User newUser = userRepository.save(user);
+
+        // TODO : Login() 생성 필요
+        this.login(newUser);
+    }
 }
