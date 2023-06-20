@@ -12,10 +12,12 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 
 @Getter
 @NoArgsConstructor
@@ -36,6 +38,9 @@ public class User implements UserDetails {
     private String description;
 
     @Enumerated(EnumType.STRING)
+    private UserRole userRole;
+
+    @Enumerated(EnumType.STRING)
     private SignUpStatus signUpStatus;
 
     private boolean bEnabled;
@@ -51,13 +56,17 @@ public class User implements UserDetails {
     public User(String email) {
         this.email = email;
         this.signUpStatus = SignUpStatus.PASSWORD_VERIFICATION_PENDING;
+        this.userRole = UserRole.USER;
         this.bEnabled = true;
         this.bLocked = false;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        String role = userRole.name();
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
+
+        return Collections.singletonList(authority);
     }
 
     @Override
