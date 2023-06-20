@@ -33,4 +33,12 @@ public class UserService implements IUserService, UserDetailsService {
         eventPublisher.publishEvent(new ConfirmationTokenCreatedEvent(savedToken));
     }
 
+    @Override
+    public User signUp(String email) {
+        User newUser = User.builder()
+                .email(email)
+                .build();
+
+        return userRepository.save(newUser);
+    }
 }

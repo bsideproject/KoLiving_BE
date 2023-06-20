@@ -57,7 +57,7 @@ public class User implements UserDetails {
         this.email = email;
         this.signUpStatus = SignUpStatus.PASSWORD_VERIFICATION_PENDING;
         this.userRole = UserRole.USER;
-        this.bEnabled = true;
+        this.bEnabled = false;
         this.bLocked = false;
     }
 
