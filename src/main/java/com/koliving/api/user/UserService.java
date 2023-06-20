@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ public class UserService implements IUserService, UserDetailsService {
     private final UserRepository userRepository;
     private final IConfirmationTokenService confirmationTokenService;
     private final ApplicationEventPublisher eventPublisher;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String email) {
@@ -40,5 +42,12 @@ public class UserService implements IUserService, UserDetailsService {
                 .build();
 
         return userRepository.save(newUser);
+    }
+
+    @Override
+    @Transactional
+    public void setPassword(User user, String password) {
+        String encodedPassword = passwordEncoder.encode(password);
+        user.setPassword(encodedPassword);
     }
 }

@@ -61,6 +61,11 @@ public class User implements UserDetails {
         this.bLocked = false;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+        this.signUpStatus = SignUpStatus.PROFILE_INFORMATION_PENDING;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String role = userRole.name();
