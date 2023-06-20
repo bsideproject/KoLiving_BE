@@ -17,12 +17,9 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public void saveTokenAndSendEmail(String mail) {
-        ConfirmationToken confirmationToken = ConfirmationToken.builder()
-                .email(mail)
-                .build();
-
-        ConfirmationToken savedToken = confirmationTokenService.saveToken(confirmationToken);
+    public void saveTokenAndSendEmail(String email) {
+        ConfirmationToken newToken = confirmationTokenService.createToken(email);
+        ConfirmationToken savedToken = confirmationTokenService.saveToken(newToken);
         eventPublisher.publishEvent(new ConfirmationTokenCreatedEvent(savedToken));
     }
 }
