@@ -5,15 +5,25 @@ import com.koliving.api.token.ConfirmationToken;
 import com.koliving.api.token.IConfirmationTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
-public class UserService implements IUserService {
+public class UserService implements IUserService, UserDetailsService {
 
+    private final UserRepository userRepository;
     private final IConfirmationTokenService confirmationTokenService;
     private final ApplicationEventPublisher eventPublisher;
+
+    @Override
+    public UserDetails loadUserByUsername(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() ->
+                new UsernameNotFoundException(String.format("User with email %s not found", email)));
+    }
 
     @Override
     @Transactional
@@ -22,4 +32,5 @@ public class UserService implements IUserService {
         ConfirmationToken savedToken = confirmationTokenService.saveToken(newToken);
         eventPublisher.publishEvent(new ConfirmationTokenCreatedEvent(savedToken));
     }
+
 }
