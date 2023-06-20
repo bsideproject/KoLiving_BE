@@ -5,4 +5,6 @@ public interface IUserService {
 
     void saveTokenAndSendEmail(String mail);
 
+    User signUp(String email);
+
 }
