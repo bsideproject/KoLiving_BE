@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.xml.bind.DatatypeConverter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -18,11 +19,17 @@ import java.util.Map;
 @Component
 public class JwtProvider {
 
-    @Value("${jwt.secret}")
     private String secret;
-
-    @Value("${jwt.expiration:24}")
     private long expiration;
+    private final UserDetailsService userService;
+
+    public JwtProvider(@Value("${jwt.secret}") String secret,
+                       @Value("${jwt.expiration:24}") long expiration,
+                       UserDetailsService userService) {
+        this.secret=secret;
+        this.userService = userService;
+        this.expiration = expiration;
+    }
 
     public String generateToken(JwtVo jwtVo) {
         Map<String, Object> headers = new HashMap<>();
