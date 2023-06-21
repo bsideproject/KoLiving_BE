@@ -18,8 +18,8 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.validity-period}")
-    private long validityPeriod;
+    @Value("${jwt.expiration:24}")
+    private long expiration;
 
     public String generate(JwtVo jwtVo) {
         Map<String, Object> headers = new HashMap<>();
@@ -37,8 +37,8 @@ public class JwtUtil {
         Date createdAt = new Date();
         Date expiredAt = new Date();
 
-        // 유효 기간 = ms * sec * min * hour
-        Long validity = 1000 * 60L * 60L * validityPeriod;
+        // 유효 기간 = ms * sec * min * {hour}
+        Long validity = 1000 * 60L * 60L * expiration;
         expiredAt.setTime(createdAt.getTime() + validity);
 
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;

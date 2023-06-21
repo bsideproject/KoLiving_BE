@@ -66,3 +66,7 @@ logging:
   file:
     name: app
     path: log
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 24 # 24 hours
