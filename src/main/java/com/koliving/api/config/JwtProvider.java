@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class JwtUtil {
+public class JwtProvider {
 
     @Value("${jwt.secret}")
     private String secret;
@@ -24,7 +24,7 @@ public class JwtUtil {
     @Value("${jwt.expiration:24}")
     private long expiration;
 
-    public String generate(JwtVo jwtVo) {
+    public String generateToken(JwtVo jwtVo) {
         Map<String, Object> headers = new HashMap<>();
         headers.put("typ", "JWT");
         headers.put("alg", "HS256");
@@ -62,7 +62,7 @@ public class JwtUtil {
         return jwt;
     }
 
-    public boolean validate(String token) {
+    public boolean validateToken(String token) {
         Claims claims = null;
         try {
             byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secret);
