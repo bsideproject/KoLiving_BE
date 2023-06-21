@@ -42,17 +42,19 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         String rootPath = String.format("/api/%s", currentVersion);
 
-        http.authorizeRequests()
-                // TODO : Add more specific path (No need to authenticate)
-                .requestMatchers(rootPath + "/signup/**").permitAll()
-                .anyRequest().authenticated();
-
         http
             .formLogin().disable()
             .httpBasic().disable();
 
         http.csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http
+            .addFilter(corsFilter())
+            .authorizeRequests()
+                // TODO : Add more specific path (No need to authenticate)
+                .requestMatchers(rootPath + "/signup/**").permitAll()
+            .anyRequest().authenticated();
 
         return http.build();
     }
