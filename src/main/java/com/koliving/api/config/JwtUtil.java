@@ -48,7 +48,7 @@ public class JwtUtil {
         Key signKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
 
         String jwt = Jwts.builder()
-                .setSubject(username)
+                .setSubject("user-auth " + username)
                 .setHeader(headers)
                 .setClaims(payloads)
                 .setIssuedAt(createdAt)
