@@ -7,6 +7,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.xml.bind.DatatypeConverter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
@@ -90,5 +93,19 @@ public class JwtProvider {
         }
 
         return false;
+    }
+
+    public Authentication getAuthentication(String token) {
+        UserDetails userDetails = userService.loadUserByUsername(this.getEmail(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    private Claims getClaimsFormToken(String token) {
+        return Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(secret)).parseClaimsJws(token).getBody();
+    }
+
+    private String getEmail(String token) {
+        Claims claim = getClaimsFormToken(token);
+        return (String) claim.get("email");
     }
 }
