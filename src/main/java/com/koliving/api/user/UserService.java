@@ -12,8 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
 @AllArgsConstructor
+@Transactional
+@Service
 public class UserService implements IUserService, UserDetailsService {
 
     private final UserRepository userRepository;
@@ -22,13 +23,13 @@ public class UserService implements IUserService, UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) {
         return userRepository.findByEmail(email).orElseThrow(() ->
                 new UsernameNotFoundException(String.format("User with email %s not found", email)));
     }
 
     @Override
-    @Transactional
     public void saveTokenAndSendEmail(String email) {
         ConfirmationToken newToken = confirmationTokenService.createToken(email);
         ConfirmationToken savedToken = confirmationTokenService.saveToken(newToken);
@@ -45,14 +46,12 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
-    @Transactional
     public void setPassword(User user, String password) {
         String encodedPassword = passwordEncoder.encode(password);
         user.setPassword(encodedPassword);
     }
 
     @Override
-    @Transactional
     public void completeSignUp(User user) {
         user.completeSignUp();
         User newUser = userRepository.save(user);
