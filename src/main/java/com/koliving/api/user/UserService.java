@@ -57,6 +57,6 @@ public class UserService implements IUserService, UserDetailsService {
         User newUser = userRepository.save(user);
 
         // TODO : Login() 생성 필요
-        this.login(newUser);
+//        this.login(newUser);
     }
 }
