@@ -43,6 +43,10 @@ public class SecurityConfig {
                 .requestMatchers(rootPath + "/signup/**").permitAll()
                 .anyRequest().authenticated();
 
+        http
+            .formLogin().disable()
+            .httpBasic().disable();
+
         return http.build();
     }
 
