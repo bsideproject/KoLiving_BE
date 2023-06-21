@@ -7,6 +7,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.xml.bind.DatatypeConverter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -16,15 +20,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class JwtUtil {
+public class JwtProvider {
 
-    @Value("${jwt.secret}")
     private String secret;
-
-    @Value("${jwt.expiration:24}")
     private long expiration;
+    private final UserDetailsService userService;
 
-    public String generate(JwtVo jwtVo) {
+    public JwtProvider(@Value("${jwt.secret}") String secret,
+                       @Value("${jwt.expiration:24}") long expiration,
+                       UserDetailsService userService) {
+        this.secret=secret;
+        this.userService = userService;
+        this.expiration = expiration;
+    }
+
+    public String generateToken(JwtVo jwtVo) {
         Map<String, Object> headers = new HashMap<>();
         headers.put("typ", "JWT");
         headers.put("alg", "HS256");
@@ -62,7 +72,7 @@ public class JwtUtil {
         return jwt;
     }
 
-    public boolean validate(String token) {
+    public boolean validateToken(String token) {
         Claims claims = null;
         try {
             byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secret);
@@ -83,5 +93,19 @@ public class JwtUtil {
         }
 
         return false;
+    }
+
+    public Authentication getAuthentication(String token) {
+        UserDetails userDetails = userService.loadUserByUsername(this.getEmail(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    private Claims getClaimsFormToken(String token) {
+        return Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(secret)).parseClaimsJws(token).getBody();
+    }
+
+    private String getEmail(String token) {
+        Claims claim = getClaimsFormToken(token);
+        return (String) claim.get("email");
     }
 }
