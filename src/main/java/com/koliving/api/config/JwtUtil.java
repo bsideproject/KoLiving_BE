@@ -1,5 +1,8 @@
 package com.koliving.api.config;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.xml.bind.DatatypeConverter;
@@ -57,5 +60,28 @@ public class JwtUtil {
                 .compact();
 
         return jwt;
+    }
+
+    public boolean validate(String token) {
+        Claims claims = null;
+        try {
+            byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secret);
+
+            // 토큰에서 페이로드(Claim) 추출
+            claims = Jwts.parser()
+                    .setSigningKey(apiKeySecretBytes)
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            return true;
+        } catch (ExpiredJwtException e) {
+            // TODO: 토큰 만료
+        } catch (JwtException e) {
+            // TODO: 유효하지 않은 토큰
+        } catch (Exception e){
+            // TODO: 기타
+        }
+
+        return false;
     }
 }
