@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -18,13 +19,16 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
 
     private final UserDetailsService userService;
+    private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
     private String currentVersion;
 
     public SecurityConfig(UserDetailsService userService,
-            PasswordEncoder passwordEncoder,
-            @Value("${server.current-version:v1}") String currentVersion) {
+                          JwtProvider jwtProvider,
+                          PasswordEncoder passwordEncoder,
+                        @Value("${server.current-version:v1}") String currentVersion) {
         this.userService = userService;
+        this.jwtProvider = jwtProvider;
         this.passwordEncoder = passwordEncoder;
         this.currentVersion = currentVersion;
     }
@@ -40,17 +44,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtProvider);
         String rootPath = String.format("/api/%s", currentVersion);
 
         http
             .formLogin().disable()
             .httpBasic().disable();
 
-        http.csrf().disable()
+        http
+            .csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http
             .addFilter(corsFilter())
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http
             .authorizeRequests()
                 // TODO : Add more specific path (No need to authenticate)
                 .requestMatchers(rootPath + "/signup/**").permitAll()
@@ -81,6 +90,4 @@ public class SecurityConfig {
         provider.setUserDetailsService(userService);
         return provider;
     }
-
-
 }
