@@ -1,5 +1,6 @@
-package com.koliving.api.config;
+package com.koliving.api.filter;
 
+import com.koliving.api.provider.JwtProvider;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;

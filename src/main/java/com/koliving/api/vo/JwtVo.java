@@ -1,4 +1,4 @@
-package com.koliving.api.config;
+package com.koliving.api.vo;
 
 import lombok.Data;
 
