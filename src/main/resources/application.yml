@@ -40,6 +40,10 @@ spring:
   thymeleaf:
     mode: HTML
     encoding: UTF-8
+  data:
+    redis:
+      host: localhost # TODO : redis 서버 구축 후 수정
+      port: 6379
 
 # Open API (swagger)
 springdoc:
