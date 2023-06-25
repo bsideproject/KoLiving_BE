@@ -1,6 +1,6 @@
 package com.koliving.api.event;
 
-import com.koliving.api.token.IConfirmationTokenService;
+import com.koliving.api.token.confirmation.IConfirmationTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;

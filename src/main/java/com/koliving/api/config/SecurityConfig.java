@@ -1,5 +1,7 @@
 package com.koliving.api.config;
 
+import com.koliving.api.filter.JwtAuthenticationFilter;
+import com.koliving.api.provider.JwtProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

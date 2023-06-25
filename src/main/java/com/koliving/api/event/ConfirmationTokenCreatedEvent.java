@@ -1,6 +1,6 @@
 package com.koliving.api.event;
 
-import com.koliving.api.token.ConfirmationToken;
+import com.koliving.api.token.confirmation.ConfirmationToken;
 import lombok.Getter;
 
 @Getter
