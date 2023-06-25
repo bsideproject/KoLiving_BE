@@ -2,9 +2,11 @@ package com.koliving.api.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.xml.bind.DatatypeConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -73,23 +75,27 @@ public class JwtProvider {
     }
 
     public boolean validateToken(String token) {
-        Claims claims = null;
-        try {
-            byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secret);
+        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secret);
 
+        try {
             // 토큰에서 페이로드(Claim) 추출
-            claims = Jwts.parser()
-                    .setSigningKey(apiKeySecretBytes)
-                    .parseClaimsJws(token)
-                    .getBody();
+            // 토큰의 유효성 검증 목적
+            Jwts.parser()
+                .setSigningKey(apiKeySecretBytes)
+                .parseClaimsJws(token)
+                .getBody();
 
             return true;
         } catch (ExpiredJwtException e) {
-            // TODO: 토큰 만료
-        } catch (JwtException e) {
-            // TODO: 유효하지 않은 토큰
-        } catch (Exception e){
-            // TODO: 기타
+            throw new ExpiredJwtException(null, null, "access token has expired");
+        } catch (MalformedJwtException e) {
+            throw new MalformedJwtException("malformed jwt token");
+        } catch (SignatureException e){
+            throw new SignatureException("signature validation failed");
+        } catch (UnsupportedJwtException e){
+            throw new UnsupportedJwtException("unexpected format of jwt token");
+        } catch (Exception e) {
+
         }
 
         return false;
