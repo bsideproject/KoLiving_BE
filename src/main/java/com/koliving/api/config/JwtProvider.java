@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.xml.bind.DatatypeConverter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class JwtProvider {
 
@@ -87,12 +89,16 @@ public class JwtProvider {
 
             return true;
         } catch (ExpiredJwtException e) {
+            log.error("access token has expired");
             throw new ExpiredJwtException(null, null, "access token has expired");
         } catch (MalformedJwtException e) {
+            log.error("malformed jwt token");
             throw new MalformedJwtException("malformed jwt token");
         } catch (SignatureException e){
+            log.error("signature validation failed");
             throw new SignatureException("signature validation failed");
         } catch (UnsupportedJwtException e){
+            log.error("unexpected format of jwt token");
             throw new UnsupportedJwtException("unexpected format of jwt token");
         } catch (Exception e) {
 
