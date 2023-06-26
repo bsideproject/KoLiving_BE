@@ -17,7 +17,8 @@ public class Furnishing {
     @Column(name = "furnishing_id")
     private Integer id;
 
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private FurnishingType furnishingType;
 
     @ManyToOne
     @JoinColumn(name = "room_id")
