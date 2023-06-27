@@ -1,5 +1,6 @@
 package com.koliving.api.provider;
 
+import com.koliving.api.token.refresh.RefreshTokenRepository;
 import com.koliving.api.vo.JwtVo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -30,13 +31,16 @@ public class JwtProvider {
     private String secret;
     private long expiration;
     private final UserDetailsService userService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public JwtProvider(@Value("${jwt.secret}") String secret,
                        @Value("${jwt.expiration:24}") long expiration,
-                       UserDetailsService userService) {
+                       UserDetailsService userService,
+                       RefreshTokenRepository refreshTokenRepository) {
         this.secret=secret;
         this.userService = userService;
         this.expiration = expiration;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     public String generateAccessToken(JwtVo jwtVo) {
