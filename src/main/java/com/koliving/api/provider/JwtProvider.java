@@ -1,5 +1,7 @@
 package com.koliving.api.provider;
 
+import com.koliving.api.token.refresh.RefreshToken;
+import com.koliving.api.token.refresh.RefreshTokenRepository;
 import com.koliving.api.vo.JwtVo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -16,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
@@ -30,13 +33,16 @@ public class JwtProvider {
     private String secret;
     private long expiration;
     private final UserDetailsService userService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public JwtProvider(@Value("${jwt.secret}") String secret,
                        @Value("${jwt.expiration:24}") long expiration,
-                       UserDetailsService userService) {
+                       UserDetailsService userService,
+                       RefreshTokenRepository refreshTokenRepository) {
         this.secret=secret;
         this.userService = userService;
         this.expiration = expiration;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     public String generateAccessToken(JwtVo jwtVo) {
@@ -75,6 +81,15 @@ public class JwtProvider {
                 .compact();
 
         return jwt;
+    }
+
+    @Transactional
+    public String saveRefreshToken(String email) {
+        RefreshToken newRefreshToken = RefreshToken.builder()
+                .email(email)
+                .build();
+
+        return refreshTokenRepository.save(newRefreshToken).getRefreshToken();
     }
 
     public boolean validateAccessToken(String token) {
