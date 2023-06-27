@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
-            jwtProvider.validateToken(token);
+            jwtProvider.validateAccessToken(token);
         } catch (ExpiredJwtException | MalformedJwtException | SignatureException | UnsupportedJwtException e) {
             setResponse(response, e.getMessage());
         }

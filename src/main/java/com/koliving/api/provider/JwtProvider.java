@@ -39,7 +39,7 @@ public class JwtProvider {
         this.expiration = expiration;
     }
 
-    public String generateToken(JwtVo jwtVo) {
+    public String generateAccessToken(JwtVo jwtVo) {
         Map<String, Object> headers = new HashMap<>();
         headers.put("typ", "JWT");
         headers.put("alg", "HS256");
@@ -77,7 +77,7 @@ public class JwtProvider {
         return jwt;
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateAccessToken(String token) {
         byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secret);
 
         try {
