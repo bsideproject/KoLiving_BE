@@ -128,12 +128,15 @@ public class JwtProvider {
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    private Claims getClaimsFormToken(String token) {
-        return Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(secret)).parseClaimsJws(token).getBody();
-    }
-
-    private String getEmail(String token) {
+    public String getEmail(String token) {
         Claims claim = getClaimsFormToken(token);
         return (String) claim.get("email");
+    }
+
+    private Claims getClaimsFormToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(DatatypeConverter.parseBase64Binary(secret))
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
