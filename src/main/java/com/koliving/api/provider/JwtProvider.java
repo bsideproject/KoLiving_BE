@@ -1,5 +1,6 @@
 package com.koliving.api.provider;
 
+import com.koliving.api.token.refresh.RefreshToken;
 import com.koliving.api.token.refresh.RefreshTokenRepository;
 import com.koliving.api.vo.JwtVo;
 import io.jsonwebtoken.Claims;
@@ -17,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
@@ -79,6 +81,15 @@ public class JwtProvider {
                 .compact();
 
         return jwt;
+    }
+
+    @Transactional
+    public String saveRefreshToken(String email) {
+        RefreshToken newRefreshToken = RefreshToken.builder()
+                .email(email)
+                .build();
+
+        return refreshTokenRepository.save(newRefreshToken).getRefreshToken();
     }
 
     public boolean validateAccessToken(String token) {
