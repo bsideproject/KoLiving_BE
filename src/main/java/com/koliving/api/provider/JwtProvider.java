@@ -76,14 +76,6 @@ public class JwtProvider {
                 .compact();
     }
 
-    @Transactional
-    public String saveRefreshToken(String email) {
-        RefreshToken newRefreshToken = RefreshToken.builder()
-                .email(email)
-                .build();
-
-        return refreshTokenRepository.save(newRefreshToken).getRefreshToken();
-    }
 
     public boolean validateAccessToken(String token) {
         byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secret);
