@@ -1,14 +1,12 @@
 package com.koliving.api.token.refresh;
 
-import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-import java.util.UUID;
-
-@RedisHash(value = "RefreshToken", timeToLive = 60*60*24*14) // 2week
 @Getter
+@RedisHash(value = "RefreshToken", timeToLive = 60*60*24*30) // 1 month (30 days)
 public class RefreshToken {
 
     @Id
@@ -16,8 +14,8 @@ public class RefreshToken {
     private String refreshToken;
 
     @Builder
-    public RefreshToken(String email) {
+    public RefreshToken(String email, String refreshToken) {
         this.email = email;
-        this.refreshToken = UUID.randomUUID().toString();
+        this.refreshToken = refreshToken;   // jwt
     }
 }
