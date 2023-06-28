@@ -2,10 +2,6 @@ package com.koliving.api.filter;
 
 import com.koliving.api.provider.JwtProvider;
 import com.koliving.api.token.IJwtService;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,15 +24,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = null;
-        try {
-            accessToken = resolveToken(request);
-        } catch (RuntimeException e) {
-            setResponse(response, e.getMessage());
-        }
 
         try {
+            accessToken = resolveToken(request);
             jwtProvider.validateToken(accessToken);
-        } catch (ExpiredJwtException | MalformedJwtException | SignatureException | UnsupportedJwtException e) {
+        } catch (RuntimeException e) {
             setResponse(response, e.getMessage());
         }
 
