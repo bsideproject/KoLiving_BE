@@ -68,6 +68,14 @@ public class JwtProvider {
                 .compact();
     }
 
+    public String generateRefreshToken(String email) {
+        Map<String, Object> payloads = new HashMap<>();
+        payloads.put("email", email);
+
+        return generateJwtBuilder(payloads)
+                .compact();
+    }
+
     @Transactional
     public String saveRefreshToken(String email) {
         RefreshToken newRefreshToken = RefreshToken.builder()
