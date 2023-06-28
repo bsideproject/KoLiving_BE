@@ -1,5 +1,6 @@
 package com.koliving.api.provider;
 
+import com.koliving.api.clock.IClock;
 import com.koliving.api.token.refresh.RefreshToken;
 import com.koliving.api.token.refresh.RefreshTokenRepository;
 import com.koliving.api.vo.JwtVo;
@@ -30,19 +31,16 @@ import java.util.Map;
 @Component
 public class JwtProvider {
 
-    private String secret;
+    private String jwtSecret;
     private long expiration;
-    private final UserDetailsService userService;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private IClock clock;
 
-    public JwtProvider(@Value("${jwt.secret}") String secret,
+    public JwtProvider(@Value("${jwt.secret}") String jwtSecret,
                        @Value("${jwt.expiration:24}") long expiration,
-                       UserDetailsService userService,
-                       RefreshTokenRepository refreshTokenRepository) {
-        this.secret=secret;
-        this.userService = userService;
+                       IClock clock) {
+        this.jwtSecret=jwtSecret;
         this.expiration = expiration;
-        this.refreshTokenRepository = refreshTokenRepository;
+        this.clock = clock;
     }
 
     public String generateAccessToken(JwtVo jwtVo) {
