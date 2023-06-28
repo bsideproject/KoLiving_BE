@@ -76,7 +76,6 @@ public class JwtProvider {
                 .compact();
     }
 
-
     public boolean validateAccessToken(String token) {
         byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secret);
 
@@ -106,11 +105,6 @@ public class JwtProvider {
         }
 
         return false;
-    }
-
-    public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userService.loadUserByUsername(this.getEmail(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     public String getEmail(String token) {
