@@ -1,6 +1,7 @@
 package com.koliving.api.filter;
 
 import com.koliving.api.provider.JwtProvider;
+import com.koliving.api.token.IJwtService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -22,23 +23,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public static final String BEARER_PREFIX = "Bearer ";
     private final JwtProvider jwtProvider;
+    private final IJwtService jwtService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = null;
+        String accessToken = null;
         try {
-            token = resolveToken(request);
+            accessToken = resolveToken(request);
         } catch (RuntimeException e) {
             setResponse(response, e.getMessage());
         }
 
         try {
-            jwtProvider.validateAccessToken(token);
+            jwtProvider.validateToken(accessToken);
         } catch (ExpiredJwtException | MalformedJwtException | SignatureException | UnsupportedJwtException e) {
             setResponse(response, e.getMessage());
         }
 
-        Authentication authentication = jwtProvider.getAuthentication(token);
+        Authentication authentication = jwtService.getAuthentication(accessToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
