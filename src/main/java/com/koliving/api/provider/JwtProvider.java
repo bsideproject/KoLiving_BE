@@ -107,18 +107,6 @@ public class JwtProvider {
         return false;
     }
 
-    public String getEmail(String token) {
-        Claims claim = getClaimsFormToken(token);
-        return (String) claim.get("email");
-    }
-
-    private Claims getClaimsFormToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(DatatypeConverter.parseBase64Binary(secret))
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
     private JwtBuilder generateJwtBuilder(Map<String, Object> payloads) {
         Map<String, Object> headers = new HashMap<>();
         headers.put("typ", "JWT");
