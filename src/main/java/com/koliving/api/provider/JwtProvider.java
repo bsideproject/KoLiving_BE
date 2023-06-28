@@ -1,10 +1,7 @@
 package com.koliving.api.provider;
 
 import com.koliving.api.clock.IClock;
-import com.koliving.api.token.refresh.RefreshToken;
-import com.koliving.api.token.refresh.RefreshTokenRepository;
 import com.koliving.api.vo.JwtVo;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
@@ -15,12 +12,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.xml.bind.DatatypeConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
@@ -76,8 +68,8 @@ public class JwtProvider {
                 .compact();
     }
 
-    public boolean validateAccessToken(String token) {
-        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secret);
+    public boolean validateToken(String token) {
+        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(jwtSecret);
 
         try {
             // 토큰에서 페이로드(Claim) 추출
@@ -94,10 +86,10 @@ public class JwtProvider {
         } catch (MalformedJwtException e) {
             log.error("malformed jwt token");
             throw new MalformedJwtException("malformed jwt token");
-        } catch (SignatureException e){
+        } catch (SignatureException e) {
             log.error("signature validation failed");
             throw new SignatureException("signature validation failed");
-        } catch (UnsupportedJwtException e){
+        } catch (UnsupportedJwtException e) {
             log.error("unexpected format of jwt token");
             throw new UnsupportedJwtException("unexpected format of jwt token");
         } catch (Exception e) {
