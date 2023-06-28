@@ -1,5 +1,6 @@
 package com.koliving.api.token;
 
+import com.koliving.api.token.refresh.RefreshToken;
 import com.koliving.api.token.refresh.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -10,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class JwtService implements IJwtService {
@@ -41,8 +43,14 @@ public class JwtService implements IJwtService {
     }
 
     @Override
+    @Transactional
     public String saveRefreshToken(String email, String newRefreshTokenValue) {
-        return null;
+        RefreshToken newRefreshToken = RefreshToken.builder()
+                .email(email)
+                .refreshToken(newRefreshTokenValue)
+                .build();
+
+        return refreshTokenRepository.save(newRefreshToken).getRefreshToken();
     }
 
     private Claims getClaims(String token) {
