@@ -5,7 +5,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.xml.bind.DatatypeConverter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +34,10 @@ public class JwtService implements IJwtService {
 
     @Override
     public Authentication getAuthentication(String accessToken) {
-        return null;
+        String email = this.extractEmail(accessToken);
+        UserDetails userDetails = userService.loadUserByUsername(email);
+
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     @Override
