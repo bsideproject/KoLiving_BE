@@ -43,6 +43,16 @@ public class JwtService implements IJwtService {
     }
 
     @Override
+    public boolean isRefreshTokenPresent(String email) {
+        return refreshTokenRepository.existByEmail(email);
+    }
+
+    @Override
+    public void deleteRefreshToken(String email) {
+        refreshTokenRepository.delete(email);
+    }
+
+    @Override
     @Transactional
     public String saveRefreshToken(String email, String newRefreshTokenValue) {
         RefreshToken newRefreshToken = RefreshToken.builder()
