@@ -1,5 +1,6 @@
 package com.koliving.api.token;
 
+import com.koliving.api.token.blacklist.BlackAccessToken;
 import com.koliving.api.token.blacklist.BlackListRepository;
 import com.koliving.api.token.refresh.RefreshToken;
 import com.koliving.api.token.refresh.RefreshTokenRepository;
@@ -54,7 +55,12 @@ public class JwtService implements IJwtService {
 
     @Override
     public void registerBlackList(String accessToken, Date expirationDate) {
+        BlackAccessToken blackAccessToken = BlackAccessToken.builder()
+                .accessToken(accessToken)
+                .expirationTime(expirationDate)
+                .build();
 
+        blackListRepository.save(blackAccessToken);
     }
 
     @Override
