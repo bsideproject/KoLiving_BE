@@ -1,6 +1,6 @@
 package com.koliving.api.token.refresh;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -8,17 +8,23 @@ import org.springframework.stereotype.Repository;
 import java.util.concurrent.TimeUnit;
 
 @Repository
-@RequiredArgsConstructor
 public class RefreshTokenRepository {
 
     private final RedisTemplate redisTemplate;
-    private static final String RT_HASH_KEY = "RefreshToken";
+    private final long RT_EXPIRATION_TIME;
+    private final static String RT_HASH_KEY = "RefreshToken";
+
+    public RefreshTokenRepository(RedisTemplate redisTemplate,
+                                  @Value("${jwt.refreshExpiration:30}") long RT_EXPIRATION_TIME) {
+        this.redisTemplate = redisTemplate;
+        this.RT_EXPIRATION_TIME = RT_EXPIRATION_TIME;
+    }
 
     public String save(final RefreshToken refreshToken) {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         hashOperations.putIfAbsent(RT_HASH_KEY, refreshToken.getEmail(), refreshToken.getRefreshToken());
 
-        redisTemplate.expire(RT_HASH_KEY, 30L, TimeUnit.DAYS);
+        redisTemplate.expire(RT_HASH_KEY, RT_EXPIRATION_TIME, TimeUnit.DAYS);
 
         return refreshToken.getRefreshToken();
     }
