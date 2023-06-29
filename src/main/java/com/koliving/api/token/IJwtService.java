@@ -6,6 +6,8 @@ import java.util.Date;
 
 public interface IJwtService {
 
+    Date extractExpirationDate(String token);
+
     String extractEmail(String token);
 
     Authentication getAuthentication(String accessToken);

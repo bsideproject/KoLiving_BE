@@ -35,6 +35,11 @@ public class JwtService implements IJwtService {
     }
 
     @Override
+    public Date extractExpirationDate(String token) {
+        return getClaims(token).getExpiration();
+    }
+
+    @Override
     public String extractEmail(String token) {
         Claims claim = getClaims(token);
         return (String) claim.get("email");
