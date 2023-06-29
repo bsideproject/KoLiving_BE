@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class RefreshTokenRepository {
 
-    private RedisTemplate redisTemplate;
+    private final RedisTemplate redisTemplate;
 
     public String save(final RefreshToken refreshToken) {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
