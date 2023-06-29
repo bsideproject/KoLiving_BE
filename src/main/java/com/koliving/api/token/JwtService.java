@@ -1,5 +1,7 @@
 package com.koliving.api.token;
 
+import com.koliving.api.token.blacklist.BlackAccessToken;
+import com.koliving.api.token.blacklist.BlackListRepository;
 import com.koliving.api.token.refresh.RefreshToken;
 import com.koliving.api.token.refresh.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
@@ -12,18 +14,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 public class JwtService implements IJwtService {
 
     private String jwtSecret;
     private final UserDetailsService userService;
+    private final BlackListRepository blackListRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
     public JwtService(@Value("${jwt.secret}") String jwtSecret,
                       UserDetailsService userService,
+                      BlackListRepository blackListRepository,
                       RefreshTokenRepository refreshTokenRepository) {
         this.jwtSecret = jwtSecret;
         this.userService = userService;
+        this.blackListRepository = blackListRepository;
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
@@ -39,6 +46,21 @@ public class JwtService implements IJwtService {
         UserDetails userDetails = userService.loadUserByUsername(email);
 
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    @Override
+    public boolean isBlackList(String accessToken) {
+        return blackListRepository.existByToken(accessToken);
+    }
+
+    @Override
+    public void registerBlackList(String accessToken, Date expirationDate) {
+        BlackAccessToken blackAccessToken = BlackAccessToken.builder()
+                .accessToken(accessToken)
+                .expirationTime(expirationDate)
+                .build();
+
+        blackListRepository.save(blackAccessToken);
     }
 
     @Override
