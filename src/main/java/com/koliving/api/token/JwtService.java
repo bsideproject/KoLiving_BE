@@ -50,7 +50,7 @@ public class JwtService implements IJwtService {
                 .refreshToken(newRefreshTokenValue)
                 .build();
 
-        return refreshTokenRepository.save(newRefreshToken).getRefreshToken();
+        return refreshTokenRepository.save(newRefreshToken);
     }
 
     private Claims getClaims(String token) {
