@@ -28,4 +28,8 @@ public class BlackListRepository {
         hashOperations.put(BAT_HASH_KEY, tokenValue, expirationDate);
         redisTemplate.expireAt(BAT_HASH_KEY, expirationDate);
     }
+
+    public boolean existByToken(final String token) {
+        return hashOperations.hasKey(BAT_HASH_KEY, token);
+    }
 }
