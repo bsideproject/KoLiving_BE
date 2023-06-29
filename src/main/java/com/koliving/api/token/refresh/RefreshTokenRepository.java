@@ -12,29 +12,24 @@ import java.util.concurrent.TimeUnit;
 public class RefreshTokenRepository {
 
     private final RedisTemplate redisTemplate;
+    private static final String RT_HASH_KEY = "RefreshToken";
 
     public String save(final RefreshToken refreshToken) {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        String id = "RefreshToken";
+        hashOperations.putIfAbsent(RT_HASH_KEY, refreshToken.getEmail(), refreshToken.getRefreshToken());
 
-        hashOperations.putIfAbsent(id, refreshToken.getEmail(), refreshToken.getRefreshToken());
-
-        redisTemplate.expire(id, 30L, TimeUnit.DAYS);
+        redisTemplate.expire(RT_HASH_KEY, 30L, TimeUnit.DAYS);
 
         return refreshToken.getRefreshToken();
     }
 
     public boolean existByEmail(final String email) {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        String id = "RefreshToken";
-
-        return hashOperations.hasKey(id, email);
+        return hashOperations.hasKey(RT_HASH_KEY, email);
     }
 
     public void delete(final String email) {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        String id = "RefreshToken";
-
-        hashOperations.delete(id, email);
+        hashOperations.delete(RT_HASH_KEY, email);
     }
 }
