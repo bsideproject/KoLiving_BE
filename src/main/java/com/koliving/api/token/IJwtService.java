@@ -8,6 +8,10 @@ public interface IJwtService {
 
     Authentication getAuthentication(String accessToken);
 
+    boolean isRefreshTokenPresent(String email);
+
+    void deleteRefreshToken(String email);
+
     String saveRefreshToken(String email, String newRefreshTokenValue);
 
 }
