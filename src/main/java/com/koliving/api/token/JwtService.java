@@ -74,6 +74,11 @@ public class JwtService implements IJwtService {
     }
 
     @Override
+    public String getRefreshToken(String email) {
+        return refreshTokenRepository.findByEmail(email);
+    }
+
+    @Override
     public void deleteRefreshToken(String email) {
         refreshTokenRepository.delete(email);
     }

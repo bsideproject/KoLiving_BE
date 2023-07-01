@@ -16,6 +16,8 @@ public interface IJwtService {
 
     void registerBlackList(String accessToken, Date expirationDate);
 
+    String getRefreshToken(String email);
+
     boolean isRefreshTokenPresent(String email);
 
     void deleteRefreshToken(String email);

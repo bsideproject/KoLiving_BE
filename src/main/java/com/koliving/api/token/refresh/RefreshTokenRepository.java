@@ -27,6 +27,10 @@ public class RefreshTokenRepository {
         hashOperations = redisTemplate.opsForHash();
     }
 
+    public String findByEmail(String email) {
+        return hashOperations.get(RT_HASH_KEY, email);
+    }
+
     public String save(final RefreshToken refreshToken) {
         hashOperations.putIfAbsent(RT_HASH_KEY, refreshToken.getEmail(), refreshToken.getRefreshToken());
         redisTemplate.expire(RT_HASH_KEY, RT_EXPIRATION_TIME, TimeUnit.DAYS);
