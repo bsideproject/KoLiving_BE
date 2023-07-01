@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class ApiController {
 
-//    @PostMapping("/makeRoom")
-//    public void makeRoom(@RequestBody @Valid MakeRoomRequest makeRoomRequest) {
-//
-//    }
+    @PostMapping("/careateRoom")
+    public void createRoom(@RequestBody @Valid CreateRoomRequest createRoomRequest) {
+
+    }
 
     @PostMapping("/getRoom")
     public void getRoom() {
