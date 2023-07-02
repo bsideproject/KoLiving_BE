@@ -52,4 +52,16 @@ public class ObjectStorageService {
 
         return true;
     }
+
+    public boolean deleteFile(String filePath) {
+        try {
+            client.deleteObject(bucket, filePath);
+        } catch(AmazonS3Exception e) {
+            log.error("Error "); // TODO error message
+        } catch(SdkClientException e) {
+            log.error("Error "); // TODO error message
+        }
+
+        return true;
+    }
 }
