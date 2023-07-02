@@ -24,7 +24,7 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
-    public User signUp(String email) {
+    public User save(String email) {
         User newUser = User.builder()
                 .email(email)
                 .build();
