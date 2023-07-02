@@ -30,6 +30,14 @@ public class AuthFacade {
         eventPublisher.publishEvent(new ConfirmationTokenCreatedEvent(savedToken));
     }
 
+    @Transactional(readOnly = true)
+    public String login(String email, String password) {
+        UserDetails userDetails = userService.loadUserByUsername(email);;
+        this.setAuthenticationWithPassword(password, userDetails);
+
+        return issueAccessToken(userDetails);
+    }
+
     public String signUp(String email) {
         User user = (User) userService.loadUserByUsername(email);
         user.completeSignUp();
