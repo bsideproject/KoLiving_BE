@@ -3,12 +3,9 @@ package com.koliving.api.user;
 
 public interface IUserService {
 
-    void saveTokenAndSendEmail(String mail);
-
-    User signUp(String email);
+    User save(String email);
 
     void setPassword(User user, String password);
 
-    void completeSignUp(User user);
-
+    boolean isEqualPassword(String rawPassword, String hashPassword);
 }
