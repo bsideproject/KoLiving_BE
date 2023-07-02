@@ -2,6 +2,9 @@ package com.koliving.api.user;
 
 import com.koliving.api.event.ConfirmationTokenCreatedEvent;
 import com.koliving.api.provider.JwtProvider;
+import com.koliving.api.token.IJwtService;
+import com.koliving.api.token.blacklist.BlackAccessToken;
+import com.koliving.api.token.blacklist.BlackListRepository;
 import com.koliving.api.token.confirmation.ConfirmationToken;
 import com.koliving.api.token.confirmation.IConfirmationTokenService;
 import com.koliving.api.vo.JwtVo;
@@ -20,8 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthFacade {
     private final UserService userService;
-    private final JwtProvider jwtProvider;
     private final IConfirmationTokenService confirmationTokenService;
+    private final JwtProvider jwtProvider;
+    private final IJwtService jwtService;
+    private final BlackListRepository blackListRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     public void processEmailAuth(String email) {
@@ -45,6 +50,12 @@ public class AuthFacade {
         String accessToken = this.loginWithSignUp(user);
 
         return accessToken;
+    }
+
+    public void logout(String accessToken) {
+        BlackAccessToken blackAccessToken = parseBlackAccessToken(accessToken);
+        blackListRepository.save(blackAccessToken);
+        SecurityContextHolder.clearContext();
     }
 
     private String loginWithSignUp(UserDetails userDetails) {
@@ -74,5 +85,12 @@ public class AuthFacade {
                 .build();
 
         return jwtProvider.generateAccessToken(jwtVo);
+    }
+
+    private BlackAccessToken parseBlackAccessToken(String accessToken) {
+        return BlackAccessToken.builder()
+                .accessToken(accessToken)
+                .expirationTime(jwtService.extractExpirationDate(accessToken))
+                .build();
     }
 }
