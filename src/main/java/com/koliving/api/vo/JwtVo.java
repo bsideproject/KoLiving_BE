@@ -1,8 +1,9 @@
 package com.koliving.api.vo;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
-@Data
+@Getter
 public class JwtVo {
 
     private String email;
@@ -12,5 +13,16 @@ public class JwtVo {
 
     public String getUsername() {
         return this.getLastName() + " " + this.getFirstName();
+    }
+
+    public void setUsername(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    @Builder
+    public JwtVo(String email, String role) {
+        this.email = email;
+        this.role = role;
     }
 }

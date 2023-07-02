@@ -1,10 +1,16 @@
 package com.koliving.api.user;
 
 import com.koliving.api.event.ConfirmationTokenCreatedEvent;
+import com.koliving.api.provider.JwtProvider;
 import com.koliving.api.token.confirmation.ConfirmationToken;
 import com.koliving.api.token.confirmation.IConfirmationTokenService;
+import com.koliving.api.vo.JwtVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class AuthFacade {
+    private final UserService userService;
+    private final JwtProvider jwtProvider;
     private final IConfirmationTokenService confirmationTokenService;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -21,5 +29,32 @@ public class AuthFacade {
         eventPublisher.publishEvent(new ConfirmationTokenCreatedEvent(savedToken));
     }
 
+    public void completeSignUp(User user) {
+        User user = (User) userService.loadUserByUsername(email);
+        user.completeSignUp();
 
+        String accessToken = this.loginWithSignUp(user);
+
+        return accessToken;
+    }
+
+    private String loginWithSignUp(UserDetails userDetails) {
+        this.setAuthentication(userDetails);
+
+        return issueAccessToken(userDetails);
+    }
+
+    private void setAuthentication(UserDetails userDetails) {
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    private String issueAccessToken(UserDetails userDetails) {
+        JwtVo jwtVo = JwtVo.builder()
+                .email(userDetails.getUsername())
+                .role(userDetails.getAuthorities().toString())
+                .build();
+
+        return jwtProvider.generateAccessToken(jwtVo);
+    }
 }

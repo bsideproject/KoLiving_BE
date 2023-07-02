@@ -38,12 +38,4 @@ public class UserService implements IUserService, UserDetailsService {
         user.setPassword(encodedPassword);
     }
 
-    @Override
-    public void completeSignUp(User user) {
-        user.completeSignUp();
-        User newUser = userRepository.save(user);
-
-        // TODO : Login() 생성 필요
-//        this.login(newUser);
-    }
 }
