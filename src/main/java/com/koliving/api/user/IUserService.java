@@ -7,4 +7,5 @@ public interface IUserService {
 
     void setPassword(User user, String password);
 
+    boolean isEqualPassword(String rawPassword, String hashPassword);
 }

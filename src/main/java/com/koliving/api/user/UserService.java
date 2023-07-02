@@ -38,4 +38,8 @@ public class UserService implements IUserService, UserDetailsService {
         user.setPassword(encodedPassword);
     }
 
+    @Override
+    public boolean isEqualPassword(String rawPassword, String hashPassword) {
+        return passwordEncoder.matches(rawPassword, hashPassword);
+    }
 }

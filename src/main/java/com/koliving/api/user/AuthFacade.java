@@ -7,6 +7,7 @@ import com.koliving.api.token.confirmation.IConfirmationTokenService;
 import com.koliving.api.vo.JwtVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,6 +48,15 @@ public class AuthFacade {
     private void setAuthentication(UserDetails userDetails) {
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    private void setAuthenticationWithPassword(String password, UserDetails userDetails) {
+        String storedPassword = userDetails.getPassword();
+        if (!userService.isEqualPassword(password, storedPassword)) {
+            throw new BadCredentialsException("Password not matched");
+        };
+
+        this.setAuthentication(userDetails);
     }
 
     private String issueAccessToken(UserDetails userDetails) {
