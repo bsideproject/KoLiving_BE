@@ -15,7 +15,7 @@ public class AuthFacade {
     private final IConfirmationTokenService confirmationTokenService;
     private final ApplicationEventPublisher eventPublisher;
 
-    public void saveTokenAndSendEmail(String email) {
+    public void processEmailAuth(String email) {
         ConfirmationToken newToken = confirmationTokenService.createToken(email);
         ConfirmationToken savedToken = confirmationTokenService.saveToken(newToken);
         eventPublisher.publishEvent(new ConfirmationTokenCreatedEvent(savedToken));
