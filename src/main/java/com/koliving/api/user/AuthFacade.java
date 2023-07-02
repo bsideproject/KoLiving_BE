@@ -29,7 +29,7 @@ public class AuthFacade {
         eventPublisher.publishEvent(new ConfirmationTokenCreatedEvent(savedToken));
     }
 
-    public void completeSignUp(User user) {
+    public String signUp(String email) {
         User user = (User) userService.loadUserByUsername(email);
         user.completeSignUp();
 
