@@ -26,6 +26,10 @@ public class ObjectStorageService {
         this.client = client;
     }
 
+    public String getFileUrl(String filePath) {
+        return client.getUrl(bucket, filePath).toString();
+    }
+
     public boolean uploadFile(MultipartFile file, String dirName)  {
         String uploadPath = dirName + "/" + file.getOriginalFilename();
 
