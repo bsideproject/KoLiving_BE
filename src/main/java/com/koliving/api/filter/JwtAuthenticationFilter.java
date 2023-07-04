@@ -30,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             jwtProvider.validateToken(accessToken);
         } catch (RuntimeException e) {
             setResponse(response, e.getMessage());
+            return;
         }
 
         Authentication authentication = jwtService.getAuthentication(accessToken);
