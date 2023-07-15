@@ -7,7 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
@@ -17,22 +17,34 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public static final String BEARER_PREFIX = "Bearer ";
     private final JwtProvider jwtProvider;
     private final IJwtService jwtService;
+    private final String currentVersion;
+
+    public JwtAuthenticationFilter(JwtProvider jwtProvider, IJwtService jwtService, @Value("${server.current-version:v1}") String currentVersion) {
+        this.jwtProvider = jwtProvider;
+        this.jwtService = jwtService;
+        this.currentVersion = currentVersion;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String rootPath = String.format("/api/%s", currentVersion);
+        String loginPath = rootPath + "/auth/login";
+        String refreshTokenPath = rootPath + "/auth/refresh-token";
         String accessToken = null;
 
         try {
             accessToken = resolveToken(request);
             jwtProvider.validateToken(accessToken);
-        } catch (AuthenticationException | JwtException e) {
+        } catch (AuthenticationException e) {
             setResponse(response, e.getMessage());
+            return;
+        } catch (JwtException e) {
+            response.sendRedirect(refreshTokenPath);
             return;
         }
 
