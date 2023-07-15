@@ -39,6 +39,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             accessToken = resolveToken(request);
+            if (jwtService.isBlackList(accessToken)) {
+                SecurityContextHolder.clearContext();
+                response.sendRedirect(loginPath);
+                return;
+            }
             jwtProvider.validateToken(accessToken);
         } catch (AuthenticationException e) {
             setResponse(response, e.getMessage());
