@@ -42,4 +42,5 @@ jobs:
           command: ~/deploy.sh
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
           privateKey: ${{ secrets.SERVER_KEY }}
