@@ -24,7 +24,9 @@ jobs:
         run: chmod 755 ./gradlew
 
       - name: Build App
-        run: ./gradlew clean build -x test
+        run:  |
+          ./gradlew copyGitSubmodule
+          ./gradlew clean build -x test
 
       - uses: mr-smithers-excellent/docker-build-push@v5
         name: Build & push Docker image
