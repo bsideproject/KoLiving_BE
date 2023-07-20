@@ -35,6 +35,16 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 }
 
+jar {
+    enabled = false
+}
+
 test {
     useJUnitPlatform()
+}
+
+task copyGitSubmodule(type: Copy) {
+    from './config'
+    include '*.yml'
+    into './src/main/resources'
 }
