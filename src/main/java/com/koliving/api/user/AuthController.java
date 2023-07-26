@@ -7,7 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,11 +22,13 @@ public class AuthController {
     private final AuthFacade authFacade;
 
     @PostMapping("/sign-up")
-    public ResponseEntity signUp(final @Valid @RequestBody SignUpDto signUpDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            String errorField = bindingResult.getFieldError().getField();
-            String errorCode = bindingResult.getFieldError().getCode();
-            String duplicatedEmail = bindingResult.getFieldError().getDefaultMessage();
+    public ResponseEntity signUp(final @Valid @RequestBody SignUpDto signUpDto) {
+        BindException error = new BindException(signUpDto, "signUpDto");
+        emailDuplicationValidator.validate(signUpDto, error);
+        if (error.hasErrors()) {
+            String errorField = error.getFieldError().getField();
+            String errorCode = error.getFieldError().getCode();
+            String duplicatedEmail = error.getFieldError().getDefaultMessage();
             throw new DuplicateResourceException(errorField + "_" + errorCode + ":" + duplicatedEmail);
         }
 
