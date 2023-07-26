@@ -2,14 +2,12 @@ package com.koliving.api.user;
 
 import com.koliving.api.dto.SignUpDto;
 import com.koliving.api.exception.DuplicateResourceException;
+import com.koliving.api.validation.EmailDuplicationValidator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.Validator;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,20 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final Validator emailDuplicationValidator;
+    private final EmailDuplicationValidator emailDuplicationValidator;
     private final AuthFacade authFacade;
 
-    @InitBinder("SignUpDto")
-    public void initBinderForEvent(WebDataBinder webDataBinder) {
-        webDataBinder.addValidators(emailDuplicationValidator);
-    }
-
     @PostMapping("/sign-up")
-    public ResponseEntity signUp(final @Valid @RequestBody SignUpDto signUpDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            String errorField = bindingResult.getFieldError().getField();
-            String errorCode = bindingResult.getFieldError().getCode();
-            String duplicatedEmail = bindingResult.getFieldError().getDefaultMessage();
+    public ResponseEntity signUp(final @Valid @RequestBody SignUpDto signUpDto) {
+        BindException error = new BindException(signUpDto, "signUpDto");
+        emailDuplicationValidator.validate(signUpDto, error);
+        if (error.hasErrors()) {
+            String errorField = error.getFieldError().getField();
+            String errorCode = error.getFieldError().getCode();
+            String duplicatedEmail = error.getFieldError().getDefaultMessage();
             throw new DuplicateResourceException(errorField + "_" + errorCode + ":" + duplicatedEmail);
         }
 
