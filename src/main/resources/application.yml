@@ -79,7 +79,7 @@ jwt:
 cloud:
   aws:
     region:
-      static: kr-standard # NCP
+      static1: kr-standard # NCP
     credentials:
       access-key: ${S3_ACCESS_KEY}
       secret-key: ${S3_SECRET_KEY}
