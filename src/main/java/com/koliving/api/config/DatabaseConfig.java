@@ -1,8 +1,9 @@
 package com.koliving.api.config;
 
+import com.koliving.api.properties.DatasourceProperties;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -14,29 +15,21 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 
+
 @Configuration
+@AllArgsConstructor
 @EnableJpaRepositories(basePackages = "com.koliving.api")
 public class DatabaseConfig {
 
-    @Value("${spring.datasource.url}")
-    private String dbUrl;
-
-    @Value("${spring.datasource.username}")
-    private String username;
-
-    @Value("${spring.datasource.password}")
-    private String password;
-
-    @Value("${spring.datasource.driver-class-name}")
-    private String driverClassName;
+    private final DatasourceProperties datasourceProperties;
 
     @Bean
     public DataSource dataSource() {
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName(driverClassName);
-        config.setJdbcUrl(dbUrl);
-        config.setUsername(username);
-        config.setPassword(password);
+        config.setDriverClassName(datasourceProperties.getDriverClassName());
+        config.setJdbcUrl(datasourceProperties.getUrl());
+        config.setUsername(datasourceProperties.getUsername());
+        config.setPassword(datasourceProperties.getPassword());
 
         return new HikariDataSource(config);
     }
@@ -45,7 +38,7 @@ public class DatabaseConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan(new String[] { "com.koliving.api" });
+        em.setPackagesToScan("com.koliving.api");
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
@@ -60,5 +53,4 @@ public class DatabaseConfig {
 
         return transactionManager;
     }
-
 }

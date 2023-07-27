@@ -24,9 +24,14 @@ public class CustomLocaleResolver extends AcceptHeaderLocaleResolver {
 
         List<Locale> supportedLocales = Arrays.asList(Locale.ENGLISH, Locale.KOREAN);
         String headerLang = request.getHeader(HttpHeaders.ACCEPT_LANGUAGE);
-        List<LanguageRange> headerLangList = LanguageRange.parse(headerLang);
-        Locale adoptedLocale = Locale.lookup(headerLangList, supportedLocales);
 
-        return (headerLang == null || headerLang.isEmpty()) ? defaultLocale : adoptedLocale;
+        if (headerLang == null) {
+            return defaultLocale;
+        }
+
+        List<LanguageRange> headerLangList = LanguageRange.parse(headerLang);
+        Locale currentLocale = Locale.lookup(headerLangList, supportedLocales);
+
+        return currentLocale;
     }
 }
