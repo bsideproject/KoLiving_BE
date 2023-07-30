@@ -26,7 +26,14 @@ public class ObjectStorageService {
     }
 
     public String getFileUrl(String filePath) {
-        return client.getUrl(getBucketName(), filePath).toString();
+        String string = null;
+        try {
+            string = client.getUrl(getBucketName(), filePath).toString();;
+        } catch (SdkClientException e) {
+            log.error("Error "); // TODO error handling
+        }
+
+        return string;
     }
 
     public boolean uploadFile(MultipartFile file, String dirName)  {
@@ -42,11 +49,11 @@ public class ObjectStorageService {
                         .withCannedAcl(CannedAccessControlList.PublicRead)
             );
         } catch(IOException e) {
-            log.error("Error "); // TODO error message
+            log.error("Error "); // TODO error handling
         } catch(AmazonS3Exception e) {
-            log.error("Error "); // TODO error message
+            log.error("Error "); // TODO error handling
         } catch(SdkClientException e) {
-            log.error("Error "); // TODO error message
+            log.error("Error "); // TODO error handling
         }
 
         return true;
@@ -56,9 +63,9 @@ public class ObjectStorageService {
         try {
             client.deleteObject(getBucketName(), filePath);
         } catch(AmazonS3Exception e) {
-            log.error("Error "); // TODO error message
+            log.error("Error "); // TODO error handling
         } catch(SdkClientException e) {
-            log.error("Error "); // TODO error message
+            log.error("Error "); // TODO error handling
         }
 
         return true;
