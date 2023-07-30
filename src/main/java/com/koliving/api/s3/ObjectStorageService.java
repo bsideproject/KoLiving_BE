@@ -6,8 +6,8 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.koliving.api.properties.ObjectStorageProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,17 +17,23 @@ import java.io.IOException;
 @Service
 public class ObjectStorageService {
 
-    private String bucket;
+    private final ObjectStorageProperties objectStorageProperties;
     private final AmazonS3Client client;
 
-    public ObjectStorageService(@Value("${cloud.aws.s3.bucket}") String bucket,
-                                AmazonS3Client client) {
-        this.bucket = bucket;
+    public ObjectStorageService(ObjectStorageProperties objectStorageProperties, AmazonS3Client client) {
+        this.objectStorageProperties = objectStorageProperties;
         this.client = client;
     }
 
     public String getFileUrl(String filePath) {
-        return client.getUrl(bucket, filePath).toString();
+        String string = null;
+        try {
+            string = client.getUrl(getBucketName(), filePath).toString();;
+        } catch (SdkClientException e) {
+            log.error("Error "); // TODO error handling
+        }
+
+        return string;
     }
 
     public boolean uploadFile(MultipartFile file, String dirName)  {
@@ -39,15 +45,15 @@ public class ObjectStorageService {
 
         try {
             client.putObject(
-                    new PutObjectRequest(bucket, uploadPath, file.getInputStream(), metadata)
+                    new PutObjectRequest(getBucketName(), uploadPath, file.getInputStream(), metadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead)
             );
         } catch(IOException e) {
-            log.error("Error "); // TODO error message
+            log.error("Error "); // TODO error handling
         } catch(AmazonS3Exception e) {
-            log.error("Error "); // TODO error message
+            log.error("Error "); // TODO error handling
         } catch(SdkClientException e) {
-            log.error("Error "); // TODO error message
+            log.error("Error "); // TODO error handling
         }
 
         return true;
@@ -55,13 +61,17 @@ public class ObjectStorageService {
 
     public boolean deleteFile(String filePath) {
         try {
-            client.deleteObject(bucket, filePath);
+            client.deleteObject(getBucketName(), filePath);
         } catch(AmazonS3Exception e) {
-            log.error("Error "); // TODO error message
+            log.error("Error "); // TODO error handling
         } catch(SdkClientException e) {
-            log.error("Error "); // TODO error message
+            log.error("Error "); // TODO error handling
         }
 
         return true;
+    }
+
+    private String getBucketName() {
+        return objectStorageProperties.getS3().getBucket();
     }
 }
