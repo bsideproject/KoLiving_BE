@@ -28,8 +28,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ResponseDto.failure(errors ,value), badRequest);
     }
 
-    @ExceptionHandler(value = DuplicateResourceException.class)
-    public ResponseEntity<ResponseDto> handleEmailDuplicationException(DuplicateResourceException e, Locale locale) {
+    @ExceptionHandler(value = {DuplicateResourceException.class, IllegalArgumentException.class})
+    public ResponseEntity<ResponseDto> handleRequestException(DuplicateResourceException e, Locale locale) {
         String[] messageKeyAndEmail = e.getMessage().split(":");
         String messageKey = messageKeyAndEmail[0];
         String email = messageKeyAndEmail[1];
