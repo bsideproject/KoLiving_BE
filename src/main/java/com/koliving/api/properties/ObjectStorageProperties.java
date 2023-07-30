@@ -14,6 +14,7 @@ public class ObjectStorageProperties {
 
     private Credentials credentials;
     private Region region;
+    private S3 s3;
 
     @Getter
     @Setter
@@ -43,4 +44,16 @@ public class ObjectStorageProperties {
         }
     }
 
+
+    @Getter
+    @Setter
+    public static class S3 {
+
+        @NotBlank
+        private String bucket;
+
+        public S3(String bucket) {
+            this.bucket = bucket;
+        }
+    }
 }
