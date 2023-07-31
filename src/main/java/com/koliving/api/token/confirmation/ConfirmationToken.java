@@ -23,7 +23,7 @@ public class ConfirmationToken {
 
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    private Integer id;
+    private Long id;
     private String token;
     private String email;
 
