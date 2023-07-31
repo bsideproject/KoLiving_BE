@@ -32,10 +32,10 @@ public class RefreshTokenRepository {
     }
 
     public String save(final RefreshToken refreshToken) {
-        hashOperations.putIfAbsent(RT_HASH_KEY, refreshToken.getEmail(), refreshToken.getRefreshToken());
+        hashOperations.putIfAbsent(RT_HASH_KEY, refreshToken.email(), refreshToken.refreshToken());
         redisTemplate.expire(RT_HASH_KEY, RT_EXPIRATION_TIME, TimeUnit.DAYS);
 
-        return refreshToken.getRefreshToken();
+        return refreshToken.refreshToken();
     }
 
     public boolean existByEmail(final String email) {
