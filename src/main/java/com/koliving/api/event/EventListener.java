@@ -1,14 +1,14 @@
 package com.koliving.api.event;
 
 import com.koliving.api.token.confirmation.IConfirmationTokenService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class EventListener {
 
     private final IConfirmationTokenService confirmationTokenService;

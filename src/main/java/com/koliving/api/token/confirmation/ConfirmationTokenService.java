@@ -13,12 +13,12 @@ import java.util.Optional;
 @Service
 public class ConfirmationTokenService implements IConfirmationTokenService {
 
-    private final ConfirmationTokenRepository confirmationTokenRepository;
     private final IEmailService emailService;
+    private final ConfirmationTokenRepository confirmationTokenRepository;
     private final IClock clock;
-    private String origin;
-    private String currentVersion;
-    private long validityPeriod;
+    private final String origin;
+    private final String currentVersion;
+    private final long validityPeriod;
 
     public ConfirmationTokenService(ConfirmationTokenRepository confirmationTokenRepository,
                                     IEmailService emailService,

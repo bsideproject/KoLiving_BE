@@ -1,7 +1,7 @@
 package com.koliving.api.config;
 
 import com.koliving.api.properties.EmailProperties;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -9,8 +9,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.util.Properties;
 
-@AllArgsConstructor
 @Configuration
+@RequiredArgsConstructor
 public class EmailConfig {
 
     private final EmailProperties emailProperties;
