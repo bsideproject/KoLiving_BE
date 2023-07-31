@@ -24,12 +24,8 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
-    public User save(String email) {
-        User newUser = User.builder()
-                .email(email)
-                .build();
-
-        return userRepository.save(newUser);
+    public User save(User user) {
+        return userRepository.save(user);
     }
 
     @Override
