@@ -1,7 +1,7 @@
 package com.koliving.api.user;
 
 import com.koliving.api.dto.ProfileDto;
-import com.koliving.api.dto.SetPasswordDto;
+import com.koliving.api.dto.PasswordDto;
 import com.koliving.api.dto.SignUpDto;
 import com.koliving.api.exception.DuplicateResourceException;
 import com.koliving.api.validation.EmailDuplicationValidator;
@@ -25,10 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
+    private final AuthFacade authFacade;
+    private final UserService userService;
     private final EmailDuplicationValidator emailDuplicationValidator;
     private final Provider<UserPropertyEditor> userPropertyEditorProvider;
-    private final UserService userService;
-    private final AuthFacade authFacade;
     private final ModelMapper modelMapper;
 
     @InitBinder
@@ -53,8 +53,8 @@ public class AuthController {
     }
 
     @PostMapping("/password")
-    public ResponseEntity setPassword(final @Valid @RequestBody SetPasswordDto setPasswordDto, @RequestParam("email") User user) {
-        userService.setPassword(user, setPasswordDto.password());
+    public ResponseEntity setPassword(final @Valid @RequestBody PasswordDto passwordDto, @RequestParam("email") User user) {
+        userService.setPassword(user, passwordDto.password());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
