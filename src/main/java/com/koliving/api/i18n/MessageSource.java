@@ -17,15 +17,10 @@ public class MessageSource extends AbstractMessageSource {
 
     @Override
     protected MessageFormat resolveCode(String key, Locale locale) {
-        String messageContent;
-        Language message = languageRepository.findByLocaleAndMessageKey(locale.toString(), key);
-
-        if (message == null) {
-            messageContent = resourceBundleMessageSource.getMessage(key, null, locale);
-        } else {
-            messageContent = message.getMessagePattern();
-        }
-
-        return new MessageFormat(messageContent, locale);
+        String messagePattern = languageRepository
+                .findByLocaleAndMessageKey(locale.toString(), key)
+                .map(Language::getMessagePattern)
+                .orElseGet(() -> resourceBundleMessageSource.getMessage(key, null, locale));
+        return new MessageFormat(messagePattern, locale);
     }
 }
