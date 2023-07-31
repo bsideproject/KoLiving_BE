@@ -33,7 +33,7 @@ public class User implements UserDetails {
 
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    private Integer id;
+    private Long id;
     private String email;
     private String password;
 
@@ -66,11 +66,11 @@ public class User implements UserDetails {
     private boolean bLocked;
 
     @CreationTimestamp
-    @Column(name = "CREATED_DATE")
+    @Column(name = "created_date")
     private LocalDateTime createdDate;
 
     @UpdateTimestamp
-    @Column(name = "LAST_MODIFIED_DATE")
+    @Column(name = "last_modified_date")
     private LocalDateTime lastModifiedDate;
 
     @Builder
