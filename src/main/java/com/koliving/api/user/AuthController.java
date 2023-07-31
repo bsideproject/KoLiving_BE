@@ -1,5 +1,6 @@
 package com.koliving.api.user;
 
+import com.koliving.api.dto.ProfileDto;
 import com.koliving.api.dto.SetPasswordDto;
 import com.koliving.api.dto.SignUpDto;
 import com.koliving.api.exception.DuplicateResourceException;
@@ -7,6 +8,7 @@ import com.koliving.api.validation.EmailDuplicationValidator;
 import jakarta.inject.Provider;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -27,6 +29,7 @@ public class AuthController {
     private final Provider<UserPropertyEditor> userPropertyEditorProvider;
     private final UserService userService;
     private final AuthFacade authFacade;
+    private final ModelMapper modelMapper;
 
     @InitBinder
     public void initBinder(WebDataBinder dataBinder){
@@ -50,8 +53,17 @@ public class AuthController {
     }
 
     @PostMapping("/password")
-    public ResponseEntity setPassword(final @Valid @RequestBody SetPasswordDto setPasswordDto, @RequestParam User user) {
+    public ResponseEntity setPassword(final @Valid @RequestBody SetPasswordDto setPasswordDto, @RequestParam("email") User user) {
         userService.setPassword(user, setPasswordDto.password());
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/profile")
+    public ResponseEntity setProfile(final @Valid @RequestBody ProfileDto profileDto, @RequestParam("email") User user) {
+        modelMapper.map(profileDto, user);
+        user.completeSignUp();
+        userService.save(user);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
