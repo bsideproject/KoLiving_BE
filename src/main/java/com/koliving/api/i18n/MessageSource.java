@@ -25,7 +25,7 @@ public class MessageSource extends AbstractMessageSource {
         if (message == null) {
             messageContent = resourceBundleMessageSource.getMessage(key, null, locale);
         } else {
-            messageContent = message.getMessageContent();
+            messageContent = message.getMessagePattern();
         }
 
         return new MessageFormat(messageContent, locale);
