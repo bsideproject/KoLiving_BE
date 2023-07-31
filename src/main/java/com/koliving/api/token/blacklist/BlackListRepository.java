@@ -22,8 +22,8 @@ public class BlackListRepository {
     }
 
     public void save(final BlackAccessToken blackAccessToken) {
-        String tokenValue = blackAccessToken.getAccessToken();
-        Date expirationDate = blackAccessToken.getExpirationTime();
+        String tokenValue = blackAccessToken.accessToken();
+        Date expirationDate = blackAccessToken.expirationTime();
 
         hashOperations.put(BAT_HASH_KEY, tokenValue, expirationDate);
         redisTemplate.expireAt(BAT_HASH_KEY, expirationDate);
