@@ -3,7 +3,7 @@ package com.koliving.api.user;
 
 public interface IUserService {
 
-    User save(String email);
+    User save(User user);
 
     void setPassword(User user, String password);
 
