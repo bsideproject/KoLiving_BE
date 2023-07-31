@@ -14,8 +14,6 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: none
-      naming:
-        physical-strategy: com.koliving.api.config.CustomNamingStrategy
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect

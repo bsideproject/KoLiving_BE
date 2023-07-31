@@ -1,21 +1,24 @@
 package com.koliving.api.token.confirmation;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-
-@Getter
-@NoArgsConstructor
 @Entity
+@Getter @ToString @EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ConfirmationToken {
 
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,22 +28,24 @@ public class ConfirmationToken {
     private String email;
 
     @CreationTimestamp
-    private LocalDateTime createdAt;
-    private LocalDateTime expiresAt;
+    @Column(name = "CREATED_DATE")
+    private LocalDateTime createdDate;
+    @Column(name = "EXPIRED_DATE")
+    private LocalDateTime expiredDate;
 
-    private boolean isResended;
-    private boolean isConfirmed;
+    @Column(name = "B_RESENDED")
+    private boolean bResended;
+    @Column(name = "B_CONFIRMED")
+    private boolean bConfirmed;
 
     @Builder
     public ConfirmationToken(String email, long validityPeriod) {
         this.token = UUID.randomUUID().toString();
         this.email = email;
-        this.expiresAt = LocalDateTime.now().plusMinutes(validityPeriod);
-        this.isResended = false;
-        this.isConfirmed = false;
+        this.expiredDate = LocalDateTime.now().plusMinutes(validityPeriod);
     }
 
     public void confirm() {
-        this.isConfirmed = true;
+        this.bConfirmed = true;
     }
 }

@@ -1,5 +1,6 @@
 package com.koliving.api.user;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -8,9 +9,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,9 +26,9 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
-@Getter
-@NoArgsConstructor
-@Entity
+@Entity(name = "USER")
+@Getter @ToString @EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User implements UserDetails {
 
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,30 +36,41 @@ public class User implements UserDetails {
     private Integer id;
     private String email;
     private String password;
+
+    @Column(name = "FIRST_NAME")
     private String firstName;
+
+    @Column(name = "LAST_NAME")
     private String lastName;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Temporal(TemporalType.DATE)
+    @Column(name = "BIRTH_DATE")
     private LocalDate birthDate;
 
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "USER_ROLE")
     private UserRole userRole;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "SIGNUP_STATUS")
     private SignUpStatus signUpStatus;
 
+    @Column(name = "B_ENABLED")
     private boolean bEnabled;
+    @Column(name = "B_LOCKED")
     private boolean bLocked;
 
     @CreationTimestamp
+    @Column(name = "CREATED_DATE")
     private LocalDateTime createdDate;
 
     @UpdateTimestamp
+    @Column(name = "LAST_MODIFIED_DATE")
     private LocalDateTime lastModifiedDate;
 
     @Builder
@@ -63,8 +78,6 @@ public class User implements UserDetails {
         this.email = email;
         this.signUpStatus = SignUpStatus.PASSWORD_VERIFICATION_PENDING;
         this.userRole = UserRole.USER;
-        this.bEnabled = false;
-        this.bLocked = false;
     }
 
     public void setPassword(String password) {

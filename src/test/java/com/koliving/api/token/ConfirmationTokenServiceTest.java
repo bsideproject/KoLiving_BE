@@ -115,10 +115,10 @@ class ConfirmationTokenServiceTest {
 
         // expiredAt 시간이 현재 시간으로부터 30분 이후의 시간값이 생성되었는지 확인
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime resultExpiresAt = result.getExpiresAt();
+        LocalDateTime resultExpiresAt = result.getExpiredDate();
         assertTrue(resultExpiresAt.isAfter(now) && resultExpiresAt.isBefore(now.plusMinutes(validityPeriod)));
-        assertEquals(result.isResended(), false);
-        assertEquals(result.isConfirmed(), false);
+        assertEquals(result.isBResended(), false);
+        assertEquals(result.isBConfirmed(), false);
     }
 
     // createToken_failure() 생략
@@ -169,7 +169,7 @@ class ConfirmationTokenServiceTest {
         confirmationTokenService.authenticateToken(tokenValue);
 
         assertTrue(confirmationTokenService.getToken(anyString()).isPresent());
-        assertEquals(token.isConfirmed(), true);
+        assertEquals(token.isBConfirmed(), true);
     }
 
     @Test
@@ -197,7 +197,7 @@ class ConfirmationTokenServiceTest {
         });
         assertTrue(confirmationTokenService.getToken(anyString()).isPresent());
         assertEquals(e.getMessage(), "token has expired");
-        assertFalse(token.isConfirmed());
+        assertFalse(token.isBConfirmed());
     }
 
     @Test
@@ -221,7 +221,7 @@ class ConfirmationTokenServiceTest {
         });
         assertTrue(confirmationTokenService.getToken(anyString()).isPresent());
         assertEquals(e.getMessage(), "token already confirmed");
-        assertTrue(token.isConfirmed());
+        assertTrue(token.isBConfirmed());
     }
 
     @Test
