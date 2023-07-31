@@ -4,28 +4,31 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
-public record ProfileDto(
-        @NotBlank
-        String firstName,
+@Getter
+public class ProfileDto {
 
-        @NotBlank
-        String lastName,
+    @NotBlank
+    private String firstName;
 
-        @NotNull
-        @Range(min = 0L, max=2L)
-        int genderCode,
+    @NotBlank
+    private String lastName;
 
-        @NotNull
-        @Past
-        @DateTimeFormat(pattern = "yyyy-MM-dd")
-        LocalDate birthDate,
+    @NotNull
+    @Range(min = 0L, max=2L)
+    private int genderCode;
 
-        @NotBlank
-        @Size(min = 0, max =500)
-        String description) {
+    @NotNull
+    @Past
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthDate;
+
+    @NotBlank
+    @Size(min = 0, max =500)
+    private String description;
 }
