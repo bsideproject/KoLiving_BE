@@ -19,10 +19,10 @@ import java.util.Date;
 @Service
 public class JwtService implements IJwtService {
 
-    private String jwtSecret;
     private final UserDetailsService userService;
-    private final BlackListRepository blackListRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final BlackListRepository blackListRepository;
+    private final String jwtSecret;
 
     public JwtService(@Value("${jwt.secret}") String jwtSecret,
                       UserDetailsService userService,

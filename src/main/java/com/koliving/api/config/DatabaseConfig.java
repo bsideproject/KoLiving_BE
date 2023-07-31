@@ -3,7 +3,7 @@ package com.koliving.api.config;
 import com.koliving.api.properties.DatasourceProperties;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -17,8 +17,8 @@ import javax.sql.DataSource;
 
 
 @Configuration
-@AllArgsConstructor
 @EnableJpaRepositories(basePackages = "com.koliving.api")
+@RequiredArgsConstructor
 public class DatabaseConfig {
 
     private final DatasourceProperties datasourceProperties;

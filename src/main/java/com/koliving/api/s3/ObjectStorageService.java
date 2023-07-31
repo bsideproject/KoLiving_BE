@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.koliving.api.properties.ObjectStorageProperties;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,15 +16,11 @@ import java.io.IOException;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ObjectStorageService {
 
-    private final ObjectStorageProperties objectStorageProperties;
     private final AmazonS3Client client;
-
-    public ObjectStorageService(ObjectStorageProperties objectStorageProperties, AmazonS3Client client) {
-        this.objectStorageProperties = objectStorageProperties;
-        this.client = client;
-    }
+    private final ObjectStorageProperties objectStorageProperties;
 
     public String getFileUrl(String filePath) {
         String string = null;

@@ -26,9 +26,9 @@ import java.util.Map;
 @Component
 public class JwtProvider {
 
-    private String jwtSecret;
-    private long expiration;
-    private IClock clock;
+    private final IClock clock;
+    private final String jwtSecret;
+    private final long expiration;
 
     public JwtProvider(@Value("${jwt.secret}") String jwtSecret,
                        @Value("${jwt.expiration:24}") long expiration,
