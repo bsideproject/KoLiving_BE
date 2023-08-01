@@ -50,11 +50,17 @@ public class AuthFacade {
     }
 
     @Transactional(readOnly = true)
-    public String login(String email, String password) {
-        UserDetails userDetails = userService.loadUserByUsername(email);;
+    public TokenDto login(String email, String password) {
+        UserDetails userDetails = userService.loadUserByUsername(email);
         this.setAuthenticationWithPassword(password, userDetails);
 
-        return issueAccessToken(userDetails);
+        String accessToken = issueAccessToken(userDetails);
+        String refreshToken = jwtService.getRefreshToken(email);
+
+        return TokenDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     public TokenDto signUp(User user) {
