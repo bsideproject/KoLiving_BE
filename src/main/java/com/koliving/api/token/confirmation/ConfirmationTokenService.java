@@ -26,7 +26,7 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
                                     @Value("${server.origin:http://localhost:8080}") String origin,
                                     @Value("${server.current-version:v1}") String currentVersion,
                                     @Value("${spring.mail.properties.mail.auth.validity-period:30}") long validityPeriod
-    ) {
+                                    ) {
         this.confirmationTokenRepository = confirmationTokenRepository;
         this.emailService = emailService;
         this.clock = clock;
@@ -52,6 +52,11 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     @Transactional
     public ConfirmationToken save(ConfirmationToken token) {
         return confirmationTokenRepository.save(token);
+    }
+
+    @Override
+    public Long delete(String token) {
+        return confirmationTokenRepository.deleteByToken(token);
     }
 
     @Override

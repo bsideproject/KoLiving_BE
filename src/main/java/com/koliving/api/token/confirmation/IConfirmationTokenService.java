@@ -10,7 +10,9 @@ public interface IConfirmationTokenService {
 
     ConfirmationToken save(ConfirmationToken token);
 
+    Long delete(String email);
+
     void sendEmail(String mail, String token);
 
-    String authenticateToken(String token);
+    boolean authenticateToken(String token);
 }
