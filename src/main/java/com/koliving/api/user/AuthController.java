@@ -1,5 +1,6 @@
 package com.koliving.api.user;
 
+import com.koliving.api.dto.LoginDto;
 import com.koliving.api.dto.PasswordDto;
 import com.koliving.api.dto.ProfileDto;
 import com.koliving.api.dto.ResponseDto;
@@ -65,7 +66,7 @@ public class AuthController {
         String token = emailParams.get("token");
         String email = emailParams.get("email");
 
-        authFacade.checkAuthMail(token, email);
+        authFacade.checkAuthMail(token, email);   
         authFacade.deleteConfirmationToken(token);
 
         String redirectPath = "/password";
@@ -85,6 +86,13 @@ public class AuthController {
         TokenDto accessToken = authFacade.signUp(user);
 
         return createSuccessResponse(accessToken, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ResponseDto<TokenDto>> login(final @Valid @RequestBody LoginDto loginDto) {
+        TokenDto authTokens = authFacade.login(loginDto.email(), loginDto.password());
+
+        return createSuccessResponse(authTokens, HttpStatus.OK);
     }
 
     private <T> ResponseEntity<ResponseDto<T>> createSuccessResponse(T data, HttpStatus status) {
