@@ -61,7 +61,7 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
 
     @Override
     public void sendEmail(String email, String token) {
-        String authLinkPath = String.format("/api/%s/signup/confirm", currentVersion);
+        String authLinkPath = String.format("/api/%s/sign-up/confirm", currentVersion);
         String tokenValue = token;
         String authLink = origin + authLinkPath + "?token=" + tokenValue + "&email=" + email;
 
