@@ -70,8 +70,8 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
 
     @Override
     @Transactional
-    public String authenticateToken(String token) {
-        Optional<ConfirmationToken> optionalConfirmationToken = get(token);
+    public boolean authenticateToken(String token) {
+        Optional<ConfirmationToken> optionalConfirmationToken = this.get(token);
         if (optionalConfirmationToken.isEmpty()) {
             this.handleInvalidToken();
         }
@@ -81,8 +81,7 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
                 .filter(this::isNotConfirmed)
                 .ifPresent(this::confirmToken);
 
-        //TODO response : 302 -> signup-password page (The token successfully confirmed)
-        return "302";
+        return true;
     }
 
     private boolean isNotExpired(ConfirmationToken confirmationToken) {
