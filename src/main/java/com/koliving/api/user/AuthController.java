@@ -11,8 +11,10 @@ import jakarta.inject.Provider;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -21,6 +23,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/${server.current-version}/auth")
@@ -54,6 +60,18 @@ public class AuthController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PostMapping("/sign-up/confirm")
+    public ResponseEntity<ResponseDto<String>> checkAuthEmail(@RequestParam Map<String, String> emailParams, ServerHttpRequest req) {
+        String token = emailParams.get("token");
+        String email = emailParams.get("email");
+
+        authFacade.checkAuthMail(token, email);
+        authFacade.deleteConfirmationToken(token);
+
+        String redirectPath = "/password";
+        return createRedirectResponse(email, req, redirectPath);
+    }
+
     @PostMapping("/password")
     public ResponseEntity setPassword(final @Valid @RequestBody PasswordDto passwordDto, @RequestParam("email") User user) {
         userService.setPassword(user, passwordDto.password());
@@ -73,5 +91,21 @@ public class AuthController {
         ResponseDto<T> response = ResponseDto.success(data, status.value());
 
         return new ResponseEntity<>(response, status);
+    }
+
+    private <T> ResponseEntity<ResponseDto<T>> createRedirectResponse(T data, ServerHttpRequest req, String redirectPath) {
+        HttpStatus found = HttpStatus.FOUND;
+
+        ResponseDto<T> response = ResponseDto.success(data, found.value());
+
+        URI currentUri = req.getURI();
+        URI redirectUri = UriComponentsBuilder.fromUri(currentUri)
+                .path(redirectPath)
+                .build().toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(redirectUri);
+
+        return new ResponseEntity<>(response, headers, found);
     }
 }
