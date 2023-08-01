@@ -45,6 +45,10 @@ public class AuthFacade {
         }
     }
 
+    public boolean deleteConfirmationToken(String email) {
+        return confirmationTokenService.delete(email) > 0;
+    }
+
     @Transactional(readOnly = true)
     public String login(String email, String password) {
         UserDetails userDetails = userService.loadUserByUsername(email);;
