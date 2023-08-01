@@ -1,5 +1,6 @@
 package com.koliving.api.user;
 
+import com.koliving.api.dto.TokenDto;
 import com.koliving.api.event.ConfirmationTokenCreatedEvent;
 import com.koliving.api.provider.JwtProvider;
 import com.koliving.api.token.IJwtService;
@@ -43,13 +44,15 @@ public class AuthFacade {
         return issueAccessToken(userDetails);
     }
 
-    public String signUp(String email) {
-        User user = (User) userService.loadUserByUsername(email);
+    public TokenDto signUp(User user) {
         user.completeSignUp();
-
         String accessToken = this.loginWithSignUp(user);
 
-        return accessToken;
+        userService.save(user);
+
+        return TokenDto.builder()
+                .accessToken(accessToken)
+                .build();
     }
 
     public void logout(String accessToken) {

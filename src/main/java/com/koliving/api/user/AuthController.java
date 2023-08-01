@@ -1,8 +1,10 @@
 package com.koliving.api.user;
 
-import com.koliving.api.dto.ProfileDto;
 import com.koliving.api.dto.PasswordDto;
+import com.koliving.api.dto.ProfileDto;
+import com.koliving.api.dto.ResponseDto;
 import com.koliving.api.dto.SignUpDto;
+import com.koliving.api.dto.TokenDto;
 import com.koliving.api.exception.DuplicateResourceException;
 import com.koliving.api.validation.EmailDuplicationValidator;
 import jakarta.inject.Provider;
@@ -11,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindException;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,33 +40,38 @@ public class AuthController {
 
     @PostMapping("/sign-up")
     public ResponseEntity signUp(final @Valid @RequestBody SignUpDto signUpDto) {
-        BindException error = new BindException(signUpDto, "signUpDto");
-        emailDuplicationValidator.validate(signUpDto, error);
-        if (error.hasErrors()) {
-            String errorField = error.getFieldError().getField();
-            String errorCode = error.getFieldError().getCode();
-            String duplicatedEmail = error.getFieldError().getDefaultMessage();
+        BeanPropertyBindingResult errors = new BeanPropertyBindingResult(signUpDto, "signUpDto");
+        emailDuplicationValidator.validate(signUpDto, errors);
+        if (errors.hasErrors()) {
+            String errorField = errors.getFieldError().getField();
+            String errorCode = errors.getFieldError().getCode();
+            String duplicatedEmail = errors.getFieldError().getDefaultMessage();
             throw new DuplicateResourceException(errorField + "_" + errorCode + ":" + duplicatedEmail);
         }
 
         authFacade.processEmailAuth(signUpDto.email());
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/password")
     public ResponseEntity setPassword(final @Valid @RequestBody PasswordDto passwordDto, @RequestParam("email") User user) {
         userService.setPassword(user, passwordDto.password());
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/profile")
-    public ResponseEntity setProfile(final @Valid @RequestBody ProfileDto profileDto, @RequestParam("email") User user) {
+    public ResponseEntity<ResponseDto<TokenDto>> setProfile(final @Valid @RequestBody ProfileDto profileDto, @RequestParam("email") User user) {
         modelMapper.map(profileDto, user);
-        user.completeSignUp();
-        userService.save(user);
+        TokenDto accessToken = authFacade.signUp(user);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return createSuccessResponse(accessToken, HttpStatus.CREATED);
+    }
+
+    private <T> ResponseEntity<ResponseDto<T>> createSuccessResponse(T data, HttpStatus status) {
+        ResponseDto<T> response = ResponseDto.success(data, status.value());
+
+        return new ResponseEntity<>(response, status);
     }
 }
