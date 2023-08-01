@@ -4,13 +4,15 @@ import java.util.Optional;
 
 public interface IConfirmationTokenService {
 
-    Optional<ConfirmationToken> getToken(String token);
+    Optional<ConfirmationToken> get(String token);
 
-    ConfirmationToken createToken(String email);
+    ConfirmationToken create(String email);
 
-    ConfirmationToken saveToken(ConfirmationToken token);
+    ConfirmationToken save(ConfirmationToken token);
+
+    Long delete(String email);
 
     void sendEmail(String mail, String token);
 
-    String authenticateToken(String token);
+    boolean authenticateToken(String token);
 }
