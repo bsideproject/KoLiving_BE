@@ -2,7 +2,9 @@ package com.koliving.api.user;
 
 import com.koliving.api.dto.PasswordDto;
 import com.koliving.api.dto.ProfileDto;
+import com.koliving.api.dto.ResponseDto;
 import com.koliving.api.dto.SignUpDto;
+import com.koliving.api.dto.TokenDto;
 import com.koliving.api.exception.DuplicateResourceException;
 import com.koliving.api.validation.EmailDuplicationValidator;
 import jakarta.inject.Provider;
@@ -60,11 +62,16 @@ public class AuthController {
     }
 
     @PostMapping("/profile")
-    public ResponseEntity setProfile(final @Valid @RequestBody ProfileDto profileDto, @RequestParam("email") User user) {
+    public ResponseEntity<ResponseDto<TokenDto>> setProfile(final @Valid @RequestBody ProfileDto profileDto, @RequestParam("email") User user) {
         modelMapper.map(profileDto, user);
-        user.completeSignUp();
-        userService.save(user);
+        TokenDto accessToken = authFacade.signUp(user);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return createSuccessResponse(accessToken, HttpStatus.CREATED);
+    }
+
+    private <T> ResponseEntity<ResponseDto<T>> createSuccessResponse(T data, HttpStatus status) {
+        ResponseDto<T> response = ResponseDto.success(data, status.value());
+
+        return new ResponseEntity<>(response, status);
     }
 }
