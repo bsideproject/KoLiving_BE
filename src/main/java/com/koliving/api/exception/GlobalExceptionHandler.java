@@ -19,25 +19,36 @@ public class GlobalExceptionHandler {
     private final MessageSource messageSource;
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public ResponseEntity<ResponseDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ResponseDto<ValidationResult>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         ValidationResult errors = ValidationResult.of(e);
 
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
-        int value = badRequest.value();
 
-        return new ResponseEntity<>(ResponseDto.failure(errors ,value), badRequest);
+        return createClientErrorResponse(errors, badRequest);
     }
 
     @ExceptionHandler(value = {DuplicateResourceException.class, IllegalArgumentException.class})
-    public ResponseEntity<ResponseDto> handleRequestException(DuplicateResourceException e, Locale locale) {
+    public ResponseEntity<ResponseDto<String>> handleRequestException(DuplicateResourceException e, Locale locale) {
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+
+        String errorMessage = getErrorMessage(e, locale);
+
+        return createClientErrorResponse(errorMessage, badRequest);
+    }
+
+    private String getErrorMessage(DuplicateResourceException e, Locale locale) {
         String[] messageKeyAndEmail = e.getMessage().split(":");
         String messageKey = messageKeyAndEmail[0];
         String email = messageKeyAndEmail[1];
+
         String errorMessage = messageSource.getMessage(messageKey, new Object[]{email}, locale);
 
-        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
-        int value = badRequest.value();
+        return errorMessage;
+    }
 
-        return new ResponseEntity<>(ResponseDto.failure(errorMessage ,value), badRequest);
+    private <T> ResponseEntity<ResponseDto<T>> createClientErrorResponse(T error, HttpStatus status) {
+        ResponseDto<T> response = ResponseDto.failure(error, status.value());
+
+        return new ResponseEntity<>(response, status);
     }
 }
