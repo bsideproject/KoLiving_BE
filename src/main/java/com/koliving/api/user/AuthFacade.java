@@ -2,6 +2,7 @@ package com.koliving.api.user;
 
 import com.koliving.api.dto.TokenDto;
 import com.koliving.api.event.ConfirmationTokenCreatedEvent;
+import com.koliving.api.exception.AuthException;
 import com.koliving.api.provider.JwtProvider;
 import com.koliving.api.token.IJwtService;
 import com.koliving.api.token.blacklist.BlackAccessToken;
@@ -34,6 +35,14 @@ public class AuthFacade {
         ConfirmationToken newToken = confirmationTokenService.create(email);
         ConfirmationToken savedToken = confirmationTokenService.save(newToken);
         eventPublisher.publishEvent(new ConfirmationTokenCreatedEvent(savedToken));
+    }
+
+    public void checkAuthMail(String token, String email) {
+        try {
+            confirmationTokenService.authenticateToken(token);
+        } catch (RuntimeException e) {
+            throw new AuthException(e.getMessage(), email);
+        }
     }
 
     @Transactional(readOnly = true)
