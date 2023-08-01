@@ -26,7 +26,7 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
                                     @Value("${server.origin:http://localhost:8080}") String origin,
                                     @Value("${server.current-version:v1}") String currentVersion,
                                     @Value("${spring.mail.properties.mail.auth.validity-period:30}") long validityPeriod
-                                    ) {
+    ) {
         this.confirmationTokenRepository = confirmationTokenRepository;
         this.emailService = emailService;
         this.clock = clock;
@@ -36,12 +36,12 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     }
 
     @Override
-    public Optional<ConfirmationToken> getToken(String token) {
+    public Optional<ConfirmationToken> get(String token) {
         return confirmationTokenRepository.findByToken(token);
     }
 
     @Override
-    public ConfirmationToken createToken(String email) {
+    public ConfirmationToken create(String email) {
         return ConfirmationToken.builder()
                 .email(email)
                 .validityPeriod(validityPeriod)
@@ -50,7 +50,7 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
 
     @Override
     @Transactional
-    public ConfirmationToken saveToken(ConfirmationToken token) {
+    public ConfirmationToken save(ConfirmationToken token) {
         return confirmationTokenRepository.save(token);
     }
 
@@ -66,7 +66,7 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     @Override
     @Transactional
     public String authenticateToken(String token) {
-        Optional<ConfirmationToken> optionalConfirmationToken = getToken(token);
+        Optional<ConfirmationToken> optionalConfirmationToken = get(token);
         if (optionalConfirmationToken.isEmpty()) {
             this.handleInvalidToken();
         }

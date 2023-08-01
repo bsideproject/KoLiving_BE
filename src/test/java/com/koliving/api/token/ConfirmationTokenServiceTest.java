@@ -72,7 +72,7 @@ class ConfirmationTokenServiceTest {
 
         when(confirmationTokenRepository.findByToken(tokenValue)).thenReturn(Optional.of(token));
 
-        Optional<ConfirmationToken> result = confirmationTokenService.getToken(tokenValue);
+        Optional<ConfirmationToken> result = confirmationTokenService.get(tokenValue);
 
         assertTrue(result.isPresent());
         assertEquals(token, result.get());
@@ -91,7 +91,7 @@ class ConfirmationTokenServiceTest {
 
         when(confirmationTokenRepository.findByToken(nonExistentTokenValue)).thenReturn(Optional.empty());
 
-        Optional<ConfirmationToken> result = confirmationTokenService.getToken(nonExistentTokenValue);
+        Optional<ConfirmationToken> result = confirmationTokenService.get(nonExistentTokenValue);
 
         assertTrue(result.isEmpty());
 
@@ -102,7 +102,7 @@ class ConfirmationTokenServiceTest {
     @DisplayName("createToken() : 올바른 email 형식")
     void createToken_success() {
         String testMail = "new@test.com";
-        ConfirmationToken result = confirmationTokenService.createToken(testMail);
+        ConfirmationToken result = confirmationTokenService.create(testMail);
 
         assertNotNull(result);
 
@@ -133,7 +133,7 @@ class ConfirmationTokenServiceTest {
 
         when(confirmationTokenRepository.save(any(ConfirmationToken.class))).thenReturn(token);
 
-        ConfirmationToken result = confirmationTokenService.saveToken(token);
+        ConfirmationToken result = confirmationTokenService.save(token);
 
         assertNotNull(result);
         assertEquals(result, token);
@@ -163,12 +163,12 @@ class ConfirmationTokenServiceTest {
                 .build();
         String tokenValue = token.getToken();
 
-        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(token));
+        when(confirmationTokenService.get(anyString())).thenReturn(Optional.of(token));
         when(clock.now()).thenReturn(LocalDateTime.now());
 
         confirmationTokenService.authenticateToken(tokenValue);
 
-        assertTrue(confirmationTokenService.getToken(anyString()).isPresent());
+        assertTrue(confirmationTokenService.get(anyString()).isPresent());
         assertEquals(token.isBConfirmed(), true);
     }
 
@@ -187,7 +187,7 @@ class ConfirmationTokenServiceTest {
         long max = 1440L;               // 24시간. expiredAt 값의 범위를 검증하는데 충분한 최대값
         long expirationMinutes = min + ((long)(rand.nextDouble()*(max - min)));
 
-        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.of(token));
+        when(confirmationTokenService.get(anyString())).thenReturn(Optional.of(token));
 
         // clock.now() 의 반환값이 유효기간 만료여부의 기준이 됨
         when(clock.now()).thenReturn(LocalDateTime.now().plusMinutes(expirationMinutes));
@@ -195,7 +195,7 @@ class ConfirmationTokenServiceTest {
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
             confirmationTokenService.authenticateToken(tokenValue);
         });
-        assertTrue(confirmationTokenService.getToken(anyString()).isPresent());
+        assertTrue(confirmationTokenService.get(anyString()).isPresent());
         assertEquals(e.getMessage(), "token has expired");
         assertFalse(token.isBConfirmed());
     }
@@ -209,7 +209,7 @@ class ConfirmationTokenServiceTest {
                 .validityPeriod(validityPeriod)
                 .build();
 
-        when(confirmationTokenService.getToken(anyString())).thenAnswer(invocation -> {
+        when(confirmationTokenService.get(anyString())).thenAnswer(invocation -> {
             token.confirm();            // already confirmed
             return Optional.of(token);  // not empty
         });
@@ -219,7 +219,7 @@ class ConfirmationTokenServiceTest {
             String tokenValue = token.getToken();
             confirmationTokenService.authenticateToken(tokenValue);
         });
-        assertTrue(confirmationTokenService.getToken(anyString()).isPresent());
+        assertTrue(confirmationTokenService.get(anyString()).isPresent());
         assertEquals(e.getMessage(), "token already confirmed");
         assertTrue(token.isBConfirmed());
     }
@@ -229,7 +229,7 @@ class ConfirmationTokenServiceTest {
     void authenticateToken_failure_not_generated_by_server() {
         String nonExistentTokenValue = "invalid token value";
 
-        when(confirmationTokenService.getToken(anyString())).thenReturn(Optional.empty());
+        when(confirmationTokenService.get(anyString())).thenReturn(Optional.empty());
 
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
             confirmationTokenService.authenticateToken(nonExistentTokenValue);
