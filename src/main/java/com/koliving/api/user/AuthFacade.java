@@ -30,8 +30,8 @@ public class AuthFacade {
     private final ApplicationEventPublisher eventPublisher;
 
     public void processEmailAuth(String email) {
-        ConfirmationToken newToken = confirmationTokenService.createToken(email);
-        ConfirmationToken savedToken = confirmationTokenService.saveToken(newToken);
+        ConfirmationToken newToken = confirmationTokenService.create(email);
+        ConfirmationToken savedToken = confirmationTokenService.save(newToken);
         eventPublisher.publishEvent(new ConfirmationTokenCreatedEvent(savedToken));
     }
 
