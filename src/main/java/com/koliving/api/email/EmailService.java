@@ -27,7 +27,7 @@ public class EmailService implements IEmailService {
     private final JavaMailSender mailSender;
     private final MessageSource messageSource;
     private final EmailTemplateUtil emailTemplateUtil;
-    private String mailHost;
+    private final String mailHost;
 
     public EmailService(JavaMailSender mailSender, MessageSource messageSource, EmailTemplateUtil emailTemplateUtil, @Value("${spring.mail.username}") String mailHost) {
         this.mailSender = mailSender;
