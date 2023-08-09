@@ -24,8 +24,8 @@ public class ObjectStorageConfig {
         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
 
         return (AmazonS3Client) AmazonS3ClientBuilder.standard()
-            .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-            .withRegion(regionName)
-            .build();
+                                        .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+                                        .withRegion(regionName)
+                                        .build();
     }
 }
