@@ -1,18 +1,19 @@
-package com.koliving.api.user;
+package com.koliving.api.auth;
 
-import com.koliving.api.dto.TokenDto;
+import com.koliving.api.auth.jwt.IJwtService;
+import com.koliving.api.auth.jwt.JwtProvider;
+import com.koliving.api.auth.jwt.JwtVo;
+import com.koliving.api.dto.JwtTokenDto;
 import com.koliving.api.event.ConfirmationTokenCreatedEvent;
-import com.koliving.api.exception.AuthException;
-import com.koliving.api.provider.JwtProvider;
-import com.koliving.api.token.IJwtService;
+import com.koliving.api.exception.ConfirmationTokenException;
 import com.koliving.api.token.blacklist.BlackAccessToken;
 import com.koliving.api.token.blacklist.BlackListRepository;
 import com.koliving.api.token.confirmation.ConfirmationToken;
 import com.koliving.api.token.confirmation.IConfirmationTokenService;
-import com.koliving.api.vo.JwtVo;
+import com.koliving.api.user.User;
+import com.koliving.api.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,7 +42,7 @@ public class AuthFacade {
         try {
             confirmationTokenService.authenticateToken(token);
         } catch (RuntimeException e) {
-            throw new AuthException(e.getMessage(), email);
+            throw new ConfirmationTokenException(e.getMessage(), email);
         }
     }
 
@@ -50,54 +51,34 @@ public class AuthFacade {
     }
 
     @Transactional(readOnly = true)
-    public TokenDto login(String email, String password) {
-        UserDetails userDetails = userService.loadUserByUsername(email);
-        this.setAuthenticationWithPassword(password, userDetails);
-
+    public JwtTokenDto issueAuthTokens(UserDetails userDetails) {
         String accessToken = issueAccessToken(userDetails);
-        String refreshToken = jwtService.getRefreshToken(email);
+        String refreshToken = jwtService.getRefreshToken(userDetails.getUsername());
 
-        return TokenDto.builder()
+        return JwtTokenDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
     }
 
-    public TokenDto signUp(User user) {
+    public JwtTokenDto signUp(User user) {
         user.completeSignUp();
-        String accessToken = this.loginWithSignUp(user);
-
         userService.save(user);
 
-        return TokenDto.builder()
+        this.setAuthentication(user);
+
+        String accessToken = issueAccessToken(user);
+        String refreshToken = issueRefreshToken(user);
+        jwtService.saveRefreshToken(user.getEmail(), refreshToken);
+
+        return JwtTokenDto.builder()
                 .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 
-    public void logout(String accessToken) {
-        BlackAccessToken blackAccessToken = parseBlackAccessToken(accessToken);
-        blackListRepository.save(blackAccessToken);
-        SecurityContextHolder.clearContext();
-    }
-
-    private String loginWithSignUp(UserDetails userDetails) {
-        this.setAuthentication(userDetails);
-
-        return issueAccessToken(userDetails);
-    }
-
-    private void setAuthentication(UserDetails userDetails) {
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
-
-    private void setAuthenticationWithPassword(String password, UserDetails userDetails) {
-        String storedPassword = userDetails.getPassword();
-        if (!userService.isEqualPassword(password, storedPassword)) {
-            throw new BadCredentialsException("Password not matched");
-        };
-
-        this.setAuthentication(userDetails);
+    public void addToBlackList(String accessToken) {
+        blackListRepository.save(parseBlackAccessToken(accessToken));
     }
 
     private String issueAccessToken(UserDetails userDetails) {
@@ -107,6 +88,19 @@ public class AuthFacade {
                 .build();
 
         return jwtProvider.generateAccessToken(jwtVo);
+    }
+
+    private String issueRefreshToken(UserDetails userDetails) {
+        JwtVo jwtVo = JwtVo.builder()
+                .email(userDetails.getUsername())
+                .build();
+
+        return jwtProvider.generateRefreshToken(jwtVo);
+    }
+
+    private void setAuthentication(UserDetails userDetails) {
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     private BlackAccessToken parseBlackAccessToken(String accessToken) {
