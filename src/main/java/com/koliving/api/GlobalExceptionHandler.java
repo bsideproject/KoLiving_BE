@@ -1,17 +1,20 @@
-package com.koliving.api.exception;
+package com.koliving.api;
 
-import com.koliving.api.dto.AuthErrorDto;
+import com.koliving.api.dto.ConfirmationTokenErrorDto;
 import com.koliving.api.dto.ResponseDto;
 import com.koliving.api.dto.ValidationResult;
+import com.koliving.api.exception.ConfirmationTokenException;
+import com.koliving.api.exception.DuplicateResourceException;
 import com.koliving.api.i18n.MessageSource;
 import com.koliving.api.user.SignUpStatus;
 import com.koliving.api.user.User;
 import com.koliving.api.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -27,17 +30,8 @@ public class GlobalExceptionHandler {
     private final MessageSource messageSource;
     private final UserService userService;
 
-    @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public ResponseEntity<ResponseDto<ValidationResult>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        ValidationResult errors = ValidationResult.of(e);
-
-        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
-
-        return createClientErrorResponse(errors, badRequest);
-    }
-
     @ExceptionHandler(value = {DuplicateResourceException.class, IllegalArgumentException.class})
-    public ResponseEntity<ResponseDto<String>> handleRequestException(DuplicateResourceException e, Locale locale) {
+    public ResponseEntity<ResponseDto<String>> handleRequestException(RuntimeException e, Locale locale) {
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
 
         String errorMessage = getErrorMessage(e, locale);
@@ -45,17 +39,16 @@ public class GlobalExceptionHandler {
         return createClientErrorResponse(errorMessage, badRequest);
     }
 
-    @ExceptionHandler(value = AuthException.class)
-    public ResponseEntity<ResponseDto<AuthErrorDto>> handleAuthException(AuthException e, ServerHttpRequest req, Locale locale) {
+    @ExceptionHandler(value = ConfirmationTokenException.class)
+    public ResponseEntity<ResponseDto<ConfirmationTokenErrorDto>> handleAuthException(ConfirmationTokenException e, HttpServletRequest request, Locale locale) {
         String messageKey = e.getMessage();
         String errorMessage = messageSource.getMessage(messageKey, null, locale);
-
         String email = e.getEmail();
 
         HttpStatus status = null;
         String redirectPath = null;
 
-        switch (e.getMessage()) {
+        switch (messageKey) {
             case "ungenerated_token", "expired_token" -> {
                 status = HttpStatus.UNAUTHORIZED;
                 redirectPath = "/login";
@@ -66,7 +59,35 @@ public class GlobalExceptionHandler {
             }
         }
 
-        return createRedirectResponse(new AuthErrorDto(errorMessage, email), req, redirectPath, status);
+        return createRedirectResponse(new ConfirmationTokenErrorDto(errorMessage, email), status, getUri(request, redirectPath));
+    }
+
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseEntity<ResponseDto<ValidationResult>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        ValidationResult errors = ValidationResult.of(e);
+
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+
+        return createClientErrorResponse(errors, badRequest);
+    }
+
+    @ExceptionHandler(value = AccessDeniedException.class) // Authorization
+    public ResponseEntity<ResponseDto<String>> handleAccessDeniedException(RuntimeException e, HttpServletRequest request, Locale locale) {
+        String messageKey = e.getMessage();
+        String errorMessage = messageSource.getMessage(messageKey, null, locale);
+
+        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
+
+        String redirectPath = "/login";
+
+        return createRedirectResponse(errorMessage, httpStatus, getUri(request, redirectPath));
+    }
+
+    private URI getUri(HttpServletRequest req, String redirectPath) {
+        URI currentUri = URI.create(req.getRequestURI());
+        return UriComponentsBuilder.fromUri(currentUri)
+                .path(redirectPath)
+                .build().toUri();
     }
 
     private String getRedirectLocation(String email) {
@@ -80,7 +101,7 @@ public class GlobalExceptionHandler {
         return null;
     }
 
-    private String getErrorMessage(DuplicateResourceException e, Locale locale) {
+    private String getErrorMessage(RuntimeException e, Locale locale) {
         String[] messageKeyAndEmail = e.getMessage().split(":");
         String messageKey = messageKeyAndEmail[0];
         String email = messageKeyAndEmail[1];
@@ -96,13 +117,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, status);
     }
 
-    private <T> ResponseEntity<ResponseDto<T>> createRedirectResponse(T error, ServerHttpRequest req, String redirectPath, HttpStatus status) {
+    private <T> ResponseEntity<ResponseDto<T>> createRedirectResponse(T error, HttpStatus status, URI redirectUri) {
         ResponseDto<T> response = ResponseDto.failure(error, status.value());
-
-        URI currentUri = req.getURI();
-        URI redirectUri = UriComponentsBuilder.fromUri(currentUri)
-                .path(redirectPath)
-                .build().toUri();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(redirectUri);
