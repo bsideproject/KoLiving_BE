@@ -1,4 +1,4 @@
-package com.koliving.api.vo;
+package com.koliving.api.auth.jwt;
 
 import lombok.Builder;
 import lombok.Getter;

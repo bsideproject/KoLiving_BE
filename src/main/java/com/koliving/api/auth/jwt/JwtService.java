@@ -1,4 +1,4 @@
-package com.koliving.api.token;
+package com.koliving.api.auth.jwt;
 
 import com.koliving.api.token.blacklist.BlackAccessToken;
 import com.koliving.api.token.blacklist.BlackListRepository;
@@ -24,14 +24,14 @@ public class JwtService implements IJwtService {
     private final BlackListRepository blackListRepository;
     private final String jwtSecret;
 
-    public JwtService(@Value("${jwt.secret}") String jwtSecret,
-                      UserDetailsService userService,
+    public JwtService(UserDetailsService userService,
+                      RefreshTokenRepository refreshTokenRepository,
                       BlackListRepository blackListRepository,
-                      RefreshTokenRepository refreshTokenRepository) {
-        this.jwtSecret = jwtSecret;
+                      @Value("${jwt.secret}") String jwtSecret) {
         this.userService = userService;
-        this.blackListRepository = blackListRepository;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.blackListRepository = blackListRepository;
+        this.jwtSecret = jwtSecret;
     }
 
     @Override
@@ -41,14 +41,12 @@ public class JwtService implements IJwtService {
 
     @Override
     public String extractEmail(String token) {
-        Claims claim = getClaims(token);
-        return (String) claim.get("email");
+        return (String) getClaims(token).get("email");
     }
 
     @Override
-    public Authentication getAuthentication(String accessToken) {
-        String email = this.extractEmail(accessToken);
-        UserDetails userDetails = userService.loadUserByUsername(email);
+    public Authentication createAuthentication(String accessToken) {
+        UserDetails userDetails = userService.loadUserByUsername(this.extractEmail(accessToken));
 
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
@@ -69,7 +67,7 @@ public class JwtService implements IJwtService {
     }
 
     @Override
-    public boolean isRefreshTokenPresent(String email) {
+    public boolean isExistsRefreshToken(String email) {
         return refreshTokenRepository.existByEmail(email);
     }
 
@@ -84,13 +82,13 @@ public class JwtService implements IJwtService {
     }
 
     @Override
-    public String saveRefreshToken(String email, String newRefreshTokenValue) {
-        RefreshToken newRefreshToken = RefreshToken.builder()
+    public String saveRefreshToken(String email, String newRTValue) {
+        RefreshToken newRT = RefreshToken.builder()
                 .email(email)
-                .refreshToken(newRefreshTokenValue)
+                .token(newRTValue)
                 .build();
 
-        return refreshTokenRepository.save(newRefreshToken);
+        return refreshTokenRepository.save(newRT);
     }
 
     private Claims getClaims(String token) {
