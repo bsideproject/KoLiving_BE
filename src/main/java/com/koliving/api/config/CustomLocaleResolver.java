@@ -20,18 +20,13 @@ public class CustomLocaleResolver extends AcceptHeaderLocaleResolver {
 
     @Override
     public Locale resolveLocale(HttpServletRequest request) {
-        Locale defaultLocale = Locale.forLanguageTag(defaultLocaleString);
-
         List<Locale> supportedLocales = Arrays.asList(Locale.ENGLISH, Locale.KOREAN);
         String headerLang = request.getHeader(HttpHeaders.ACCEPT_LANGUAGE);
 
         if (headerLang == null) {
-            return defaultLocale;
+            return Locale.forLanguageTag(defaultLocaleString);
         }
 
-        List<LanguageRange> headerLangList = LanguageRange.parse(headerLang);
-        Locale currentLocale = Locale.lookup(headerLangList, supportedLocales);
-
-        return currentLocale;
+        return Locale.lookup(LanguageRange.parse(headerLang), supportedLocales);
     }
 }
