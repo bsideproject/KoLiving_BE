@@ -16,12 +16,12 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
+@Entity(name = "CONFIRMATION_TOKEN")
 @Getter @ToString @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ConfirmationToken {
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
     private String token;
@@ -30,11 +30,13 @@ public class ConfirmationToken {
     @CreationTimestamp
     @Column(name = "CREATED_DATE")
     private LocalDateTime createdDate;
+
     @Column(name = "EXPIRED_DATE")
     private LocalDateTime expiredDate;
 
     @Column(name = "B_RESENDED")
     private boolean bResended;
+
     @Column(name = "B_CONFIRMED")
     private boolean bConfirmed;
 
