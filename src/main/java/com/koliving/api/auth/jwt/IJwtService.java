@@ -1,4 +1,4 @@
-package com.koliving.api.token;
+package com.koliving.api.auth.jwt;
 
 import org.springframework.security.core.Authentication;
 
@@ -10,7 +10,7 @@ public interface IJwtService {
 
     String extractEmail(String token);
 
-    Authentication getAuthentication(String accessToken);
+    Authentication createAuthentication(String accessToken);
 
     boolean isBlackList(String accessToken);
 
@@ -18,7 +18,7 @@ public interface IJwtService {
 
     String getRefreshToken(String email);
 
-    boolean isRefreshTokenPresent(String email);
+    boolean isExistsRefreshToken(String email);
 
     void deleteRefreshToken(String email);
 
