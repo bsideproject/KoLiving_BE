@@ -26,6 +26,7 @@ public class UserPropertyEditor extends PropertyEditorSupport {
         if (user == null) {
             throw new IllegalArgumentException("no email value");
         }
+
         setValue(user);
     }
 }

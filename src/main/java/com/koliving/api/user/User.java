@@ -16,6 +16,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,11 +29,12 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Entity(name = "USER")
+@DynamicInsert @DynamicUpdate
 @Getter @ToString @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User implements UserDetails {
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
     private String email;
@@ -62,15 +65,16 @@ public class User implements UserDetails {
 
     @Column(name = "B_ENABLED")
     private boolean bEnabled;
+
     @Column(name = "B_LOCKED")
     private boolean bLocked;
 
     @CreationTimestamp
-    @Column(name = "created_date")
+    @Column(name = "CREATED_DATE")
     private LocalDateTime createdDate;
 
     @UpdateTimestamp
-    @Column(name = "last_modified_date")
+    @Column(name = "LAST_MODIFIED_DATE")
     private LocalDateTime lastModifiedDate;
 
     @Builder
@@ -92,7 +96,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String role = userRole.name();
+        String role = userRole.getSecurityName();
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
 
         return Collections.singletonList(authority);
