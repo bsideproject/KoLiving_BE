@@ -11,10 +11,10 @@ import java.util.concurrent.TimeUnit;
 @Repository
 public class RefreshTokenRepository {
 
+    private static HashOperations<String, String, String> hashOperations;
+    private final static String RT_HASH_KEY = "RefreshToken";
     private final RedisTemplate redisTemplate;
     private final long RT_EXPIRATION_TIME;
-    private final static String RT_HASH_KEY = "RefreshToken";
-    private static HashOperations<String, String, String> hashOperations;
 
     public RefreshTokenRepository(RedisTemplate redisTemplate,
                                   @Value("${jwt.refreshExpiration:30}") long RT_EXPIRATION_TIME) {
@@ -32,10 +32,10 @@ public class RefreshTokenRepository {
     }
 
     public String save(final RefreshToken refreshToken) {
-        hashOperations.putIfAbsent(RT_HASH_KEY, refreshToken.email(), refreshToken.refreshToken());
+        hashOperations.putIfAbsent(RT_HASH_KEY, refreshToken.email(), refreshToken.token());
         redisTemplate.expire(RT_HASH_KEY, RT_EXPIRATION_TIME, TimeUnit.DAYS);
 
-        return refreshToken.refreshToken();
+        return refreshToken.token();
     }
 
     public boolean existByEmail(final String email) {
