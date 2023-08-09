@@ -1,6 +1,7 @@
 package com.koliving.api.i18n;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.AbstractMessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
@@ -17,10 +18,16 @@ public class MessageSource extends AbstractMessageSource {
 
     @Override
     protected MessageFormat resolveCode(String key, Locale locale) {
-        String messagePattern = languageRepository
-                .findByLocaleAndMessageKey(locale.toString(), key)
-                .map(Language::getMessagePattern)
-                .orElseGet(() -> resourceBundleMessageSource.getMessage(key, null, locale));
+        String messagePattern = null;
+
+        try {
+            messagePattern = resourceBundleMessageSource.getMessage(key, null, locale);
+        } catch (NoSuchMessageException e) {
+            messagePattern = languageRepository.findByLocaleAndMessageKey(locale.toString(), key)
+                    .map(Language::getMessagePattern)
+                    .orElseThrow(() -> new IllegalStateException("Could not find message pattern"));
+        }
+
         return new MessageFormat(messagePattern, locale);
     }
 }
