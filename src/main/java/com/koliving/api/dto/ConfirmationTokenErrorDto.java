@@ -1,6 +1,6 @@
 package com.koliving.api.dto;
 
-public record AuthErrorDto(
+public record ConfirmationTokenErrorDto(
         String errorMessage,
         String email) {
 }
