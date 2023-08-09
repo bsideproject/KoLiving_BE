@@ -61,9 +61,8 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
 
     @Override
     public void sendEmail(String email, String token) {
-        String authLinkPath = String.format("/api/%s/sign-up/confirm", currentVersion);
-        String tokenValue = token;
-        String authLink = origin + authLinkPath + "?token=" + tokenValue + "&email=" + email;
+        String authLinkPath = String.format("/api/%s/auth/sign-up/confirm", currentVersion);
+        String authLink = origin + authLinkPath + "?token=" + token + "&email=" + email;
 
         emailService.send(MailType.AUTH, email, authLink);
     }
@@ -87,20 +86,22 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     private boolean isNotExpired(ConfirmationToken confirmationToken) {
         LocalDateTime expiresAt = confirmationToken.getExpiredDate();
         if (isExpired(expiresAt)) {
-            throw new IllegalArgumentException("expired_token");
+            throw new IllegalArgumentException("expired_confirmation_token");
         }
+
         return true;
     }
 
     private boolean isNotConfirmed(ConfirmationToken confirmationToken) {
         if (confirmationToken.isBConfirmed()) {
-            throw new IllegalStateException("authenticated_token");
+            throw new IllegalStateException("authenticated_confirmation_token");
         }
+
         return true;
     }
 
     private void handleInvalidToken() {
-        throw new IllegalArgumentException("ungenerated_token");
+        throw new IllegalArgumentException("ungenerated_confirmation_token");
     }
 
     private boolean isExpired(LocalDateTime expiredAt) {
