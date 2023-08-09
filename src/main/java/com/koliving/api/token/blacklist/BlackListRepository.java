@@ -12,9 +12,9 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class BlackListRepository {
 
-    private final RedisTemplate redisTemplate;
-    private final static String BAT_HASH_KEY = "BlackAccessToken";
     private static HashOperations<String, String, Date> hashOperations;
+    private final static String BAT_HASH_KEY = "BlackAccessToken";
+    private final RedisTemplate redisTemplate;
 
     @PostConstruct
     private void init() {
@@ -22,11 +22,8 @@ public class BlackListRepository {
     }
 
     public void save(final BlackAccessToken blackAccessToken) {
-        String tokenValue = blackAccessToken.accessToken();
-        Date expirationDate = blackAccessToken.expirationTime();
-
-        hashOperations.put(BAT_HASH_KEY, tokenValue, expirationDate);
-        redisTemplate.expireAt(BAT_HASH_KEY, expirationDate);
+        hashOperations.put(BAT_HASH_KEY, blackAccessToken.accessToken(), blackAccessToken.expirationTime());
+        redisTemplate.expireAt(BAT_HASH_KEY, blackAccessToken.expirationTime());
     }
 
     public boolean existByToken(final String token) {
