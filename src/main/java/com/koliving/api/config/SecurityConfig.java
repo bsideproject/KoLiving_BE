@@ -59,6 +59,7 @@ public class SecurityConfig {
     private void init() {
         AUTHENTICATION_WHITELIST = new String[]{
                 "/api/" + apiVersion + "/auth/**",
+                "/api/" + apiVersion +"/management/**",
                 "/api-docs/**",
                 "/swagger-ui/**",
                 "/swagger-resources/**"

@@ -1,5 +1,8 @@
 package com.koliving.api.user;
 
+import com.koliving.api.user.application.dto.UserResponse;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -37,5 +40,12 @@ public class UserService implements IUserService, UserDetailsService {
     @Override
     public boolean isEqualPassword(String rawPassword, String hashPassword) {
         return passwordEncoder.matches(rawPassword, hashPassword);
+    }
+
+    public List<UserResponse> list() {
+        return userRepository.findAll()
+            .stream()
+            .map(UserResponse::valueOf)
+            .collect(Collectors.toList());
     }
 }

@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -13,11 +15,10 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-@Entity(name = "CONFIRMATION_TOKEN")
-@Getter @ToString @EqualsAndHashCode
+@Entity(name = "TB_CONFIRMATION_TOKEN")
+@Getter
+@ToString
+@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ConfirmationToken {
 
