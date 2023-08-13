@@ -21,10 +21,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Entity
+@Entity(name = "TB_LOCATION")
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor(access = PROTECTED)
-@Table(name = "LOCATION")
 public class Location {
 
     @Id
