@@ -16,6 +16,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -60,6 +61,7 @@ public class SecurityConfig {
         AUTHENTICATION_WHITELIST = new String[]{
                 "/api/" + apiVersion + "/auth/**",
                 "/api/" + apiVersion +"/management/**",
+                "/api/" + apiVersion + "/locations",
                 "/api-docs/**",
                 "/swagger-ui/**",
                 "/swagger-resources/**"

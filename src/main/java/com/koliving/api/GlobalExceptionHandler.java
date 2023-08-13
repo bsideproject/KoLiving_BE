@@ -1,5 +1,7 @@
 package com.koliving.api;
 
+import com.koliving.api.base.ErrorResponse;
+import com.koliving.api.base.exception.KolivingServiceException;
 import com.koliving.api.dto.ConfirmationTokenErrorDto;
 import com.koliving.api.dto.ResponseDto;
 import com.koliving.api.dto.ValidationResult;
@@ -11,6 +13,7 @@ import com.koliving.api.user.User;
 import com.koliving.api.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.Locale;
 
+@Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
@@ -99,6 +103,12 @@ public class GlobalExceptionHandler {
         }
         
         return null;
+    }
+
+    @ExceptionHandler(value = KolivingServiceException.class)
+    public ErrorResponse handleError(KolivingServiceException e) {
+        log.error("handleError", e);
+        return ErrorResponse.valueOf(e.getError());
     }
 
     private String getErrorMessage(RuntimeException e, Locale locale) {
