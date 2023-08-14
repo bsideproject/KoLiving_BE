@@ -39,13 +39,12 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
     }
 
     private String getRedirectUri(HttpServletRequest request) {
-        String redirectPath = "/api/v1/auth/login";
+        String redirectPath = "/api/v1/login";
         URI currentUri = URI.create(request.getRequestURI());
-        URI redirectUri = UriComponentsBuilder.fromUri(currentUri)
-                .path(redirectPath)
-                .build().toUri();
 
-        return String.valueOf(redirectUri);
+        return UriComponentsBuilder.fromUri(currentUri)
+                .path(redirectPath)
+                .build().toString();
     }
 
     private <T> ResponseDto<T> createFailureResponse(T error, HttpStatus status) {
