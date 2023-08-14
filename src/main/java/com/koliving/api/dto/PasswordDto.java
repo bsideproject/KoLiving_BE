@@ -10,7 +10,7 @@ public record PasswordDto(
         @NotBlank
         @Size(min = 8, max = 20)
         @PasswordConstraint
-        @Schema(description = "비밀번호 (소문자, 대문자, 숫자, 특수기호 필수)", minLength = 8, maxLength = 20)
+        @Schema(description = "비밀번호 (소문자, 대문자, 숫자, 특수기호 필수)", minLength = 8, maxLength = 20, example = "Koliving1!")
         String password
         ) {
 }

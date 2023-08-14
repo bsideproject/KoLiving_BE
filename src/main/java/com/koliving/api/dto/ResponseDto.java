@@ -12,13 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResponseDto<T> {
 
-    @Schema(description = "response code")
     private int responseCode;
-
-    @Schema(description = "response body (if succeed)")
     private T data;
-
-    @Schema(description = "response body (if fail)")
     private T error;
 
     public static <T> ResponseDto<T> success(T data, int responseCode) {
