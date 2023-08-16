@@ -16,7 +16,6 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -82,10 +81,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.formLogin().disable();
-        http.httpBasic().disable();
-        http.csrf().disable();
-        http.cors().disable();
+//        http.formLogin().disable();
+//        http.httpBasic().disable();
+//        http.csrf().disable();
+//        http.cors().disable();
+
+        http.formLogin(config -> config.disable());
+        http.httpBasic(config -> config.disable());
+        http.csrf(config -> config.disable());
+        http.cors(cors -> cors.disable());
+
         http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.authorizeHttpRequests(req ->  {
@@ -129,6 +134,16 @@ public class SecurityConfig {
 
         return builder.build();
     }
+
+//    @Bean
+//    CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(Collections.singletonList("*"));
+//        configuration.setAllowedMethods(Collections.singletonList("*"));
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 
     private CustomExceptionHandlerFilter createExceptionHandlerFilter() {
         return new CustomExceptionHandlerFilter(objectMapper, messageSource, localeResolver);
