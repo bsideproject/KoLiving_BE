@@ -118,12 +118,6 @@ public class GlobalExceptionHandler {
         return null;
     }
 
-    @ExceptionHandler(value = KolivingServiceException.class)
-    public ErrorResponse handleError(KolivingServiceException e) {
-        log.error("handleError", e);
-        return ErrorResponse.valueOf(e.getError());
-    }
-
     private String getErrorMessage(RuntimeException e, Locale locale) {
         String[] messageKeyAndEmail = e.getMessage().split(":");
         String messageKey = messageKeyAndEmail[0];
