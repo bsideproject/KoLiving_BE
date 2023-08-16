@@ -53,17 +53,17 @@ public class GlobalExceptionHandler {
         String redirectPath = null;
 
         switch (messageKey) {
-            case "ungenerated_token", "expired_token" -> {
-                status = HttpStatus.UNAUTHORIZED;
+            case "ungenerated_confirmation_token", "expired_confirmation_token" -> {
+                status = HttpStatus.BAD_REQUEST;
                 redirectPath = "/login";
             }
-            case "authenticated_token" -> {
-                status = HttpStatus.FOUND;
-                redirectPath = getRedirectLocation(email);
+            case "authenticated_confirmation_token" -> {
+                status = HttpStatus.UNAUTHORIZED;
+                redirectPath = getRedirectLocation(request, email);
             }
         }
 
-        return createRedirectResponse(new ConfirmationTokenErrorDto(errorMessage, email), status, getUri(request, redirectPath));
+        return createRedirectResponse(new ConfirmationTokenErrorDto(errorMessage, email), status, redirectPath);
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
@@ -87,21 +87,34 @@ public class GlobalExceptionHandler {
         return createRedirectResponse(errorMessage, httpStatus, getUri(request, redirectPath));
     }
 
-    private URI getUri(HttpServletRequest req, String redirectPath) {
+    @ExceptionHandler(value = KolivingServiceException.class)
+    public ErrorResponse handleError(KolivingServiceException e) {
+        log.error("handleError", e);
+        return ErrorResponse.valueOf(e.getError());
+    }
+
+    private String getUri(HttpServletRequest req, String redirectPath) {
         URI currentUri = URI.create(req.getRequestURI());
         return UriComponentsBuilder.fromUri(currentUri)
                 .path(redirectPath)
-                .build().toUri();
+                .build().toString();
     }
 
-    private String getRedirectLocation(String email) {
+    private String getRedirectLocation(HttpServletRequest request, String email) {
         User user = (User) userService.loadUserByUsername(email);
-        if (user.getSignUpStatus().equals(SignUpStatus.PROFILE_INFORMATION_PENDING)) {
-            return "/profile";
-        } else if (user.getSignUpStatus().equals(SignUpStatus.COMPLETED)) {
-            return "/login";
+        SignUpStatus currentSignUpStatus = user.getSignUpStatus();
+        if (currentSignUpStatus.equals(SignUpStatus.PASSWORD_VERIFICATION_PENDING)) {
+            return getUri(request, "/password");
         }
-        
+
+        if (currentSignUpStatus.equals(SignUpStatus.PROFILE_INFORMATION_PENDING)) {
+            return getUri(request, "/profile");
+        }
+
+        if (currentSignUpStatus.equals(SignUpStatus.COMPLETED)) {
+            return "/api/login";
+        }
+
         return null;
     }
 
@@ -127,11 +140,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, status);
     }
 
-    private <T> ResponseEntity<ResponseDto<T>> createRedirectResponse(T error, HttpStatus status, URI redirectUri) {
+    private <T> ResponseEntity<ResponseDto<T>> createRedirectResponse(T error, HttpStatus status, String redirectUri) {
         ResponseDto<T> response = ResponseDto.failure(error, status.value());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(redirectUri);
+//        headers.setLocation(redirectUri);
+        headers.add("Location", redirectUri);
 
         return new ResponseEntity<>(response, headers, status);
     }
