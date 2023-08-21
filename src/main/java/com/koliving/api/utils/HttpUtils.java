@@ -2,11 +2,12 @@ package com.koliving.api.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.koliving.api.dto.ResponseDto;
+import com.koliving.api.properties.JwtProperties;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -27,22 +28,15 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class HttpUtils {
 
     public static final String BEARER_PREFIX = "Bearer ";
 
     private final ObjectMapper objectMapper;
 
-    private final long accessTokenValidity;
-    private final long refreshTokenValidity;
+    private final JwtProperties jwtProperties;
 
-    public HttpUtils(ObjectMapper objectMapper,
-                     @Value("${jwt.expiration:2}") int accessTokenValidity,
-                     @Value("${jwt.refreshExpiration:30}") int refreshTokenValidity) {
-        this.objectMapper = objectMapper;
-        this.accessTokenValidity = accessTokenValidity;
-        this.refreshTokenValidity = refreshTokenValidity;
-    }
 
     public String resolveToken(HttpServletRequest request) throws AuthenticationException {
         String bearerToken = request.getHeader(AUTHORIZATION);
@@ -63,7 +57,7 @@ public class HttpUtils {
         Cookie accessToken = new Cookie("access_token", accessTokenValue);
         accessToken.setHttpOnly(true);
         accessToken.setSecure(true);
-        accessToken.setMaxAge((int) (60 * 60 * accessTokenValidity));
+        accessToken.setMaxAge((int) getValidityHour(jwtProperties.getAccessValidity()));
 
         return accessToken;
     }
@@ -72,7 +66,7 @@ public class HttpUtils {
         Cookie refreshToken = new Cookie("refresh_token", refreshTokenValue);
         refreshToken.setHttpOnly(true);
         refreshToken.setSecure(true);
-        refreshToken.setMaxAge((int) (60 * 60 * 24 * refreshTokenValidity));
+        refreshToken.setMaxAge((int) getValidityDay(jwtProperties.getRefreshValidity()));
 
         return refreshToken;
     }
@@ -81,15 +75,15 @@ public class HttpUtils {
         return ResponseCookie.from("access_token", value)
                 .httpOnly(true)
                 .secure(true)
-                .maxAge(60 * 60 * accessTokenValidity)
+                .maxAge(getValidityHour(jwtProperties.getAccessValidity()))
                 .build();
     }
 
     public ResponseCookie getResponseCookieOfRefreshToken(String value) {
-        return ResponseCookie.from("access_token", value)
+        return ResponseCookie.from("refresh_token", value)
                 .httpOnly(true)
                 .secure(true)
-                .maxAge(60 * 60 * 24 * refreshTokenValidity)
+                .maxAge(getValidityDay(jwtProperties.getRefreshValidity()))
                 .build();
     }
 
@@ -152,5 +146,13 @@ public class HttpUtils {
     public void setResponseWithRedirect(HttpServletResponse response, ResponseDto body, String redirectPath) throws IOException {
         response.setHeader(LOCATION, redirectPath);
         setResponse(response, body);
+    }
+
+    private long getValidityHour(long validityPeriod) {
+        return 60 * 60 * validityPeriod;
+    }
+
+    private long getValidityDay(long validityPeriod) {
+        return 60 * 60 * 24 * validityPeriod;
     }
 }

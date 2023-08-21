@@ -1,5 +1,6 @@
 package com.koliving.api.auth.jwt;
 
+import com.koliving.api.properties.JwtProperties;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtException;
@@ -8,8 +9,8 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -23,19 +24,10 @@ import java.util.Map;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtProvider {
 
-    private final String jwtSecret;
-    private final long accessTokenValidity;
-    private final long refreshTokenValidity;
-
-    public JwtProvider(@Value("${jwt.secret:koliving}") String jwtSecret,
-                       @Value("${jwt.expiration:2}") int accessTokenValidity,
-                       @Value("${jwt.refreshExpiration:30}") int refreshTokenValidity) {
-        this.jwtSecret = jwtSecret;
-        this.accessTokenValidity = accessTokenValidity;
-        this.refreshTokenValidity = refreshTokenValidity;
-    }
+    private final JwtProperties jwtProperties;
 
     public String generateAccessToken(JwtVo jwtVo) {
         Map<String, Object> payloads = new HashMap<>();
@@ -44,7 +36,7 @@ public class JwtProvider {
 
         return generateJwtBuilder(payloads)
                 .setSubject("Access Token (" + jwtVo.getUsername() + ")")
-                .setExpiration(calculateExpiryDate(accessTokenValidity))
+                .setExpiration(calculateExpiryDate(jwtProperties.getAccessValidity()))
                 .compact();
     }
 
@@ -54,12 +46,12 @@ public class JwtProvider {
 
         return generateJwtBuilder(payloads)
                 .setSubject("Refresh Token (" + jwtVo.getEmail() + ")")
-                .setExpiration(calculateExpiryDate(refreshTokenValidity * 24))
+                .setExpiration(calculateExpiryDate(jwtProperties.getRefreshValidity() * 24))
                 .compact();
     }
 
     public void validateToken(String token) {
-        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(jwtSecret);
+        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(jwtProperties.getSecret());
 
         try {
             Jwts.parser()
@@ -84,12 +76,12 @@ public class JwtProvider {
     private JwtBuilder generateJwtBuilder(Map<String, Object> payloads) {
         Map<String, Object> headers = new HashMap<>();
         headers.put("typ", "JWT");
-        headers.put("alg", "HS256");
+        headers.put("alg", jwtProperties.getAlgorithm());
 
-        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.forName(jwtProperties.getAlgorithm());
 
         // 서명에 담을 데이터
-        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(jwtSecret);
+        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(jwtProperties.getSecret());
         Key signKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
 
         return Jwts.builder()
