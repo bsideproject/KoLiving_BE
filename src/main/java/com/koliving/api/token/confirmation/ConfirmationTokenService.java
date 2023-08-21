@@ -3,6 +3,7 @@ package com.koliving.api.token.confirmation;
 import com.koliving.api.clock.IClock;
 import com.koliving.api.email.IEmailService;
 import com.koliving.api.email.MailType;
+import com.koliving.api.utils.HttpUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,22 +17,19 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     private final IEmailService emailService;
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final IClock clock;
-    private final String origin;
-    private final String currentVersion;
+    private final HttpUtils httpUtils;
     private final long validityPeriod;
 
     public ConfirmationTokenService(ConfirmationTokenRepository confirmationTokenRepository,
                                     IEmailService emailService,
                                     IClock clock,
-                                    @Value("${server.origin:http://localhost:8080}") String origin,
-                                    @Value("${server.current-version:v1}") String currentVersion,
+                                    HttpUtils httpUtils,
                                     @Value("${spring.mail.properties.mail.auth.validity-period:30}") long validityPeriod
                                     ) {
         this.confirmationTokenRepository = confirmationTokenRepository;
         this.emailService = emailService;
         this.clock = clock;
-        this.origin = origin;
-        this.currentVersion = currentVersion;
+        this.httpUtils = httpUtils;
         this.validityPeriod = validityPeriod;
     }
 
@@ -61,10 +59,11 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
 
     @Override
     public void sendEmail(String email, String token) {
-        String authLinkPath = String.format("/api/%s/auth/sign-up/confirm", currentVersion);
-        String authLink = origin + authLinkPath + "?token=" + token + "&email=" + email;
+        String authLinkPath = httpUtils.getCurrentVersionUrl("auth/sign-up/confirm");
+        String authLinkQueryString = "?token=" + token + "&email=" + email;
+        String authLinkurl = authLinkPath + authLinkQueryString;
 
-        emailService.send(MailType.AUTH, email, authLink);
+        emailService.send(MailType.AUTH, email, authLinkurl);
     }
 
     @Override

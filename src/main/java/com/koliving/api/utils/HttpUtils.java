@@ -3,6 +3,7 @@ package com.koliving.api.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.koliving.api.dto.ResponseDto;
 import com.koliving.api.properties.JwtProperties;
+import com.koliving.api.properties.ServerProperties;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,11 +33,17 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class HttpUtils {
 
     public static final String BEARER_PREFIX = "Bearer ";
-
     private final ObjectMapper objectMapper;
-
     private final JwtProperties jwtProperties;
+    private final ServerProperties serverProperties;
 
+    public String getCurrentVersionUri(String uri) {
+        return String.format("/api/%s/%s", serverProperties.getCurrentVersion(), uri);
+    }
+
+    public String getCurrentVersionUrl(String uri) {
+        return serverProperties.getOrigin() + getCurrentVersionUri(uri);
+    }
 
     public String resolveToken(HttpServletRequest request) throws AuthenticationException {
         String bearerToken = request.getHeader(AUTHORIZATION);

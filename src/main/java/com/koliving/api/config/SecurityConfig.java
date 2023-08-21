@@ -12,7 +12,6 @@ import com.koliving.api.auth.login.LoginSuccessHandler;
 import com.koliving.api.utils.HttpUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,23 +58,20 @@ public class SecurityConfig {
     private final AccessDeniedHandler accessDeniedHandler;
     private final HttpUtils httpUtils;
 
-    @Value("${server.current-version}")
-    private String apiVersion;
-
     @PostConstruct
     private void init() {
         AUTHENTICATION_WHITELIST = new String[]{
-            "/api/" + apiVersion + "/auth/**",
-            "/api/" + apiVersion + "/management/**",
-            "/api/" + apiVersion + "/**",
+            httpUtils.getCurrentVersionUri("auth/**"),
+            httpUtils.getCurrentVersionUri("management/**"),
+            httpUtils.getCurrentVersionUri("**"),
             "/api-docs/**",
             "/swagger-ui/**",
             "/swagger-resources/**"
         };
 
         AUTHORIZATION_WHITELIST = new String[]{
-            "/api/" + apiVersion + "/login",
-            "/api/" + apiVersion + "/logout"
+            httpUtils.getCurrentVersionUri("login"),
+            httpUtils.getCurrentVersionUri("logout"),
         };
     }
 
@@ -104,8 +100,8 @@ public class SecurityConfig {
                     .anyRequest().authenticated();
             })
             .logout(config -> {
-                config.logoutUrl("/api/v1/logout")
-                    .logoutSuccessUrl("/api/v1/login")
+                config.logoutUrl(httpUtils.getCurrentVersionUri("logout"))
+                    .logoutSuccessUrl(httpUtils.getCurrentVersionUri("login"))
                     .logoutSuccessHandler(logoutSuccessHandler);
             }).exceptionHandling(config -> {
                 config.authenticationEntryPoint(authenticationEntryPoint)
@@ -148,7 +144,7 @@ public class SecurityConfig {
 
     private LoginFilter createLoginFilter(AuthenticationManager authenticationManager) {
         LoginFilter loginFilter = new LoginFilter(authenticationManager, objectMapper, validator);
-        loginFilter.setFilterProcessesUrl("/api/v1/login");
+        loginFilter.setFilterProcessesUrl(httpUtils.getCurrentVersionUri("login"));
         loginFilter.setAuthenticationSuccessHandler(loginSuccessHandler);
         loginFilter.setAuthenticationFailureHandler(loginFailureHandler);
         loginFilter.afterPropertiesSet();
