@@ -32,10 +32,10 @@ public class JwtProvider {
     public String generateAccessToken(JwtVo jwtVo) {
         Map<String, Object> payloads = new HashMap<>();
         payloads.put("email", jwtVo.getEmail());
-        payloads.put("role", jwtVo.getRole());
+        payloads.put("role", jwtVo.joinRolesToString());
 
         return generateJwtBuilder(payloads)
-                .setSubject("Access Token (" + jwtVo.getUsername() + ")")
+                .setSubject("Access Token (" + jwtVo.getEmail() + ")")
                 .setExpiration(calculateExpiryDate(jwtProperties.getAccessValidity()))
                 .compact();
     }
@@ -46,7 +46,7 @@ public class JwtProvider {
 
         return generateJwtBuilder(payloads)
                 .setSubject("Refresh Token (" + jwtVo.getEmail() + ")")
-                .setExpiration(calculateExpiryDate(jwtProperties.getRefreshValidity() * 24))
+                .setExpiration(calculateExpiryDate(getValidityDay(jwtProperties.getRefreshValidity())))
                 .compact();
     }
 
@@ -93,5 +93,9 @@ public class JwtProvider {
 
     private Date calculateExpiryDate(long validityHour) {
         return Date.from(Instant.now().plus(validityHour, ChronoUnit.HOURS));
+    }
+
+    private long getValidityDay(long refreshValidity) {
+        return refreshValidity * 24;
     }
 }
