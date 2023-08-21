@@ -13,7 +13,6 @@ import jakarta.annotation.PostConstruct;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,15 +22,12 @@ import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
-import org.springframework.security.web.header.HeaderWriterFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.cors.CorsConfiguration;
@@ -68,7 +64,7 @@ public class SecurityConfig {
         AUTHENTICATION_WHITELIST = new String[]{
             "/api/" + apiVersion + "/auth/**",
             "/api/" + apiVersion + "/management/**",
-            "/api/" + apiVersion + "/locations",
+            "/api/" + apiVersion + "/**",
             "/api-docs/**",
             "/swagger-ui/**",
             "/swagger-resources/**"
@@ -95,7 +91,7 @@ public class SecurityConfig {
             .and()
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
-            .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")))
+            .csrf().disable()
             .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(req -> {
                 req
