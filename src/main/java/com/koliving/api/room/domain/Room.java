@@ -14,6 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+//TODO Room 도메인생성
 
 @Getter
 @Entity(name = "TB_ROOM")
