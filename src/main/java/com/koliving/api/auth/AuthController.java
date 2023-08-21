@@ -9,6 +9,7 @@ import com.koliving.api.exception.DuplicateResourceException;
 import com.koliving.api.user.User;
 import com.koliving.api.user.UserPropertyEditor;
 import com.koliving.api.user.UserService;
+import com.koliving.api.utils.HttpUtils;
 import com.koliving.api.validation.EmailDuplicationValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,13 +20,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Provider;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -37,13 +35,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
 
 @Tag(name = "회원 가입 API", description = "회원 가입 및 수정 컨트롤러")
 @RestController
 @RequestMapping("/api/${server.current-version}/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthFacade authFacade;
@@ -51,24 +47,7 @@ public class AuthController {
     private final EmailDuplicationValidator emailDuplicationValidator;
     private final Provider<UserPropertyEditor> userPropertyEditorProvider;
     private final ModelMapper modelMapper;
-    private final long accessTokenValidity;
-    private final long refreshTokenValidity;
-
-    public AuthController(AuthFacade authFacade,
-                          UserService userService,
-                          EmailDuplicationValidator emailDuplicationValidator,
-                          Provider<UserPropertyEditor> userPropertyEditorProvider,
-                          ModelMapper modelMapper,
-                          @Value("${jwt.expiration:2}") int accessTokenValidity,
-                          @Value("${jwt.refreshExpiration:30}") int refreshTokenValidity) {
-        this.authFacade = authFacade;
-        this.userService = userService;
-        this.emailDuplicationValidator = emailDuplicationValidator;
-        this.userPropertyEditorProvider = userPropertyEditorProvider;
-        this.modelMapper = modelMapper;
-        this.accessTokenValidity = accessTokenValidity;
-        this.refreshTokenValidity = refreshTokenValidity;
-    }
+    private final HttpUtils httpUtils;
 
     @InitBinder
     public void initBinder(WebDataBinder dataBinder){
@@ -154,7 +133,10 @@ public class AuthController {
 
         userService.save(newUser);
 
-        return createRedirectResponse(ResponseDto.success(email, HttpStatus.FOUND.value()), getRedirectUri(request, "/password"));
+        return httpUtils.createResponseEntityWithRedirect(
+                httpUtils.createSuccessResponse(email, HttpStatus.FOUND.value()),
+                httpUtils.getRedirectUri(request, "/password")
+        );
     }
 
     @PostMapping("/password")
@@ -199,57 +181,14 @@ public class AuthController {
                 )
             )
         })
-    public ResponseEntity setProfile(final @Valid @RequestBody ProfileDto profileDto, @RequestParam("email") @Parameter(hidden = true) User user, HttpServletResponse response) {
+    public ResponseEntity setProfile(final @Valid @RequestBody ProfileDto profileDto, @RequestParam("email") @Parameter(hidden = true) User user) {
         modelMapper.map(profileDto, user);
         JwtTokenDto authToken = authFacade.signUp(user);
 
-        setResponse(response, getCookieOfAccessToken(authToken.getAccessToken()), getCookieOfRefreshToken(authToken.getAccessToken()));
-
-        return createSuccessResponse(ResponseDto.success("sign-up complete", HttpStatus.CREATED.value()));
-    }
-
-    private ResponseEntity createSuccessResponse(ResponseDto body) {
-        return new ResponseEntity<>(body, null, body.getResponseCode());
-    }
-
-    private ResponseEntity createRedirectResponse(ResponseDto body, String redirectUri) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", redirectUri);
-
-        return new ResponseEntity<>(body, headers, body.getResponseCode());
-    }
-
-    private String getRedirectUri(HttpServletRequest request, String redirectPath) {
-        URI currentUri = URI.create(request.getRequestURI());
-
-        return UriComponentsBuilder.fromUri(currentUri)
-                .path(redirectPath)
-                .build().toUri().toString();
-    }
-
-    private void setResponse(HttpServletResponse response, Cookie accessToken, Cookie refreshToken) {
-//        response.setCharacterEncoding("UTF-8");
-//        response.setContentType("application/json");
-//        response.setStatus(HttpServletResponse.SC_OK);
-        response.addCookie(accessToken);
-        response.addCookie(refreshToken);
-    }
-
-    private Cookie getCookieOfAccessToken(String accessTokenValue) {
-        Cookie accessToken = new Cookie("access_token", accessTokenValue);
-        accessToken.setHttpOnly(true);
-        accessToken.setSecure(true);
-        accessToken.setMaxAge((int) (60 * 60 * accessTokenValidity));
-
-        return accessToken;
-    }
-
-    private Cookie getCookieOfRefreshToken(String refreshTokenValue) {
-        Cookie refreshToken = new Cookie("refresh_token", refreshTokenValue);
-        refreshToken.setHttpOnly(true);
-        refreshToken.setSecure(true);
-        refreshToken.setMaxAge((int) (60 * 60 * 24 * refreshTokenValidity));
-
-        return refreshToken;
+        return httpUtils.createResponseEntityWithCookies(
+                httpUtils.createSuccessResponse("sign-up complete", HttpStatus.CREATED.value()),
+                httpUtils.getResponseCookieOfAccessToken(authToken.getAccessToken()),
+                httpUtils.getResponseCookieOfRefreshToken(authToken.getRefreshToken())
+        );
     }
 }
