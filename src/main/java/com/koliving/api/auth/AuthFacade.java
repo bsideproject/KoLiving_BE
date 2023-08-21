@@ -84,7 +84,7 @@ public class AuthFacade {
     private String issueAccessToken(UserDetails userDetails) {
         JwtVo jwtVo = JwtVo.builder()
                 .email(userDetails.getUsername())
-                .role(userDetails.getAuthorities().toString())
+                .roles(userDetails.getAuthorities())
                 .build();
 
         return jwtProvider.generateAccessToken(jwtVo);
