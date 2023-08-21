@@ -1,9 +1,10 @@
 package com.koliving.api.email;
 
+import com.koliving.api.properties.EmailProperties;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.ClassPathResource;
@@ -20,21 +21,15 @@ import java.util.Locale;
 import java.util.Map;
 
 
-@Service
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class EmailService implements IEmailService {
 
     private final JavaMailSender mailSender;
     private final MessageSource messageSource;
     private final EmailTemplateUtil emailTemplateUtil;
-    private final String mailHost;
-
-    public EmailService(JavaMailSender mailSender, MessageSource messageSource, EmailTemplateUtil emailTemplateUtil, @Value("${spring.mail.username}") String mailHost) {
-        this.mailSender = mailSender;
-        this.messageSource = messageSource;
-        this.emailTemplateUtil = emailTemplateUtil;
-        this.mailHost = mailHost;
-    }
+    private final EmailProperties emailProperties;
 
     @Async
     @Override
@@ -60,7 +55,7 @@ public class EmailService implements IEmailService {
             helper.setSubject(subject);
             helper.setTo(to);
             helper.setText(mailContent, true);
-            helper.setFrom(mailHost);
+            helper.setFrom(emailProperties.getUsername());
 
             helper.addInline("logo", new ClassPathResource("static/image/logo-black.jpg"));
 

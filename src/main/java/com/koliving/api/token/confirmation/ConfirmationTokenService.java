@@ -3,8 +3,9 @@ package com.koliving.api.token.confirmation;
 import com.koliving.api.clock.IClock;
 import com.koliving.api.email.IEmailService;
 import com.koliving.api.email.MailType;
+import com.koliving.api.properties.EmailProperties;
 import com.koliving.api.utils.HttpUtils;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,26 +13,14 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ConfirmationTokenService implements IConfirmationTokenService {
 
     private final IEmailService emailService;
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final IClock clock;
     private final HttpUtils httpUtils;
-    private final long validityPeriod;
-
-    public ConfirmationTokenService(ConfirmationTokenRepository confirmationTokenRepository,
-                                    IEmailService emailService,
-                                    IClock clock,
-                                    HttpUtils httpUtils,
-                                    @Value("${spring.mail.properties.mail.auth.validity-period:30}") long validityPeriod
-                                    ) {
-        this.confirmationTokenRepository = confirmationTokenRepository;
-        this.emailService = emailService;
-        this.clock = clock;
-        this.httpUtils = httpUtils;
-        this.validityPeriod = validityPeriod;
-    }
+    private final EmailProperties emailProperties;
 
     @Override
     public Optional<ConfirmationToken> get(String token) {
@@ -42,7 +31,7 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     public ConfirmationToken create(String email) {
         return ConfirmationToken.builder()
                 .email(email)
-                .validityPeriod(validityPeriod)
+                .validityPeriod(emailProperties.getAuthValidityPeriod())
                 .build();
     }
 
