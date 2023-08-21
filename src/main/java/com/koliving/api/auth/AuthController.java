@@ -160,6 +160,9 @@ public class AuthController {
     @PostMapping("/password")
     @Operation(
         summary = "sign-up password API", description = "회원가입 - 2. 비밀번호 입력 API",
+        parameters = {
+            @Parameter(name = "email", required = true, description = "User's email", example = "koliving@gmail.com")
+        },
         responses = {
             @ApiResponse(responseCode = "201", description = "비밀번호 설정 성공", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "400", description = "유효하지 않은 비밀번호 입력값",
@@ -179,6 +182,9 @@ public class AuthController {
     @Operation(
         summary = "sign-up profile API",
         description = "회원가입 - 3. 개인정보 입력 API",
+        parameters = {
+            @Parameter(name = "email", required = true, description = "User's email", example = "koliving@gmail.com")
+        },
         responses = {
             @ApiResponse(responseCode = "201", description = "회원가입 성공",
                 content = @Content(
