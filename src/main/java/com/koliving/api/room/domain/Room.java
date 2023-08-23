@@ -50,7 +50,7 @@ public class Room {
 
     @Embedded
     @AttributeOverrides({
-        @AttributeOverride(name = "amount", column = @Column(name = "montly_rent"))
+        @AttributeOverride(name = "amount", column = @Column(name = "monthly_rent"))
     })
     private Money monthlyRent;
 
