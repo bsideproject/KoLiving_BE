@@ -7,7 +7,11 @@ import com.koliving.api.dto.ResponseDto;
 import com.koliving.api.dto.ValidationResult;
 import com.koliving.api.exception.ConfirmationTokenException;
 import com.koliving.api.exception.DuplicateResourceException;
+import com.koliving.api.exception.NonExistentResourceException;
 import com.koliving.api.i18n.MessageSource;
+import com.koliving.api.token.confirmation.ConfirmationToken;
+import com.koliving.api.token.confirmation.ConfirmationTokenService;
+import com.koliving.api.token.confirmation.ConfirmationTokenType;
 import com.koliving.api.user.SignUpStatus;
 import com.koliving.api.user.User;
 import com.koliving.api.user.UserService;
@@ -31,15 +35,26 @@ public class GlobalExceptionHandler {
 
     private final MessageSource messageSource;
     private final UserService userService;
+    private final ConfirmationTokenService confirmationTokenService;
     private final HttpUtils httpUtils;
 
     final HttpStatus badRequest = HttpStatus.BAD_REQUEST;
     final HttpStatus unauthorized = HttpStatus.UNAUTHORIZED;
 
-    @ExceptionHandler(value = {DuplicateResourceException.class, IllegalArgumentException.class})
+    @ExceptionHandler(value = {DuplicateResourceException.class, NonExistentResourceException.class})
     public ResponseEntity<ResponseDto<String>> handleRequestException(RuntimeException e, Locale locale) {
         return httpUtils.createResponseEntity(
                 httpUtils.createFailureResponse(getErrorMessage(e, locale), badRequest.value())
+        );
+    }
+
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<ResponseDto<String>> handleIllegalArgumentException(IllegalArgumentException e, Locale locale) {
+        String messageKey = e.getMessage();
+        String errorMessage = messageSource.getMessage(messageKey, null, locale);
+
+        return httpUtils.createResponseEntity(
+                httpUtils.createFailureResponse(errorMessage, badRequest.value())
         );
     }
 
@@ -59,7 +74,12 @@ public class GlobalExceptionHandler {
             }
             case "authenticated_confirmation_token" -> {
                 status = HttpStatus.UNAUTHORIZED;
-                redirectPath = getSignUpUrl(request, email);
+                ConfirmationToken confirmationToken = confirmationTokenService.get(e.getToken()).get();
+                if (confirmationToken.getTokenType().equals(ConfirmationTokenType.SIGN_UP)) {
+                    redirectPath = getSignUpUrl(request, email);
+                } else if (confirmationToken.getTokenType().equals(ConfirmationTokenType.RESET_PASSWORD)) {
+                    redirectPath = getResetPasswordUrl();
+                }
             }
         }
 
@@ -114,6 +134,10 @@ public class GlobalExceptionHandler {
         }
 
         return null;
+    }
+
+    private String getResetPasswordUrl() {
+        return httpUtils.getCurrentVersionUri("/reset-password");
     }
 
     private String getErrorMessage(RuntimeException e, Locale locale) {

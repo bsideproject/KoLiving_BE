@@ -7,6 +7,7 @@ import com.koliving.api.properties.EmailProperties;
 import com.koliving.api.token.confirmation.ConfirmationToken;
 import com.koliving.api.token.confirmation.ConfirmationTokenRepository;
 import com.koliving.api.token.confirmation.ConfirmationTokenService;
+import com.koliving.api.token.confirmation.ConfirmationTokenType;
 import com.koliving.api.utils.HttpUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -96,7 +97,7 @@ class ConfirmationTokenServiceTest {
     void create_success() {
         String testMail = "new@test.com";
         when(emailProperties.getAuthValidityPeriod()).thenReturn(30L);
-        ConfirmationToken result = confirmationTokenService.create(testMail);
+        ConfirmationToken result = confirmationTokenService.create(testMail, ConfirmationTokenType.SIGN_UP);
 
         verify(emailProperties, times(1)).getAuthValidityPeriod();
 
@@ -148,7 +149,7 @@ class ConfirmationTokenServiceTest {
 
         when(httpUtils.getCurrentVersionUrl(anyString())).thenReturn(authLinkPath);
 
-        confirmationTokenService.sendEmail(recipientEmail, tokenValue);
+        confirmationTokenService.sendEmail(recipientEmail, tokenValue, "/api/v1/sign-up/confirm");
 
         verify(emailSender, times(1)).send(MailType.AUTH, recipientEmail, authLinkUrl);
     }
@@ -168,7 +169,7 @@ class ConfirmationTokenServiceTest {
         when(clock.now()).thenReturn(LocalDateTime.now());
 
         String tokenValue = token.getToken();
-        confirmationTokenService.authenticateToken(tokenValue);
+        confirmationTokenService.authenticate(tokenValue);
 
         assertTrue(confirmationTokenService.get(anyString()).isPresent());
         assertEquals(token.isBConfirmed(), true);
@@ -197,7 +198,7 @@ class ConfirmationTokenServiceTest {
         when(clock.now()).thenReturn(LocalDateTime.now().plusMinutes(expirationMinutes));
 
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
-            confirmationTokenService.authenticateToken(tokenValue);
+            confirmationTokenService.authenticate(tokenValue);
         });
 
         assertTrue(confirmationTokenService.get(anyString()).isPresent());
@@ -223,7 +224,7 @@ class ConfirmationTokenServiceTest {
         when(clock.now()).thenReturn(LocalDateTime.now());  // not expired
 
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
-            confirmationTokenService.authenticateToken(token.getToken());
+            confirmationTokenService.authenticate(token.getToken());
         });
 
         assertTrue(confirmationTokenService.get(anyString()).isPresent());
@@ -239,7 +240,7 @@ class ConfirmationTokenServiceTest {
         when(confirmationTokenService.get(anyString())).thenReturn(Optional.empty());
 
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
-            confirmationTokenService.authenticateToken(nonExistentTokenValue);
+            confirmationTokenService.authenticate(nonExistentTokenValue);
         });
 
         assertEquals(e.getMessage(), "ungenerated_confirmation_token");

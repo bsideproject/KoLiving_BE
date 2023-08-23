@@ -9,6 +9,7 @@ import com.koliving.api.exception.ConfirmationTokenException;
 import com.koliving.api.token.blacklist.BlackAccessToken;
 import com.koliving.api.token.blacklist.BlackListRepository;
 import com.koliving.api.token.confirmation.ConfirmationToken;
+import com.koliving.api.token.confirmation.ConfirmationTokenType;
 import com.koliving.api.token.confirmation.IConfirmationTokenService;
 import com.koliving.api.user.User;
 import com.koliving.api.user.UserService;
@@ -32,17 +33,17 @@ public class AuthFacade {
     private final BlackListRepository blackListRepository;
     private final ApplicationEventPublisher eventPublisher;
 
-    public void processEmailAuth(String email) {
-        ConfirmationToken newToken = confirmationTokenService.create(email);
+    public void processEmailAuth(String email, ConfirmationTokenType tokenType) {
+        ConfirmationToken newToken = confirmationTokenService.create(email, tokenType);
         ConfirmationToken savedToken = confirmationTokenService.save(newToken);
         eventPublisher.publishEvent(new ConfirmationTokenCreatedEvent(savedToken));
     }
 
     public void checkAuthMail(String token, String email) {
         try {
-            confirmationTokenService.authenticateToken(token);
+            confirmationTokenService.authenticate(token);
         } catch (RuntimeException e) {
-            throw new ConfirmationTokenException(e.getMessage(), email);
+            throw new ConfirmationTokenException(e.getMessage(), email, token);
         }
     }
 

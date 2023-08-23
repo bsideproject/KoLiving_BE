@@ -34,5 +34,11 @@ INSERT IGNORE INTO LANGUAGE (LOCALE, MESSAGE_KEY, MESSAGE_PATTERN) VALUES
        ('ko', 'format_invalid_token', '지원하지 않는 형식의 토큰입니다'),
 
        ('en', 'Access Denied', 'Unauthorized request'),
-       ('ko', 'Access Denied', '권한이 없는 요청입니다')
+       ('ko', 'Access Denied', '권한이 없는 요청입니다'),
+
+       ('en', 'email_not_exists', 'This email doesn''t exist : {0}'),
+       ('ko', 'email_not_exists', '존재하지 않는 이메일입니다 : {0}'),
+
+       ('en', 'mismatched_password', 'The Password and verification password does not match'),
+       ('ko', 'mismatched_password', '비밀번호가 확인 비밀번호와 일치하지 않습니다')
 ;

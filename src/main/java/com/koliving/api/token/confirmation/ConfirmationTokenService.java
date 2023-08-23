@@ -28,9 +28,10 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     }
 
     @Override
-    public ConfirmationToken create(String email) {
+    public ConfirmationToken create(String email, ConfirmationTokenType tokenType) {
         return ConfirmationToken.builder()
                 .email(email)
+                .tokenType(tokenType)
                 .validityPeriod(emailProperties.getAuthValidityPeriod())
                 .build();
     }
@@ -47,20 +48,20 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     }
 
     @Override
-    public void sendEmail(String email, String token) {
-        String authLinkPath = httpUtils.getCurrentVersionUrl("auth/sign-up/confirm");
-        String authLinkQueryString = "?token=" + token + "&email=" + email;
-        String authLinkurl = authLinkPath + authLinkQueryString;
+    public void sendEmail(String email, String token, String redirectResourcePath) {
+        String authLinkPath = httpUtils.getCurrentVersionUrl(redirectResourcePath);
+        String authLinkParams = "?token=" + token + "&email=" + email;
+        String authLinkUrl = authLinkPath + authLinkParams;
 
-        emailService.send(MailType.AUTH, email, authLinkurl);
+        emailService.send(MailType.AUTH, email, authLinkUrl);
     }
 
     @Override
     @Transactional
-    public boolean authenticateToken(String token) {
+    public boolean authenticate(String token) {
         Optional<ConfirmationToken> optionalConfirmationToken = this.get(token);
         if (optionalConfirmationToken.isEmpty()) {
-            this.handleInvalidToken();
+            handleInvalidToken();
         }
 
         optionalConfirmationToken

@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class EmailDuplicationValidator implements Validator {
+public class EmailPresenceValidator implements Validator {
 
     private final UserRepository userRepository;
 
@@ -25,6 +25,8 @@ public class EmailDuplicationValidator implements Validator {
     public void validate(Object target, Errors errors) {
         AuthEmailRequestDto emailRequest = (AuthEmailRequestDto) target;
         Optional<User> userOptional = userRepository.findByEmail(emailRequest.email());
-        userOptional.ifPresent(user -> errors.rejectValue("email",  "duplication", emailRequest.email()));
+        if (userOptional.isEmpty()) {
+            errors.rejectValue("email",  "not_exists", emailRequest.email());
+        }
     }
 }
