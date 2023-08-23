@@ -39,8 +39,8 @@ class RoomRepositoryTest {
     @DisplayName("룸 객체 생성하기")
     void create() {
         // given
-        TypeOfHousing studio = typeOfHousingRepository.findByRoomType(RoomType.STUDIO);
-        TypeOfHousing shareHouse = typeOfHousingRepository.findByRoomType(RoomType.SHARE_HOUSE);
+        TypeOfHousing studio = typeOfHousingRepository.findByType(RoomType.STUDIO);
+        TypeOfHousing shareHouse = typeOfHousingRepository.findByType(RoomType.SHARE_HOUSE);
 
         // when
         Room savedRoom = roomRepository.save(new Room(1L, Money.valueOf(0), Money.valueOf(0),

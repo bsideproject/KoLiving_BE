@@ -27,7 +27,7 @@ class TypeOfHousingRepositoryTest {
 
         // then
         assertThat(actual.getId()).isNotNull();
-        assertThat(actual.getRoomType().isStudio()).isTrue();
+        assertThat(actual.getType().isStudio()).isTrue();
     }
 
     @Test
@@ -41,7 +41,7 @@ class TypeOfHousingRepositoryTest {
 
         // then
         assertThat(actual.getId()).isNotNull();
-        assertThat(actual.getRoomType().isOneBedFlats()).isTrue();
+        assertThat(actual.getType().isOneBedFlats()).isTrue();
     }
 
     @Test
@@ -55,6 +55,6 @@ class TypeOfHousingRepositoryTest {
 
         // then
         assertThat(actual.getId()).isNotNull();
-        assertThat(actual.getRoomType().isShareHouse()).isTrue();
+        assertThat(actual.getType().isShareHouse()).isTrue();
     }
 }

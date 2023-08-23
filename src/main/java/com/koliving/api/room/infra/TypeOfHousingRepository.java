@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TypeOfHousingRepository extends JpaRepository<TypeOfHousing, Long> {
 
-    TypeOfHousing findByRoomType(RoomType roomType);
+    TypeOfHousing findByType(RoomType roomType);
 }
