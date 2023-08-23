@@ -18,7 +18,7 @@ class TypeOfHousingTest {
         final TypeOfHousing actual = TypeOfHousing.valueOf(RoomType.STUDIO);
 
         // then
-        assertThat(actual.getRoomType().isStudio()).isTrue();
+        assertThat(actual.getType().isStudio()).isTrue();
     }
 
     @Test
@@ -28,7 +28,7 @@ class TypeOfHousingTest {
         final TypeOfHousing actual = TypeOfHousing.valueOf(RoomType.ONE_BED_FLATS);
 
         // then
-        assertThat(actual.getRoomType().isOneBedFlats()).isTrue();
+        assertThat(actual.getType().isOneBedFlats()).isTrue();
     }
 
     @Test
@@ -38,7 +38,7 @@ class TypeOfHousingTest {
         final TypeOfHousing actual = TypeOfHousing.valueOf(RoomType.SHARE_HOUSE);
 
         // then
-        assertThat(actual.getRoomType().isShareHouse()).isTrue();
+        assertThat(actual.getType().isShareHouse()).isTrue();
     }
 
     @ParameterizedTest

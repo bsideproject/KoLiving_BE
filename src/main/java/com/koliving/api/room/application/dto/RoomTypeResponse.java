@@ -8,7 +8,7 @@ public record RoomTypeResponse(Long id, String roomType) {
     public static RoomTypeResponse valueOf(TypeOfHousing entity) {
         return new RoomTypeResponse(
             entity.getId(),
-            entity.getRoomType().getDescription()
+            entity.getType().getDescription()
         );
     }
 }

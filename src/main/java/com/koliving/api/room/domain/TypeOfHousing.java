@@ -27,11 +27,10 @@ public class TypeOfHousing {
     private Long id;
 
     @Enumerated(STRING)
-    @Column(name = "room_type")
-    private RoomType roomType;
+    private RoomType type;
 
-    private TypeOfHousing(RoomType roomType) {
-        this.roomType = Objects.requireNonNull(roomType);
+    private TypeOfHousing(RoomType type) {
+        this.type = Objects.requireNonNull(type);
     }
 
     public static TypeOfHousing valueOf(RoomType roomType) {
