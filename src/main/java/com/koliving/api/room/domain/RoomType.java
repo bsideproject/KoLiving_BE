@@ -1,7 +1,6 @@
 package com.koliving.api.room.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,7 +11,6 @@ public enum RoomType {
     ONE_BED_FLATS("1bed flats"),
     SHARE_HOUSE("share house");
 
-    @JsonValue
     private final String description;
 
     public boolean isStudio() {
