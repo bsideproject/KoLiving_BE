@@ -28,6 +28,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Locale;
 
+import static com.koliving.api.token.confirmation.ConfirmationTokenType.RESET_PASSWORD;
+import static com.koliving.api.token.confirmation.ConfirmationTokenType.SIGN_UP;
+
 @Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
@@ -75,11 +78,7 @@ public class GlobalExceptionHandler {
             case "authenticated_confirmation_token" -> {
                 status = HttpStatus.UNAUTHORIZED;
                 ConfirmationToken confirmationToken = confirmationTokenService.get(e.getToken()).get();
-                if (confirmationToken.getTokenType().equals(ConfirmationTokenType.SIGN_UP)) {
-                    redirectPath = getSignUpUrl(request, email);
-                } else if (confirmationToken.getTokenType().equals(ConfirmationTokenType.RESET_PASSWORD)) {
-                    redirectPath = getResetPasswordUrl();
-                }
+                redirectPath = getConfirmationTokenRedirectUrl(confirmationToken.getTokenType(), email, request);
             }
         }
 
@@ -118,26 +117,21 @@ public class GlobalExceptionHandler {
         return ErrorResponse.valueOf(e.getError());
     }
 
-    private String getSignUpUrl(HttpServletRequest request, String email) {
-        User user = (User) userService.loadUserByUsername(email);
-        SignUpStatus currentSignUpStatus = user.getSignUpStatus();
-        if (currentSignUpStatus.equals(SignUpStatus.PASSWORD_VERIFICATION_PENDING)) {
-            return httpUtils.getRedirectUri(request, "/password");
-        }
-
-        if (currentSignUpStatus.equals(SignUpStatus.PROFILE_INFORMATION_PENDING)) {
-            return httpUtils.getRedirectUri(request, "/profile");
-        }
-
-        if (currentSignUpStatus.equals(SignUpStatus.COMPLETED)) {
-            return httpUtils.getCurrentVersionUri("login");
+    private String getConfirmationTokenRedirectUrl(ConfirmationTokenType tokenType, String email, HttpServletRequest request) {
+        if (tokenType == SIGN_UP) {
+            return getSignUpRedirectUrl(email, request);
+        } else if (tokenType == RESET_PASSWORD) {
+            return httpUtils.getCurrentVersionUri("auth/reset-password");
         }
 
         return null;
     }
 
-    private String getResetPasswordUrl() {
-        return httpUtils.getCurrentVersionUri("/reset-password");
+    private String getSignUpRedirectUrl(String email, HttpServletRequest request) {
+        User user = (User) userService.loadUserByUsername(email);
+        SignUpStatus currentSignUpStatus = user.getSignUpStatus();
+
+        return currentSignUpStatus.getRedirectUri(httpUtils, request);
     }
 
     private String getErrorMessage(RuntimeException e, Locale locale) {
