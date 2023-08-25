@@ -2,10 +2,7 @@ package com.koliving.api.room.application;
 
 import com.koliving.api.room.application.dto.FurnishingResponse;
 import com.koliving.api.room.application.dto.FurnishingSaveRequest;
-import com.koliving.api.room.application.dto.RoomTypeResponse;
-import com.koliving.api.room.application.dto.RoomTypeSaveRequest;
 import com.koliving.api.room.infra.FurnishingRepository;
-import com.koliving.api.room.infra.TypeOfHousingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

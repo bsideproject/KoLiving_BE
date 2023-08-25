@@ -2,9 +2,7 @@ package com.koliving.api.room.ui;
 
 import com.koliving.api.base.ErrorResponse;
 import com.koliving.api.room.application.FurnishingService;
-import com.koliving.api.room.application.RoomTypeService;
 import com.koliving.api.room.application.dto.FurnishingSaveRequest;
-import com.koliving.api.room.application.dto.RoomTypeSaveRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

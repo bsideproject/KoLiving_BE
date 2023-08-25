@@ -6,6 +6,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -19,6 +21,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jakarta.persistence.EnumType.*;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -54,19 +57,14 @@ public class Room {
     })
     private Money monthlyRent;
 
-    @OneToMany(orphanRemoval = true)
-    @JoinTable(
-        name = "TB_ROOM_TYPE_OF_HOUSINGS",
-        joinColumns = @JoinColumn(name = "room_id"),
-        inverseJoinColumns = @JoinColumn(name = "type_of_housing_id")
-    )
-    private List<TypeOfHousing> types = new ArrayList<>();
+    @Enumerated(STRING)
+    private RoomType roomType;
 
-    public Room(Long locationId, Money deposit, Money monthlyRent, List<TypeOfHousing> types) {
+    public Room(Long locationId, Money deposit, Money monthlyRent, RoomType roomType) {
         this.locationId = locationId;
         this.deposit = deposit;
         this.monthlyRent = monthlyRent;
-        this.types = types;
+        this.roomType = roomType;
     }
 
     //TODO 이미지
