@@ -2,65 +2,47 @@ package com.koliving.api.room.domain;
 
 import static lombok.AccessLevel.PROTECTED;
 
-import com.koliving.api.room.exception.IllegalMoneyException;
+import com.koliving.api.base.ServiceError;
+import com.koliving.api.base.exception.KolivingServiceException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Transient;
-import java.math.BigInteger;
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
 @Getter
+@EqualsAndHashCode(of = "amount")
 @NoArgsConstructor(access = PROTECTED)
 public class Money {
 
     @Transient
-    public static final Long MIN_AMOUNT = 0L;
+    public static final int MIN_AMOUNT = 0;
 
-    @Column(nullable = false)
-    private BigInteger amount;
+    @Column
+    private Integer amount;
 
-    private Money(long amount) {
+    private Money(int amount) {
         validate(amount);
-        this.amount = BigInteger.valueOf(amount);
+        this.amount = amount;
     }
 
-    public static Money valueOf(long amount) {
+    public static Money valueOf(int amount) {
         return new Money(amount);
     }
 
-    private void validate(long amount) {
+    private void validate(int amount) {
         if (amount < MIN_AMOUNT) {
-            throw new IllegalMoneyException(amount);
+            throw new KolivingServiceException(ServiceError.INVALID_MONEY);
         }
     }
 
-    public BigInteger value() {
+    public int value() {
         return this.amount;
     }
 
     public boolean isEmpty() {
-        return this.amount.equals(BigInteger.ZERO);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Money money = (Money) o;
-
-        return Objects.equals(getAmount(), money.getAmount());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getAmount());
+        return this.amount == MIN_AMOUNT;
     }
 }
