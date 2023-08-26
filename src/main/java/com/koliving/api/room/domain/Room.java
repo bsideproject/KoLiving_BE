@@ -1,33 +1,23 @@
 package com.koliving.api.room.domain;
 
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+
 import com.koliving.api.location.domain.Location;
+import com.koliving.api.room.domain.info.RoomInfo;
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
-import lombok.Builder;
+import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static jakarta.persistence.EnumType.*;
-import static jakarta.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PRIVATE;
-import static lombok.AccessLevel.PROTECTED;
 
 //TODO Room 도메인생성
 
@@ -36,6 +26,7 @@ import static lombok.AccessLevel.PROTECTED;
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor(access = PROTECTED)
 public class Room {
+
     @Transient
     public static final Long MAX_DEPOSIT = 500_000_000L;
 
@@ -59,25 +50,28 @@ public class Room {
     private Money monthlyRent;
 
     @Embedded
-    @AttributeOverrides(
-        @AttributeOverride(name = "amount", column = @Column(name = "maintenance_fee", columnDefinition = "integer default 0"))
-    )
     private Maintenance maintenance;
 
-    @Enumerated(STRING)
-    @Column(name = "room_type", nullable = false)
-    private RoomType roomType;
+    @Embedded
+    private RoomInfo roomInfo;
 
-    private Room(Location location, Money deposit, Money monthlyRent, Maintenance maintenance) {
+    private Room(Location location, RoomInfo roomInfo, Money deposit, Money monthlyRent, Maintenance maintenance) {
         this.location = location;
+        this.roomInfo = roomInfo;
         this.deposit = deposit;
         this.monthlyRent = monthlyRent;
-
+        this.maintenance = maintenance;
     }
-//
-//    public static Room valueOf(Location location, Money deposit, Money monthlyRent, RoomType roomType, Maintenance maintenance) {
-//        return new Room(location, deposit, monthlyRent, roomType, maintenance);
-//    }
+
+    public static Room valueOf(
+        Location location,
+        RoomInfo info,
+        Money deposit,
+        Money monthlyRent,
+        Maintenance maintenance
+    ) {
+        return new Room(location, info, deposit, monthlyRent, maintenance);
+    }
 
     //TODO 이미지
     @Transient

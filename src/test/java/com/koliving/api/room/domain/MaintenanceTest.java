@@ -24,10 +24,10 @@ class MaintenanceTest {
     @DisplayName("관리비 0원인 객체 생성하기")
     void createEmpty() {
         // when
-        final Maintenance maintenance = Maintenance.valueOfEmpty();
+        final Maintenance maintenance = Maintenance.empty();
 
         // then
-        assertThat(maintenance.getAmount()).isEqualTo(0);
+        assertThat(maintenance.value()).isEqualTo(0);
         assertThat(maintenance.isGasIncluded()).isFalse();
         assertThat(maintenance.isWaterIncluded()).isFalse();
         assertThat(maintenance.isElectricityIncluded()).isFalse();

@@ -32,6 +32,10 @@ public class Money {
         return new Money(amount);
     }
 
+    public static Money empty() {
+        return new Money(MIN_AMOUNT);
+    }
+
     private void validate(int amount) {
         if (amount < MIN_AMOUNT) {
             throw new KolivingServiceException(ServiceError.INVALID_MONEY);
