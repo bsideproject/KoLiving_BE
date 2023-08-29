@@ -1,5 +1,6 @@
 package com.koliving.api.auth.jwt;
 
+import com.koliving.api.properties.JwtProperties;
 import com.koliving.api.token.blacklist.BlackAccessToken;
 import com.koliving.api.token.blacklist.BlackListRepository;
 import com.koliving.api.token.refresh.RefreshToken;
@@ -7,7 +8,7 @@ import com.koliving.api.token.refresh.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.xml.bind.DatatypeConverter;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,22 +18,13 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService implements IJwtService {
 
     private final UserDetailsService userService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final BlackListRepository blackListRepository;
-    private final String jwtSecret;
-
-    public JwtService(UserDetailsService userService,
-                      RefreshTokenRepository refreshTokenRepository,
-                      BlackListRepository blackListRepository,
-                      @Value("${jwt.secret}") String jwtSecret) {
-        this.userService = userService;
-        this.refreshTokenRepository = refreshTokenRepository;
-        this.blackListRepository = blackListRepository;
-        this.jwtSecret = jwtSecret;
-    }
+    private final JwtProperties jwtProperties;
 
     @Override
     public Date extractExpirationDate(String token) {
@@ -93,7 +85,7 @@ public class JwtService implements IJwtService {
 
     private Claims getClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(DatatypeConverter.parseBase64Binary(jwtSecret))
+                .setSigningKey(DatatypeConverter.parseBase64Binary(jwtProperties.getSecret()))
                 .parseClaimsJws(token)
                 .getBody();
     }

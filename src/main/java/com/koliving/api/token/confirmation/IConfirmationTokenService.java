@@ -6,13 +6,13 @@ public interface IConfirmationTokenService {
 
     Optional<ConfirmationToken> get(String token);
 
-    ConfirmationToken create(String email);
+    ConfirmationToken create(String email, ConfirmationTokenType tokenType);
 
     ConfirmationToken save(ConfirmationToken token);
 
     Long delete(String email);
 
-    void sendEmail(String mail, String token);
+    void sendEmail(String mail, String token, String redirectResourcePath);
 
-    boolean authenticateToken(String token);
+    boolean authenticate(String token);
 }
