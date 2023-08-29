@@ -143,10 +143,16 @@ public class AuthController {
     @Operation(
         summary = "sign-up password API", description = "회원가입 - 2. 비밀번호 입력 API",
         parameters = {
-            @Parameter(name = "email", required = true, description = "User's email", example = "koliving@gmail.com")
+            @Parameter(name = "email", required = true, description = "User's email", example = "test@koliving.com")
         },
         responses = {
-            @ApiResponse(responseCode = "204", description = "비밀번호 설정 성공", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "302", description = "비밀번호 설정 성공",
+                headers = {@Header(name = "Location", schema = @Schema(type = "string", example = "/api/{current-version}/auth/profile"))},
+                content = @Content(
+                    schema = @Schema(implementation = ResponseDto.class),
+                    examples = {@ExampleObject(name = "Success", value = "{\"responseCode\": 302, \"data\": \"Success password setting for sign-up : test@koliving.com\"}"),}
+                )
+            ),
             @ApiResponse(responseCode = "400", description = "유효하지 않은 비밀번호 입력값",
                 content = @Content(
                     schema = @Schema(implementation = ResponseDto.class),
@@ -158,7 +164,10 @@ public class AuthController {
     public ResponseEntity setPassword(final @Valid @RequestBody PasswordDto passwordDto, @RequestParam("email") @Parameter(hidden = true) User user) {
         userService.setPassword(user, passwordDto.password());
 
-        return new ResponseEntity<>(noContent);
+        return httpUtils.createResponseEntityWithRedirect(
+                httpUtils.createSuccessResponse("Success password setting for sign-up : " + user.getEmail(), found.value()),
+                httpUtils.getCurrentVersionUri("auth/profile")
+        );
     }
 
     @PostMapping("/profile")
