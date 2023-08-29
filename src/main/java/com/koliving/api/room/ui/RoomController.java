@@ -1,9 +1,8 @@
 package com.koliving.api.room.ui;
 
-
 import com.koliving.api.base.ErrorResponse;
-import com.koliving.api.room.application.RoomTypeService;
-import com.koliving.api.room.application.dto.RoomTypeSaveRequest;
+import com.koliving.api.room.application.RoomService;
+import com.koliving.api.room.application.dto.RoomSaveRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,39 +16,33 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "[관리자] 룸 타입 관리 API", description = "관리자 룸 타입 관리 API")
+@Tag(name = "방 API", description = "ROOM API")
 @RestController
-@RequestMapping("api/v1/management/room/types")
 @RequiredArgsConstructor
-public class RoomTypeManagementController {
+@RequestMapping("api/v1/rooms")
+public class RoomController {
 
-    private final RoomTypeService roomTypeService;
+    private final RoomService roomService;
 
     @Operation(
-        summary = "룸 타입 등록",
-        description = "룸 타입을 등록합니다.",
+        summary = "방 등록",
+        description = "방을 등록합니다.",
         responses = {
             @ApiResponse(
                 responseCode = "201",
-                description = "룸 타입 등록 성공"
+                description = "방 등록 성공"
             ),
             @ApiResponse(
                 responseCode = "400",
-                description = "룸 타입 등록 실패",
-                content = @Content(schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(
-                responseCode = "500",
-                description = "룸 타입 등록 실패",
+                description = "방 등록 실패",
                 content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             ),
         })
     @PostMapping
-    public ResponseEntity<Long> save(@RequestBody RoomTypeSaveRequest request) {
-        final Long id = roomTypeService.save(request);
+    public ResponseEntity<Long> save(@RequestBody RoomSaveRequest request) {
+        final Long id = roomService.save(request);
 
-        return ResponseEntity.created(URI.create("api/v1/management/room/types" + id))
+        return ResponseEntity.created(URI.create("api/v1/rooms/" + id))
             .build();
     }
 }
-

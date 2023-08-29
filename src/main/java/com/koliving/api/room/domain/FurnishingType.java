@@ -15,8 +15,7 @@ public enum FurnishingType {
     WARDROBE("Wardrobe"),
     WASHING_MACHINE("Washing machine"),
     DOOR_LOCK("Door lock"),
-    TV("TV"),
-    KITCHENETTE("Kitchenette");
+    TV("TV");
 
     private final String description;
 }

@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.NullSource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DisplayName("가구 도메인 테스트")
 class FurnishingTest {
 
     @Test
