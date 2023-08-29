@@ -93,7 +93,7 @@ public class AuthController {
     @Operation(
         summary = "sign-up email confirmation API", description = "회원가입 - 1-1. 이메일 인증 API",
         parameters = {
-            @Parameter(name = "token", description = "인증 토큰", example = "need to assign", required = true, content = @Content(schema = @Schema(type = "string"))),
+            @Parameter(name = "token", description = "인증 토큰", example = "confirmation token", required = true, content = @Content(schema = @Schema(type = "string"))),
             @Parameter(name = "email", description = "이메일 인증 신청자", example = "test@koliving.com", required = true, content = @Content(schema = @Schema(type = "string"))),
         },
         responses = {
@@ -125,10 +125,7 @@ public class AuthController {
                 )
             )
         })
-    public ResponseEntity<ResponseDto<String>> checkAuthEmailForSignUp(
-            @RequestParam @Parameter(hidden = true) String token,
-            @RequestParam @Parameter(hidden = true) String email,
-            HttpServletRequest request) {
+    public ResponseEntity<ResponseDto<String>> checkAuthEmailForSignUp(@RequestParam String token, @RequestParam String email, HttpServletRequest request) {
         authFacade.checkAuthMail(token, email);
 
         User newUser = User.builder()
@@ -157,7 +154,8 @@ public class AuthController {
                     examples = {@ExampleObject(name = "Invalid input of password", value = "{\"responseCode\":400,\"error\":{\"errors\":[{\"objectName\":\"passwordDto\",\"field\":\"password\",\"code\":\"Size\",\"message\":\"size must be between 8 and 20\"}]}}"),}
                 )
             ),
-    })
+        }
+    )
     public ResponseEntity setPassword(final @Valid @RequestBody PasswordDto passwordDto, @RequestParam("email") @Parameter(hidden = true) User user) {
         userService.setPassword(user, passwordDto.password());
 
@@ -183,7 +181,8 @@ public class AuthController {
                     examples = {@ExampleObject(name = "Invalid input of profile", value = "{\"responseCode\":400,\"error\":{\"errors\":[{\"objectName\":\"profileDto\",\"field\":\"firstName\",\"code\":\"NotBlank\",\"message\":\"may not be empty\"}]}}"),}
                 )
             )
-        })
+        }
+    )
     public ResponseEntity setProfile(final @Valid @RequestBody ProfileDto profileDto, @RequestParam("email") @Parameter(hidden = true) User user) {
         modelMapper.map(profileDto, user);
         JwtTokenDto authToken = authFacade.signUp(user);
@@ -224,7 +223,7 @@ public class AuthController {
     @Operation(
         summary = "reset password - confirmation API", description = "회원 수정 (비밀번호 재설정) - 2. 이메일 인증 API",
         parameters = {
-            @Parameter(name = "token", description = "인증 토큰", example = "need to assign", required = true, content = @Content(schema = @Schema(type = "string"))),
+            @Parameter(name = "token", description = "인증 토큰", example = "confirmation token", required = true, content = @Content(schema = @Schema(type = "string"))),
             @Parameter(name = "email", description = "이메일 인증 신청자", example = "test@koliving.com", required = true, content = @Content(schema = @Schema(type = "string"))),
         },
         responses = {
@@ -250,16 +249,13 @@ public class AuthController {
                 content = @Content(
                     schema = @Schema(implementation = ResponseDto.class),
                     examples = {
-                        @ExampleObject(name = "Email authentication completed", value = "{\"responseCode\":401,\"error\":{\"errorMessage\" :\"The confirmation token already confirmed\",\"email\":\"test@koliving.com\"}}"),
+                            @ExampleObject(name = "Email authentication completed", value = "{\"responseCode\":401,\"error\":{\"errorMessage\" :\"The confirmation token already confirmed\",\"email\":\"test@koliving.com\"}}"),
                     }
                 )
             )
         }
     )
-    public ResponseEntity<ResponseDto<String>> checkAuthEmailForResetPassword(
-            @RequestParam @Parameter(hidden = true) String token,
-            @RequestParam @Parameter(hidden = true) String email,
-            HttpServletRequest request) {
+    public ResponseEntity<ResponseDto<String>> checkAuthEmailForResetPassword(@RequestParam String token, @RequestParam String email, HttpServletRequest request) {
         authFacade.checkAuthMail(token, email);
 
         return httpUtils.createResponseEntityWithRedirect(
