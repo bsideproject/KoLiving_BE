@@ -9,10 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -26,6 +22,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 
 @Entity(name = "TB_USER")
 @DynamicInsert
@@ -89,6 +90,10 @@ public class User implements UserDetails {
     public void setPassword(String password) {
         this.password = password;
         this.signUpStatus = SignUpStatus.PROFILE_INFORMATION_PENDING;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 
     public void completeSignUp() {
