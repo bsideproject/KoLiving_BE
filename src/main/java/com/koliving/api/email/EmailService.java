@@ -35,7 +35,7 @@ public class EmailService implements IEmailService {
     @Override
     public void send(MailType type, String to, String link) {
         try {
-            Locale currentLocale = LocaleContextHolder.getLocale();
+            Locale currentLocale = getLocaleForLanguage(LocaleContextHolder.getLocale());
 
             String title = "KOLIVING";
             String subtitle = messageSource.getMessage("auth_email_subtitle", null, currentLocale);
@@ -56,7 +56,6 @@ public class EmailService implements IEmailService {
             helper.setTo(to);
             helper.setText(mailContent, true);
             helper.setFrom(emailProperties.getUsername());
-
             helper.addInline("logo", new ClassPathResource("static/image/logo-black.jpg"));
 
             mailSender.send(mimeMessage);
@@ -67,5 +66,9 @@ public class EmailService implements IEmailService {
             log.error("failed to send email", e);
             throw new MailSendException("Failed to send email", e);
         }
+    }
+
+    private Locale getLocaleForLanguage(Locale locale) {
+        return Locale.forLanguageTag(locale.getLanguage());
     }
 }
