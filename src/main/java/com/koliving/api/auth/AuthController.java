@@ -125,7 +125,7 @@ public class AuthController {
                 )
             )
         })
-    public ResponseEntity<ResponseDto<String>> checkAuthEmailForSignUp(@RequestParam String token, @RequestParam String email, HttpServletRequest request) {
+    public ResponseEntity<ResponseDto<String>> checkAuthEmailForSignUp(@RequestParam String token, @RequestParam String email) {
         authFacade.checkAuthMail(token, email);
 
         User newUser = User.builder()
@@ -136,7 +136,7 @@ public class AuthController {
 
         return httpUtils.createResponseEntityWithRedirect(
                 httpUtils.createSuccessResponse("email confirmation success for sign-up : " + email, found.value()),
-                httpUtils.getRedirectUri(request, "/password")
+                httpUtils.getCurrentVersionUri("auth/password")
         );
     }
 
@@ -260,7 +260,7 @@ public class AuthController {
 
         return httpUtils.createResponseEntityWithRedirect(
                 httpUtils.createSuccessResponse("email confirmation success for reset-password : " + email, found.value()),
-                httpUtils.getRedirectUri(request, "/reset-password")
+                httpUtils.getCurrentVersionUri("auth/reset-password")
         );
     }
 
