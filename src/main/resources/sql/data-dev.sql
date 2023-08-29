@@ -1,4 +1,4 @@
-INSERT INTO TB_LANGUAGE (LOCALE, MESSAGE_KEY, MESSAGE_PATTERN) VALUES
+INSERT IGNORE INTO TB_LANGUAGE (LOCALE, MESSAGE_KEY, MESSAGE_PATTERN) VALUES
        ('en', 'home_welcome','Welcome'),
        ('ko', 'home_welcome','환영합니다'),
 
