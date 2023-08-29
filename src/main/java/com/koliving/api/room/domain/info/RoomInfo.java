@@ -12,7 +12,9 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@ToString
 @Embeddable
 @Getter
 @NoArgsConstructor(access = PROTECTED)
@@ -40,15 +42,23 @@ public class RoomInfo {
         Quantity bathrooms,
         Quantity roommates
     ) {
-        validate(roomType, bedrooms);
+        validate(roomType, bedrooms, bathrooms, roommates);
         this.roomType = roomType;
         this.bedrooms = bedrooms;
         this.bathrooms = bathrooms;
         this.roommates = roommates;
     }
 
-    private void validate(RoomType roomType, Quantity bedrooms) {
-        if ((roomType.isStudio() || roomType.isOneBedFlats()) && bedrooms.isNotOne()) {
+    private void validate(RoomType roomType, Quantity bedrooms, Quantity bathrooms, Quantity roommates) {
+        if (!roomType.isValidBedrooms(bedrooms)) {
+            throw new KolivingServiceException(ServiceError.ILLEGAL_ROOM_INFO);
+        }
+
+        if (!roomType.isValidBathrooms(bathrooms)) {
+            throw new KolivingServiceException(ServiceError.ILLEGAL_ROOM_INFO);
+        }
+
+        if (!roomType.isValidRoommates(roommates)) {
             throw new KolivingServiceException(ServiceError.ILLEGAL_ROOM_INFO);
         }
     }

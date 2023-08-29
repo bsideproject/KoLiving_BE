@@ -2,11 +2,13 @@ package com.koliving.api.room.domain;
 
 import static lombok.AccessLevel.PROTECTED;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.koliving.api.base.ServiceError;
 import com.koliving.api.base.exception.KolivingServiceException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Transient;
+import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +30,11 @@ public class Money {
         this.amount = amount;
     }
 
-    public static Money valueOf(int amount) {
+    public static Money valueOf(Integer amount) {
+        if (Objects.isNull(amount)) {
+            return empty();
+        }
+
         return new Money(amount);
     }
 
@@ -46,6 +52,7 @@ public class Money {
         return this.amount;
     }
 
+    @JsonIgnore
     public boolean isEmpty() {
         return this.amount == MIN_AMOUNT;
     }

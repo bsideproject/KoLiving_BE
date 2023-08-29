@@ -1,11 +1,10 @@
 package com.koliving.api.location.domain;
 
-import static com.koliving.api.base.ServiceError.*;
+import static com.koliving.api.base.ServiceError.INVALID_LOCATION;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
-import com.koliving.api.base.ServiceError;
 import com.koliving.api.base.exception.KolivingServiceException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,12 +13,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@ToString
 @Getter
 @Entity(name = "TB_LOCATION")
 @EqualsAndHashCode(of = "id")
