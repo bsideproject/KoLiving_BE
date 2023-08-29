@@ -1,5 +1,6 @@
 package com.koliving.api.dto;
 
+import com.koliving.api.user.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,7 +27,7 @@ public class ProfileDto {
     @NotNull
     @Range(min = 0L, max=2L)
     @Schema(description = "성별 (0-남, 1-여, 2-OTHER)", allowableValues = {"0", "1", "2"}, example = "0")
-    private int genderCode;
+    private Integer genderCode;
 
     @NotNull
     @Past
@@ -38,4 +39,8 @@ public class ProfileDto {
     @Size(min = 0, max =500)
     @Schema(description = "자기소개 (1000byte 까지)", maxLength = 500, example = "hello koliving")
     private String description;
+
+    public Gender toGender() {
+        return Gender.findByCode(genderCode);
+    }
 }
