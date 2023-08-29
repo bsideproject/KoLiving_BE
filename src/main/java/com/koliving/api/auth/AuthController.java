@@ -75,7 +75,7 @@ public class AuthController {
                     schema = @Schema(implementation = ResponseDto.class),
                     examples = {
                         @ExampleObject(name = "Invalid input of email", value = "{\"responseCode\":400,\"error\":{\"errors\":[{\"objectName\":\"signUpDto\",\"field\":\"email\",\"code\":\"Email\",\"message\":\"not a well-formed email address\"}]}}"),
-                        @ExampleObject(name = "Mismatched input of passwords", value = "{\"responseCode\": 302, \"error\": \"This email already exists : existent@koliving.com\"}")
+                        @ExampleObject(name = "Mismatched input of passwords", value = "{\"responseCode\": 400, \"error\": \"This email already exists : existent@koliving.com\"}")
                     }
                 )
             ),
