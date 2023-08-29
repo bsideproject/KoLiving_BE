@@ -56,6 +56,10 @@ public class AuthController {
     private final ModelMapper modelMapper;
     private final HttpUtils httpUtils;
 
+    final HttpStatus created = HttpStatus.CREATED;
+    final HttpStatus noContent = HttpStatus.NO_CONTENT;
+    final HttpStatus found = HttpStatus.FOUND;
+
     @InitBinder
     public void initBinder(WebDataBinder dataBinder) {
         dataBinder.registerCustomEditor(User.class, userPropertyEditorProvider.get());
@@ -82,7 +86,7 @@ public class AuthController {
 
         authFacade.processEmailAuth(authEmailRequestDto.email(), ConfirmationTokenType.SIGN_UP);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(noContent);
     }
 
     @GetMapping("/sign-up/confirm")
@@ -125,7 +129,6 @@ public class AuthController {
             @RequestParam @Parameter(hidden = true) String token,
             @RequestParam @Parameter(hidden = true) String email,
             HttpServletRequest request) {
-
         authFacade.checkAuthMail(token, email);
 
         User newUser = User.builder()
@@ -135,7 +138,7 @@ public class AuthController {
         userService.save(newUser);
 
         return httpUtils.createResponseEntityWithRedirect(
-                httpUtils.createSuccessResponse("email confirmation success for sign-up : " + email, HttpStatus.FOUND.value()),
+                httpUtils.createSuccessResponse("email confirmation success for sign-up : " + email, found.value()),
                 httpUtils.getRedirectUri(request, "/password")
         );
     }
@@ -147,7 +150,7 @@ public class AuthController {
             @Parameter(name = "email", required = true, description = "User's email", example = "koliving@gmail.com")
         },
         responses = {
-            @ApiResponse(responseCode = "201", description = "비밀번호 설정 성공", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "204", description = "비밀번호 설정 성공", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "400", description = "유효하지 않은 비밀번호 입력값",
                 content = @Content(
                     schema = @Schema(implementation = ResponseDto.class),
@@ -158,7 +161,7 @@ public class AuthController {
     public ResponseEntity setPassword(final @Valid @RequestBody PasswordDto passwordDto, @RequestParam("email") @Parameter(hidden = true) User user) {
         userService.setPassword(user, passwordDto.password());
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(noContent);
     }
 
     @PostMapping("/profile")
@@ -187,7 +190,7 @@ public class AuthController {
         authFacade.deleteConfirmationToken(user.getEmail());
 
         return httpUtils.createResponseEntityWithCookies(
-                httpUtils.createSuccessResponse("sign-up complete", HttpStatus.CREATED.value()),
+                httpUtils.createSuccessResponse("sign-up complete", created.value()),
                 httpUtils.getResponseCookieOfAccessToken(authToken.getAccessToken()),
                 httpUtils.getResponseCookieOfRefreshToken(authToken.getRefreshToken())
         );
@@ -214,7 +217,7 @@ public class AuthController {
 
         authFacade.processEmailAuth(authEmailRequestDto.email(), ConfirmationTokenType.RESET_PASSWORD);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(noContent);
     }
 
     @GetMapping("/reset-password/confirm")
@@ -257,11 +260,10 @@ public class AuthController {
             @RequestParam @Parameter(hidden = true) String token,
             @RequestParam @Parameter(hidden = true) String email,
             HttpServletRequest request) {
-
         authFacade.checkAuthMail(token, email);
 
         return httpUtils.createResponseEntityWithRedirect(
-                httpUtils.createSuccessResponse("email confirmation success for reset-password : " + email, HttpStatus.FOUND.value()),
+                httpUtils.createSuccessResponse("email confirmation success for reset-password : " + email, found.value()),
                 httpUtils.getRedirectUri(request, "/reset-password")
         );
     }
@@ -273,7 +275,7 @@ public class AuthController {
             @Parameter(name = "email", required = true, description = "User's email", example = "koliving@gmail.com")
         },
         responses = {
-            @ApiResponse(responseCode = "201", description = "비밀번호 설정 성공", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "204", description = "비밀번호 설정 성공", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "400", description = "유효하지 않은 비밀번호 입력값",
                 content = @Content(
                     schema = @Schema(implementation = ResponseDto.class),
@@ -289,7 +291,7 @@ public class AuthController {
         userService.setPassword(user, resetPasswordDto.password());
         authFacade.deleteConfirmationToken(user.getEmail());
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(noContent);
     }
 
     private void checkEmailDuplication(AuthEmailRequestDto authEmailRequestDto, Validator validator) {
