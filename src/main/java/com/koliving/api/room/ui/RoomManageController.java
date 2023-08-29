@@ -23,4 +23,6 @@ public class RoomManageController {
         return ResponseEntity.ok()
             .body(responses);
     }
+
+
 }

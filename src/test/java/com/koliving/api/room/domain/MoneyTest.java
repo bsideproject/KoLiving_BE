@@ -31,4 +31,17 @@ class MoneyTest {
             .isInstanceOf(KolivingServiceException.class)
             .hasMessageContaining(ServiceError.INVALID_MONEY.getMessage());
     }
+
+    @Test
+    @DisplayName("Null인 경우 0원으로 반환한다")
+    public void createByNull() {
+        // given
+        Integer nullValue = null;
+
+        // when
+        final Money money = Money.valueOf(null);
+
+        // then
+        assertThat(money.getAmount()).isEqualTo(0);
+    }
 }

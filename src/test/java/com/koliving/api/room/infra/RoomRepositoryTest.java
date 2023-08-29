@@ -14,6 +14,7 @@ import com.koliving.api.room.domain.Money;
 import com.koliving.api.room.domain.Room;
 import com.koliving.api.room.domain.RoomType;
 import com.koliving.api.room.domain.info.Quantity;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -68,7 +69,9 @@ class RoomRepositoryTest {
                 Money.empty(),
                 Money.empty(),
                 관리비_없음,
-                Sets.newHashSet()
+                Sets.newHashSet(),
+                LocalDate.of(2023, 8, 29),
+                "설명이에요"
             )
         );
 
@@ -83,6 +86,8 @@ class RoomRepositoryTest {
         assertThat(actual.getRoomInfo().getBathrooms()).isEqualTo(Quantity.ONE);
         assertThat(actual.getRoomInfo().getRoommates()).isEqualTo(Quantity.ONE);
         assertThat(actual.getFurnishings()).hasSize(0);
+        assertThat(actual.getAvailableDate()).isEqualTo(LocalDate.of(2023, 8, 29));
+        assertThat(actual.getDescription()).isEqualTo("설명이에요");
     }
 
     @Test
@@ -112,7 +117,9 @@ class RoomRepositoryTest {
                 Money.empty(),
                 Money.empty(),
                 관리비_없음,
-                Sets.newLinkedHashSet(tv, airConditioner)
+                Sets.newLinkedHashSet(tv, airConditioner),
+                LocalDate.of(2023, 8, 29),
+                "설명이에요"
             )
         );
 
@@ -129,5 +136,7 @@ class RoomRepositoryTest {
         assertThat(actual.getRoomInfo().getBathrooms()).isEqualTo(Quantity.ONE);
         assertThat(actual.getRoomInfo().getRoommates()).isEqualTo(Quantity.ONE);
         assertThat(actual.getFurnishings()).hasSize(2);
+        assertThat(actual.getAvailableDate()).isEqualTo(LocalDate.of(2023, 8, 29));
+        assertThat(actual.getDescription()).isEqualTo("설명이에요");
     }
 }

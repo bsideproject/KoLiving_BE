@@ -16,9 +16,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -70,13 +72,21 @@ public class Room {
     )
     private Set<Furnishing> furnishings = new HashSet<>();
 
-    private Room(Location location, RoomInfo roomInfo, Money deposit, Money monthlyRent, Maintenance maintenance, Set<Furnishing> furnishings) {
+    @Column(name = "available_date", nullable = false)
+    private LocalDate availableDate;
+
+    @Lob
+    private String description;
+
+    private Room(Location location, RoomInfo roomInfo, Money deposit, Money monthlyRent, Maintenance maintenance, Set<Furnishing> furnishings, LocalDate availableDate, String description) {
         this.location = location;
         this.roomInfo = roomInfo;
         this.deposit = deposit;
         this.monthlyRent = monthlyRent;
         this.maintenance = maintenance;
         this.furnishings = furnishings;
+        this.availableDate = availableDate;
+        this.description = description;
     }
 
     public static Room valueOf(
@@ -85,9 +95,11 @@ public class Room {
         Money deposit,
         Money monthlyRent,
         Maintenance maintenance,
-        Set<Furnishing> furnishings
+        Set<Furnishing> furnishings,
+        LocalDate availableDate,
+        String description
     ) {
-        return new Room(location, info, deposit, monthlyRent, maintenance, furnishings);
+        return new Room(location, info, deposit, monthlyRent, maintenance, furnishings, availableDate, description);
     }
 
     //TODO 이미지

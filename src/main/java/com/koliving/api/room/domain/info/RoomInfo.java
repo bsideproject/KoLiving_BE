@@ -12,7 +12,9 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@ToString
 @Embeddable
 @Getter
 @NoArgsConstructor(access = PROTECTED)
