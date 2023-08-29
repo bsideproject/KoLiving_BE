@@ -2,6 +2,7 @@ package com.koliving.api.room.infra;
 
 import static com.koliving.api.fixtures.LocationFixture.성동구;
 import static com.koliving.api.fixtures.MaintenanceFixture.관리비_없음;
+import static com.koliving.api.fixtures.RoomInfoFixture.스튜디오_방1_욕실1_룸메1;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.koliving.api.location.domain.Location;
@@ -10,6 +11,7 @@ import com.koliving.api.location.infra.LocationRepository;
 import com.koliving.api.room.domain.Money;
 import com.koliving.api.room.domain.Room;
 import com.koliving.api.room.domain.RoomType;
+import com.koliving.api.room.domain.info.Quantity;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,7 +45,7 @@ class RoomRepositoryTest {
         Room savedRoom = roomRepository.save(
             Room.valueOf(
                 location,
-                null,
+                스튜디오_방1_욕실1_룸메1,
                 Money.empty(),
                 Money.empty(),
                 관리비_없음
@@ -56,6 +58,9 @@ class RoomRepositoryTest {
         assertThat(actual.getDeposit().value()).isEqualTo(0);
         assertThat(actual.getMonthlyRent().value()).isEqualTo(0);
         assertThat(actual.getMaintenance().value()).isEqualTo(0);
-        //assertThat(actual.getRoomType().isStudio()).isTrue();
+        assertThat(actual.getRoomInfo().getRoomType().isStudio()).isTrue();
+        assertThat(actual.getRoomInfo().getBedrooms()).isEqualTo(Quantity.ONE);
+        assertThat(actual.getRoomInfo().getBathrooms()).isEqualTo(Quantity.ONE);
+        assertThat(actual.getRoomInfo().getRoommates()).isEqualTo(Quantity.ONE);
     }
 }

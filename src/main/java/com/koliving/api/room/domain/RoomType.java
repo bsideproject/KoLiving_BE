@@ -24,7 +24,8 @@ public enum RoomType {
     SHARE_HOUSE(
         "share house",
         EnumSet.of(Quantity.TWO, Quantity.THREE, Quantity.FOUR, Quantity.FIVE, Quantity.SIX_OR_OVER),
-        Quantity.defaultBathrooms(), Quantity.defaultRoommates()
+        Quantity.defaultBathrooms(),
+        Quantity.defaultRoommates()
     );
 
     private final String description;
@@ -42,5 +43,17 @@ public enum RoomType {
 
     public boolean isShareHouse() {
         return this == SHARE_HOUSE;
+    }
+
+    public boolean isValidBedrooms(Quantity quantity) {
+        return bedrooms.contains(quantity);
+    }
+
+    public boolean isValidBathrooms(Quantity quantity) {
+        return bathrooms.contains(quantity);
+    }
+
+    public boolean isValidRoommates(Quantity quantity) {
+        return roommates.contains(quantity);
     }
 }

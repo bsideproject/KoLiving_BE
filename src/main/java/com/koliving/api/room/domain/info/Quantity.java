@@ -1,7 +1,6 @@
 package com.koliving.api.room.domain.info;
 
 import java.util.EnumSet;
-import java.util.Set;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -23,10 +22,6 @@ public enum Quantity {
 
     public static EnumSet<Quantity> defaultRoommates() {
         return EnumSet.of(ONE, TWO, THREE, FOUR, FIVE, SIX_OR_OVER);
-    }
-
-    public boolean isNotOne() {
-        return this != ONE;
     }
 
     private final String desc;
