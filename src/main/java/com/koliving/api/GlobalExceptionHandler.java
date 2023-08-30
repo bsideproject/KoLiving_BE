@@ -7,24 +7,29 @@ import com.koliving.api.dto.ResponseDto;
 import com.koliving.api.dto.ValidationResult;
 import com.koliving.api.exception.ConfirmationTokenException;
 import com.koliving.api.exception.DuplicateResourceException;
+import com.koliving.api.exception.NonExistentResourceException;
 import com.koliving.api.i18n.MessageSource;
+import com.koliving.api.token.confirmation.ConfirmationToken;
+import com.koliving.api.token.confirmation.ConfirmationTokenService;
+import com.koliving.api.token.confirmation.ConfirmationTokenType;
 import com.koliving.api.user.SignUpStatus;
 import com.koliving.api.user.User;
 import com.koliving.api.user.UserService;
+import com.koliving.api.utils.HttpUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.Locale;
+
+import static com.koliving.api.token.confirmation.ConfirmationTokenType.RESET_PASSWORD;
+import static com.koliving.api.token.confirmation.ConfirmationTokenType.SIGN_UP;
 
 @Slf4j
 @RestControllerAdvice
@@ -33,58 +38,77 @@ public class GlobalExceptionHandler {
 
     private final MessageSource messageSource;
     private final UserService userService;
+    private final ConfirmationTokenService confirmationTokenService;
+    private final HttpUtils httpUtils;
 
-    @ExceptionHandler(value = {DuplicateResourceException.class, IllegalArgumentException.class})
+    final HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+    final HttpStatus unauthorized = HttpStatus.UNAUTHORIZED;
+
+    @ExceptionHandler(value = {DuplicateResourceException.class, NonExistentResourceException.class})
     public ResponseEntity<ResponseDto<String>> handleRequestException(RuntimeException e, Locale locale) {
-        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        return httpUtils.createResponseEntity(
+                httpUtils.createFailureResponse(getErrorMessage(e, locale), badRequest.value())
+        );
+    }
 
-        String errorMessage = getErrorMessage(e, locale);
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<ResponseDto<String>> handleIllegalArgumentException(IllegalArgumentException e, Locale locale) {
+        String messageKey = e.getMessage();
+        String errorMessage = messageSource.getMessage(messageKey, null, locale);
 
-        return createClientErrorResponse(errorMessage, badRequest);
+        return httpUtils.createResponseEntity(
+                httpUtils.createFailureResponse(errorMessage, badRequest.value())
+        );
     }
 
     @ExceptionHandler(value = ConfirmationTokenException.class)
     public ResponseEntity<ResponseDto<ConfirmationTokenErrorDto>> handleAuthException(ConfirmationTokenException e, HttpServletRequest request, Locale locale) {
         String messageKey = e.getMessage();
         String errorMessage = messageSource.getMessage(messageKey, null, locale);
-        String email = e.getEmail();
 
         HttpStatus status = null;
         String redirectPath = null;
+        String email = e.getEmail();
 
         switch (messageKey) {
             case "ungenerated_confirmation_token", "expired_confirmation_token" -> {
                 status = HttpStatus.BAD_REQUEST;
-                redirectPath = "/login";
+                redirectPath = httpUtils.getCurrentVersionUri("login");
             }
             case "authenticated_confirmation_token" -> {
                 status = HttpStatus.UNAUTHORIZED;
-                redirectPath = getRedirectLocation(request, email);
+                ConfirmationToken confirmationToken = confirmationTokenService.get(e.getToken()).get();
+                redirectPath = getConfirmationTokenRedirectUrl(confirmationToken.getTokenType(), email, request);
             }
         }
 
-        return createRedirectResponse(new ConfirmationTokenErrorDto(errorMessage, email), status, redirectPath);
+        return httpUtils.createResponseEntityWithRedirect(
+                httpUtils.createFailureResponse(
+                        new ConfirmationTokenErrorDto(errorMessage, email),
+                        status.value()
+                ),
+                redirectPath
+        );
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseDto<ValidationResult>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         ValidationResult errors = ValidationResult.of(e);
 
-        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
-
-        return createClientErrorResponse(errors, badRequest);
+        return httpUtils.createResponseEntity(
+                httpUtils.createFailureResponse(errors, badRequest.value())
+        );
     }
 
     @ExceptionHandler(value = AccessDeniedException.class) // Authorization
-    public ResponseEntity<ResponseDto<String>> handleAccessDeniedException(RuntimeException e, HttpServletRequest request, Locale locale) {
+    public ResponseEntity<ResponseDto<String>> handleAccessDeniedException(RuntimeException e, Locale locale) {
         String messageKey = e.getMessage();
         String errorMessage = messageSource.getMessage(messageKey, null, locale);
 
-        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
-
-        String redirectPath = "/login";
-
-        return createRedirectResponse(errorMessage, httpStatus, getUri(request, redirectPath));
+        return httpUtils.createResponseEntityWithRedirect(
+                httpUtils.createFailureResponse(errorMessage, unauthorized.value()),
+                httpUtils.getCurrentVersionUri("login")
+        );
     }
 
     @ExceptionHandler(value = KolivingServiceException.class)
@@ -93,29 +117,21 @@ public class GlobalExceptionHandler {
         return ErrorResponse.valueOf(e.getError());
     }
 
-    private String getUri(HttpServletRequest req, String redirectPath) {
-        URI currentUri = URI.create(req.getRequestURI());
-        return UriComponentsBuilder.fromUri(currentUri)
-                .path(redirectPath)
-                .build().toString();
-    }
-
-    private String getRedirectLocation(HttpServletRequest request, String email) {
-        User user = (User) userService.loadUserByUsername(email);
-        SignUpStatus currentSignUpStatus = user.getSignUpStatus();
-        if (currentSignUpStatus.equals(SignUpStatus.PASSWORD_VERIFICATION_PENDING)) {
-            return getUri(request, "/password");
-        }
-
-        if (currentSignUpStatus.equals(SignUpStatus.PROFILE_INFORMATION_PENDING)) {
-            return getUri(request, "/profile");
-        }
-
-        if (currentSignUpStatus.equals(SignUpStatus.COMPLETED)) {
-            return "/api/login";
+    private String getConfirmationTokenRedirectUrl(ConfirmationTokenType tokenType, String email, HttpServletRequest request) {
+        if (tokenType == SIGN_UP) {
+            return getSignUpRedirectUrl(email, request);
+        } else if (tokenType == RESET_PASSWORD) {
+            return httpUtils.getCurrentVersionUri("auth/reset-password");
         }
 
         return null;
+    }
+
+    private String getSignUpRedirectUrl(String email, HttpServletRequest request) {
+        User user = (User) userService.loadUserByUsername(email);
+        SignUpStatus currentSignUpStatus = user.getSignUpStatus();
+
+        return currentSignUpStatus.getRedirectUri(httpUtils, request);
     }
 
     private String getErrorMessage(RuntimeException e, Locale locale) {
@@ -126,21 +142,5 @@ public class GlobalExceptionHandler {
         String errorMessage = messageSource.getMessage(messageKey, new Object[]{email}, locale);
 
         return errorMessage;
-    }
-
-    private <T> ResponseEntity<ResponseDto<T>> createClientErrorResponse(T error, HttpStatus status) {
-        ResponseDto<T> response = ResponseDto.failure(error, status.value());
-
-        return new ResponseEntity<>(response, status);
-    }
-
-    private <T> ResponseEntity<ResponseDto<T>> createRedirectResponse(T error, HttpStatus status, String redirectUri) {
-        ResponseDto<T> response = ResponseDto.failure(error, status.value());
-
-        HttpHeaders headers = new HttpHeaders();
-//        headers.setLocation(redirectUri);
-        headers.add("Location", redirectUri);
-
-        return new ResponseEntity<>(response, headers, status);
     }
 }

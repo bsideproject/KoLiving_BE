@@ -25,10 +25,15 @@ public class EmailProperties {
     @NotEmpty
     private final String password;
 
-    public EmailProperties(String host, int port, String username, String password) {
+    @NotNull
+    @Positive
+    private long authValidityPeriod;
+
+    public EmailProperties(String host, int port, String username, String password, long authValidityPeriod) {
         this.host = host;
         this.port = port;
         this.username = username;
         this.password = password;
+        this.authValidityPeriod = authValidityPeriod;
     }
 }

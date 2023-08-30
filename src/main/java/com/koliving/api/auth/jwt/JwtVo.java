@@ -2,27 +2,26 @@ package com.koliving.api.auth.jwt;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Getter
 public class JwtVo {
 
     private String email;
-    private String role;
-    private String firstName;
-    private String lastName;
-
-    public String getUsername() {
-        return this.getLastName() + " " + this.getFirstName();
-    }
-
-    public void setUsername(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
+    private Collection<? extends GrantedAuthority> roles;
 
     @Builder
-    public JwtVo(String email, String role) {
+    public JwtVo(String email, Collection<? extends GrantedAuthority> roles) {
         this.email = email;
-        this.role = role;
+        this.roles = roles;
+    }
+
+    public String joinRolesToString() {
+        return this.roles.stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(", "));
     }
 }

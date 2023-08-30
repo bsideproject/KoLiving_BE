@@ -3,7 +3,9 @@ package com.koliving.api.token.confirmation;
 import com.koliving.api.clock.IClock;
 import com.koliving.api.email.IEmailService;
 import com.koliving.api.email.MailType;
-import org.springframework.beans.factory.annotation.Value;
+import com.koliving.api.properties.EmailProperties;
+import com.koliving.api.utils.HttpUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,29 +13,14 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ConfirmationTokenService implements IConfirmationTokenService {
 
     private final IEmailService emailService;
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final IClock clock;
-    private final String origin;
-    private final String currentVersion;
-    private final long validityPeriod;
-
-    public ConfirmationTokenService(ConfirmationTokenRepository confirmationTokenRepository,
-                                    IEmailService emailService,
-                                    IClock clock,
-                                    @Value("${server.origin:http://localhost:8080}") String origin,
-                                    @Value("${server.current-version:v1}") String currentVersion,
-                                    @Value("${spring.mail.properties.mail.auth.validity-period:30}") long validityPeriod
-                                    ) {
-        this.confirmationTokenRepository = confirmationTokenRepository;
-        this.emailService = emailService;
-        this.clock = clock;
-        this.origin = origin;
-        this.currentVersion = currentVersion;
-        this.validityPeriod = validityPeriod;
-    }
+    private final HttpUtils httpUtils;
+    private final EmailProperties emailProperties;
 
     @Override
     public Optional<ConfirmationToken> get(String token) {
@@ -41,10 +28,11 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     }
 
     @Override
-    public ConfirmationToken create(String email) {
+    public ConfirmationToken create(String email, ConfirmationTokenType tokenType) {
         return ConfirmationToken.builder()
                 .email(email)
-                .validityPeriod(validityPeriod)
+                .tokenType(tokenType)
+                .validityPeriod(emailProperties.getAuthValidityPeriod())
                 .build();
     }
 
@@ -60,19 +48,20 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     }
 
     @Override
-    public void sendEmail(String email, String token) {
-        String authLinkPath = String.format("/api/%s/auth/sign-up/confirm", currentVersion);
-        String authLink = origin + authLinkPath + "?token=" + token + "&email=" + email;
+    public void sendEmail(String email, String token, String redirectResourcePath) {
+        String authLinkPath = httpUtils.getCurrentVersionUrl(redirectResourcePath);
+        String authLinkParams = "?token=" + token + "&email=" + email;
+        String authLinkUrl = authLinkPath + authLinkParams;
 
-        emailService.send(MailType.AUTH, email, authLink);
+        emailService.send(MailType.AUTH, email, authLinkUrl);
     }
 
     @Override
     @Transactional
-    public boolean authenticateToken(String token) {
+    public boolean authenticate(String token) {
         Optional<ConfirmationToken> optionalConfirmationToken = this.get(token);
         if (optionalConfirmationToken.isEmpty()) {
-            this.handleInvalidToken();
+            handleInvalidToken();
         }
 
         optionalConfirmationToken
