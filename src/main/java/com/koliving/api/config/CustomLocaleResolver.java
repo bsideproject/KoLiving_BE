@@ -1,11 +1,11 @@
 package com.koliving.api.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.koliving.api.properties.ServerProperties;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,10 +13,10 @@ import java.util.Locale;
 import java.util.Locale.LanguageRange;
 
 @Component
+@RequiredArgsConstructor
 public class CustomLocaleResolver extends AcceptHeaderLocaleResolver {
 
-    @Value("${server.default-locale:en}")
-    private String defaultLocaleString;
+    private final ServerProperties serverProperties;
 
     @Override
     public Locale resolveLocale(HttpServletRequest request) {
@@ -24,7 +24,7 @@ public class CustomLocaleResolver extends AcceptHeaderLocaleResolver {
         String headerLang = request.getHeader(HttpHeaders.ACCEPT_LANGUAGE);
 
         if (headerLang == null) {
-            return Locale.forLanguageTag(defaultLocaleString);
+            return Locale.forLanguageTag(serverProperties.getDefaultLocale());
         }
 
         return Locale.lookup(LanguageRange.parse(headerLang), supportedLocales);

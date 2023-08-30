@@ -12,8 +12,8 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class BlackListRepository {
 
-    private static HashOperations<String, String, Date> hashOperations;
     private final static String BAT_HASH_KEY = "BlackAccessToken";
+    private static HashOperations<String, String, Date> hashOperations;
     private final RedisTemplate redisTemplate;
 
     @PostConstruct

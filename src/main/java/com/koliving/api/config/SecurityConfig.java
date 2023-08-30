@@ -9,10 +9,9 @@ import com.koliving.api.auth.login.LoginFailureHandler;
 import com.koliving.api.auth.login.LoginFilter;
 import com.koliving.api.auth.login.LoginProvider;
 import com.koliving.api.auth.login.LoginSuccessHandler;
+import com.koliving.api.utils.HttpUtils;
 import jakarta.annotation.PostConstruct;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +32,8 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @EnableWebSecurity
 @Configuration
@@ -55,24 +56,22 @@ public class SecurityConfig {
     private final SimpleUrlLogoutSuccessHandler logoutSuccessHandler;
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final AccessDeniedHandler accessDeniedHandler;
-
-    @Value("${server.current-version}")
-    private String apiVersion;
+    private final HttpUtils httpUtils;
 
     @PostConstruct
     private void init() {
         AUTHENTICATION_WHITELIST = new String[]{
-            "/api/" + apiVersion + "/auth/**",
-            "/api/" + apiVersion + "/management/**",
-            "/api/" + apiVersion + "/**",
+            httpUtils.getCurrentVersionUri("auth/**"),
+            httpUtils.getCurrentVersionUri("management/**"),
+            httpUtils.getCurrentVersionUri("**"),
             "/api-docs/**",
             "/swagger-ui/**",
             "/swagger-resources/**"
         };
 
         AUTHORIZATION_WHITELIST = new String[]{
-            "/api/" + apiVersion + "/login",
-            "/api/" + apiVersion + "/logout"
+            httpUtils.getCurrentVersionUri("login"),
+            httpUtils.getCurrentVersionUri("logout"),
         };
     }
 
@@ -101,8 +100,8 @@ public class SecurityConfig {
                     .anyRequest().authenticated();
             })
             .logout(config -> {
-                config.logoutUrl("/api/v1/logout")
-                    .logoutSuccessUrl("/api/v1/login")
+                config.logoutUrl(httpUtils.getCurrentVersionUri("logout"))
+                    .logoutSuccessUrl(httpUtils.getCurrentVersionUri("login"))
                     .logoutSuccessHandler(logoutSuccessHandler);
             }).exceptionHandling(config -> {
                 config.authenticationEntryPoint(authenticationEntryPoint)
@@ -140,12 +139,12 @@ public class SecurityConfig {
     }
 
     private CustomExceptionHandlerFilter createExceptionHandlerFilter() {
-        return new CustomExceptionHandlerFilter(objectMapper, messageSource, localeResolver);
+        return new CustomExceptionHandlerFilter(httpUtils, messageSource, localeResolver);
     }
 
     private LoginFilter createLoginFilter(AuthenticationManager authenticationManager) {
         LoginFilter loginFilter = new LoginFilter(authenticationManager, objectMapper, validator);
-        loginFilter.setFilterProcessesUrl("/api/v1/login");
+        loginFilter.setFilterProcessesUrl(httpUtils.getCurrentVersionUri("login"));
         loginFilter.setAuthenticationSuccessHandler(loginSuccessHandler);
         loginFilter.setAuthenticationFailureHandler(loginFailureHandler);
         loginFilter.afterPropertiesSet();
@@ -154,6 +153,6 @@ public class SecurityConfig {
     }
 
     private JwtAuthenticationFilter createJwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtProvider, jwtService);
+        return new JwtAuthenticationFilter(jwtProvider, jwtService, httpUtils);
     }
 }

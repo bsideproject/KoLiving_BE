@@ -1,7 +1,8 @@
 package com.koliving.api.token.refresh;
 
+import com.koliving.api.properties.JwtProperties;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -9,18 +10,13 @@ import org.springframework.stereotype.Repository;
 import java.util.concurrent.TimeUnit;
 
 @Repository
+@RequiredArgsConstructor
 public class RefreshTokenRepository {
 
-    private static HashOperations<String, String, String> hashOperations;
     private final static String RT_HASH_KEY = "RefreshToken";
+    private static HashOperations<String, String, String> hashOperations;
     private final RedisTemplate redisTemplate;
-    private final long RT_EXPIRATION_TIME;
-
-    public RefreshTokenRepository(RedisTemplate redisTemplate,
-                                  @Value("${jwt.refreshExpiration:30}") long RT_EXPIRATION_TIME) {
-        this.redisTemplate = redisTemplate;
-        this.RT_EXPIRATION_TIME = RT_EXPIRATION_TIME;
-    }
+    private final JwtProperties jwtProperties;
 
     @PostConstruct
     private void init() {
@@ -33,7 +29,7 @@ public class RefreshTokenRepository {
 
     public String save(final RefreshToken refreshToken) {
         hashOperations.putIfAbsent(RT_HASH_KEY, refreshToken.email(), refreshToken.token());
-        redisTemplate.expire(RT_HASH_KEY, RT_EXPIRATION_TIME, TimeUnit.DAYS);
+        redisTemplate.expire(RT_HASH_KEY, jwtProperties.getRefreshValidity(), TimeUnit.DAYS);
 
         return refreshToken.token();
     }
