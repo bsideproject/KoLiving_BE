@@ -2,6 +2,7 @@ package com.koliving.api.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.koliving.api.dto.ResponseDto;
+import com.koliving.api.properties.FrontProperties;
 import com.koliving.api.properties.JwtProperties;
 import com.koliving.api.properties.ServerProperties;
 import jakarta.servlet.http.Cookie;
@@ -36,6 +37,7 @@ public class HttpUtils {
     private final ObjectMapper objectMapper;
     private final JwtProperties jwtProperties;
     private final ServerProperties serverProperties;
+    private final FrontProperties frontProperties;
 
     public String getCurrentVersionPath(String path) {
         return String.format("/api/%s/%s", serverProperties.getCurrentVersion(), path);
@@ -43,6 +45,10 @@ public class HttpUtils {
 
     public String getCurrentVersionUrl(String path) {
         return serverProperties.getOrigin() + getCurrentVersionPath(path);
+    }
+
+    public String getFrontUrl(String path) {
+        return frontProperties.getOrigin() + path;
     }
 
     public String resolveToken(HttpServletRequest request) throws AuthenticationException {
