@@ -1,8 +1,6 @@
 package com.koliving.api.user;
 
 import com.koliving.api.user.application.dto.UserResponse;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,6 +8,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -42,6 +43,7 @@ public class UserService implements IUserService, UserDetailsService {
         return passwordEncoder.matches(rawPassword, hashPassword);
     }
 
+    @Override
     public List<UserResponse> list() {
         return userRepository.findAll()
             .stream()
