@@ -7,19 +7,21 @@ import lombok.Getter;
 @Getter
 public enum SignUpStatus {
 
-    PASSWORD_VERIFICATION_PENDING("/password"), PROFILE_INFORMATION_PENDING("/profile"), COMPLETED("/login");
+    PASSWORD_VERIFICATION_PENDING("/signup/step2"),
+    PROFILE_INFORMATION_PENDING("/signup/step2"),
+    COMPLETED("/login");
 
-    private final String redirectResourcePath;
+    private final String redirectPath;
 
-    SignUpStatus(String redirectResourcePath) {
-        this.redirectResourcePath = redirectResourcePath;
+    SignUpStatus(String redirectPath) {
+        this.redirectPath = redirectPath;
     }
 
     public String getRedirectUri(HttpUtils httpUtils, HttpServletRequest request) {
         if (this == PASSWORD_VERIFICATION_PENDING || this == PROFILE_INFORMATION_PENDING) {
-            return httpUtils.getRedirectUri(request, getRedirectResourcePath());
+            return httpUtils.getRedirectUri(request, getRedirectPath());
         } else if (this == COMPLETED) {
-            return httpUtils.getCurrentVersionPath(getRedirectResourcePath());
+            return httpUtils.getCurrentVersionPath(getRedirectPath());
         }
 
         return null;
