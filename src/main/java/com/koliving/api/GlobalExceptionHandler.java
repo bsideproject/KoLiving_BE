@@ -16,7 +16,6 @@ import com.koliving.api.user.SignUpStatus;
 import com.koliving.api.user.User;
 import com.koliving.api.user.UserService;
 import com.koliving.api.utils.HttpUtils;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -62,7 +61,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = ConfirmationTokenException.class)
-    public ResponseEntity<ResponseDto<ConfirmationTokenErrorDto>> handleAuthException(ConfirmationTokenException e, HttpServletRequest request, Locale locale) {
+    public ResponseEntity<ResponseDto<ConfirmationTokenErrorDto>> handleAuthException(ConfirmationTokenException e, Locale locale) {
         String messageKey = e.getMessage();
         String errorMessage = messageSource.getMessage(messageKey, null, locale);
 
@@ -73,12 +72,12 @@ public class GlobalExceptionHandler {
         switch (messageKey) {
             case "ungenerated_confirmation_token", "expired_confirmation_token" -> {
                 status = HttpStatus.BAD_REQUEST;
-                redirectPath = httpUtils.getCurrentVersionPath("login");
+                redirectPath = getRedirectUrl("/login");
             }
             case "authenticated_confirmation_token" -> {
                 status = HttpStatus.UNAUTHORIZED;
                 ConfirmationToken confirmationToken = confirmationTokenService.get(e.getToken()).get();
-                redirectPath = getConfirmationTokenRedirectUrl(confirmationToken.getTokenType(), email, request);
+                redirectPath = getConfirmationTokenRedirectUrl(confirmationToken.getTokenType(), email);
             }
         }
 
@@ -117,21 +116,25 @@ public class GlobalExceptionHandler {
         return ErrorResponse.valueOf(e.getError());
     }
 
-    private String getConfirmationTokenRedirectUrl(ConfirmationTokenType tokenType, String email, HttpServletRequest request) {
+    private String getRedirectUrl(String path) {
+        return httpUtils.getFrontUrl(path);
+    }
+
+    private String getConfirmationTokenRedirectUrl(ConfirmationTokenType tokenType, String email) {
         if (tokenType == SIGN_UP) {
-            return getSignUpRedirectUrl(email, request);
+            return getSignUpRedirectUrl(email);
         } else if (tokenType == RESET_PASSWORD) {
-            return httpUtils.getCurrentVersionPath("auth/reset-password");
+            return getRedirectUrl(tokenType.getRedirectPath());
         }
 
         return null;
     }
 
-    private String getSignUpRedirectUrl(String email, HttpServletRequest request) {
+    private String getSignUpRedirectUrl(String email) {
         User user = (User) userService.loadUserByUsername(email);
         SignUpStatus currentSignUpStatus = user.getSignUpStatus();
 
-        return currentSignUpStatus.getRedirectUri(httpUtils, request);
+        return getRedirectUrl(currentSignUpStatus.getRedirectPath());
     }
 
     private String getErrorMessage(RuntimeException e, Locale locale) {
