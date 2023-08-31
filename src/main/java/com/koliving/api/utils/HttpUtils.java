@@ -41,8 +41,8 @@ public class HttpUtils {
         return String.format("/api/%s/%s", serverProperties.getCurrentVersion(), path);
     }
 
-    public String getCurrentVersionUrl(String uri) {
-        return serverProperties.getOrigin() + getCurrentVersionPath(uri);
+    public String getCurrentVersionUrl(String path) {
+        return serverProperties.getOrigin() + getCurrentVersionPath(path);
     }
 
     public String resolveToken(HttpServletRequest request) throws AuthenticationException {
