@@ -6,9 +6,9 @@ import lombok.Getter;
 public enum ConfirmationTokenType {
     SIGN_UP("auth/sign-up/confirm"), RESET_PASSWORD("auth/reset-password/confirm");
 
-    private final String redirectResourcePath;
+    private final String linkPathResource;
 
-    ConfirmationTokenType(String redirectResourcePath) {
-        this.redirectResourcePath = redirectResourcePath;
+    ConfirmationTokenType(String linkPathResource) {
+        this.linkPathResource = linkPathResource;
     }
 }

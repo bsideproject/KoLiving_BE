@@ -48,8 +48,8 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
     }
 
     @Override
-    public void sendEmail(String email, String token, String redirectResourcePath) {
-        String authLinkPath = httpUtils.getCurrentVersionUrl(redirectResourcePath);
+    public void sendEmail(String email, String token, String linkPathResource) {
+        String authLinkPath = httpUtils.getCurrentVersionUrl(linkPathResource);
         String authLinkParams = "?token=" + token + "&email=" + email;
         String authLinkUrl = authLinkPath + authLinkParams;
 
