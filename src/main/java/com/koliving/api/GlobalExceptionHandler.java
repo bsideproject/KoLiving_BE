@@ -16,7 +16,6 @@ import com.koliving.api.user.SignUpStatus;
 import com.koliving.api.user.User;
 import com.koliving.api.user.UserService;
 import com.koliving.api.utils.HttpUtils;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -62,7 +61,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = ConfirmationTokenException.class)
-    public ResponseEntity<ResponseDto<ConfirmationTokenErrorDto>> handleAuthException(ConfirmationTokenException e, HttpServletRequest request, Locale locale) {
+    public ResponseEntity<ResponseDto<ConfirmationTokenErrorDto>> handleAuthException(ConfirmationTokenException e, Locale locale) {
         String messageKey = e.getMessage();
         String errorMessage = messageSource.getMessage(messageKey, null, locale);
 
@@ -78,7 +77,7 @@ public class GlobalExceptionHandler {
             case "authenticated_confirmation_token" -> {
                 status = HttpStatus.UNAUTHORIZED;
                 ConfirmationToken confirmationToken = confirmationTokenService.get(e.getToken()).get();
-                redirectPath = getConfirmationTokenRedirectUrl(confirmationToken.getTokenType(), email, request);
+                redirectPath = getConfirmationTokenRedirectUrl(confirmationToken.getTokenType(), email);
             }
         }
 
@@ -121,9 +120,9 @@ public class GlobalExceptionHandler {
         return httpUtils.getFrontUrl(path);
     }
 
-    private String getConfirmationTokenRedirectUrl(ConfirmationTokenType tokenType, String email, HttpServletRequest request) {
+    private String getConfirmationTokenRedirectUrl(ConfirmationTokenType tokenType, String email) {
         if (tokenType == SIGN_UP) {
-            return getSignUpRedirectUrl(email, request);
+            return getSignUpRedirectUrl(email);
         } else if (tokenType == RESET_PASSWORD) {
             return getRedirectUrl(tokenType.getRedirectPath());
         }
@@ -131,7 +130,7 @@ public class GlobalExceptionHandler {
         return null;
     }
 
-    private String getSignUpRedirectUrl(String email, HttpServletRequest request) {
+    private String getSignUpRedirectUrl(String email) {
         User user = (User) userService.loadUserByUsername(email);
         SignUpStatus currentSignUpStatus = user.getSignUpStatus();
 
