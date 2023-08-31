@@ -61,17 +61,17 @@ public class SecurityConfig {
     @PostConstruct
     private void init() {
         AUTHENTICATION_WHITELIST = new String[]{
-            httpUtils.getCurrentVersionUri("auth/**"),
-            httpUtils.getCurrentVersionUri("management/**"),
-            httpUtils.getCurrentVersionUri("**"),
+            httpUtils.getCurrentVersionPath("auth/**"),
+            httpUtils.getCurrentVersionPath("management/**"),
+            httpUtils.getCurrentVersionPath("**"),
             "/api-docs/**",
             "/swagger-ui/**",
             "/swagger-resources/**"
         };
 
         AUTHORIZATION_WHITELIST = new String[]{
-            httpUtils.getCurrentVersionUri("login"),
-            httpUtils.getCurrentVersionUri("logout"),
+            httpUtils.getCurrentVersionPath("login"),
+            httpUtils.getCurrentVersionPath("logout"),
         };
     }
 
@@ -100,8 +100,8 @@ public class SecurityConfig {
                     .anyRequest().authenticated();
             })
             .logout(config -> {
-                config.logoutUrl(httpUtils.getCurrentVersionUri("logout"))
-                    .logoutSuccessUrl(httpUtils.getCurrentVersionUri("login"))
+                config.logoutUrl(httpUtils.getCurrentVersionPath("logout"))
+                    .logoutSuccessUrl(httpUtils.getCurrentVersionPath("login"))
                     .logoutSuccessHandler(logoutSuccessHandler);
             }).exceptionHandling(config -> {
                 config.authenticationEntryPoint(authenticationEntryPoint)
@@ -144,7 +144,7 @@ public class SecurityConfig {
 
     private LoginFilter createLoginFilter(AuthenticationManager authenticationManager) {
         LoginFilter loginFilter = new LoginFilter(authenticationManager, objectMapper, validator);
-        loginFilter.setFilterProcessesUrl(httpUtils.getCurrentVersionUri("login"));
+        loginFilter.setFilterProcessesUrl(httpUtils.getCurrentVersionPath("login"));
         loginFilter.setAuthenticationSuccessHandler(loginSuccessHandler);
         loginFilter.setAuthenticationFailureHandler(loginFailureHandler);
         loginFilter.afterPropertiesSet();

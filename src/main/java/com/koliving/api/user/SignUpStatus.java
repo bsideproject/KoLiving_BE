@@ -19,7 +19,7 @@ public enum SignUpStatus {
         if (this == PASSWORD_VERIFICATION_PENDING || this == PROFILE_INFORMATION_PENDING) {
             return httpUtils.getRedirectUri(request, getRedirectResourcePath());
         } else if (this == COMPLETED) {
-            return httpUtils.getCurrentVersionUri(getRedirectResourcePath());
+            return httpUtils.getCurrentVersionPath(getRedirectResourcePath());
         }
 
         return null;
