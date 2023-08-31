@@ -135,7 +135,7 @@ public class AuthController {
 
         return httpUtils.createResponseEntityWithRedirect(
                 httpUtils.createSuccessResponse("Success email confirmation for sign-up : " + email, found.value()),
-                httpUtils.getCurrentVersionPath("auth/password")
+                httpUtils.getFrontUrl(ConfirmationTokenType.SIGN_UP.getRedirectPath())
         );
     }
 
