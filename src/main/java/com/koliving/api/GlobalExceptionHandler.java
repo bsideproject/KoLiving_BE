@@ -73,7 +73,7 @@ public class GlobalExceptionHandler {
         switch (messageKey) {
             case "ungenerated_confirmation_token", "expired_confirmation_token" -> {
                 status = HttpStatus.BAD_REQUEST;
-                redirectPath = httpUtils.getCurrentVersionUri("login");
+                redirectPath = httpUtils.getCurrentVersionPath("login");
             }
             case "authenticated_confirmation_token" -> {
                 status = HttpStatus.UNAUTHORIZED;
@@ -107,7 +107,7 @@ public class GlobalExceptionHandler {
 
         return httpUtils.createResponseEntityWithRedirect(
                 httpUtils.createFailureResponse(errorMessage, unauthorized.value()),
-                httpUtils.getCurrentVersionUri("login")
+                httpUtils.getCurrentVersionPath("login")
         );
     }
 
@@ -121,7 +121,7 @@ public class GlobalExceptionHandler {
         if (tokenType == SIGN_UP) {
             return getSignUpRedirectUrl(email, request);
         } else if (tokenType == RESET_PASSWORD) {
-            return httpUtils.getCurrentVersionUri("auth/reset-password");
+            return httpUtils.getCurrentVersionPath("auth/reset-password");
         }
 
         return null;

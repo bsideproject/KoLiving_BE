@@ -30,7 +30,7 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
         httpUtils.setResponseWithRedirect(
                 response,
                 httpUtils.createFailureResponse(failureMessage, HttpStatus.UNAUTHORIZED.value()),
-                httpUtils.getCurrentVersionUri("login")
+                httpUtils.getCurrentVersionPath("login")
         );
     }
 }

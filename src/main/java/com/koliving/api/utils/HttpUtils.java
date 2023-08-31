@@ -37,12 +37,12 @@ public class HttpUtils {
     private final JwtProperties jwtProperties;
     private final ServerProperties serverProperties;
 
-    public String getCurrentVersionUri(String uri) {
-        return String.format("/api/%s/%s", serverProperties.getCurrentVersion(), uri);
+    public String getCurrentVersionPath(String path) {
+        return String.format("/api/%s/%s", serverProperties.getCurrentVersion(), path);
     }
 
     public String getCurrentVersionUrl(String uri) {
-        return serverProperties.getOrigin() + getCurrentVersionUri(uri);
+        return serverProperties.getOrigin() + getCurrentVersionPath(uri);
     }
 
     public String resolveToken(HttpServletRequest request) throws AuthenticationException {

@@ -30,7 +30,7 @@ public class LogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
         httpUtils.setResponseWithRedirect(
                 response,
                 ResponseDto.success("logout success", HttpServletResponse.SC_ACCEPTED),
-                httpUtils.getCurrentVersionUri("home")
+                httpUtils.getCurrentVersionPath("home")
         );
     }
 }

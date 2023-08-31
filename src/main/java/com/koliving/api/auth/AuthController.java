@@ -135,7 +135,7 @@ public class AuthController {
 
         return httpUtils.createResponseEntityWithRedirect(
                 httpUtils.createSuccessResponse("Success email confirmation for sign-up : " + email, found.value()),
-                httpUtils.getCurrentVersionUri("auth/password")
+                httpUtils.getCurrentVersionPath("auth/password")
         );
     }
 
@@ -166,7 +166,7 @@ public class AuthController {
 
         return httpUtils.createResponseEntityWithRedirect(
                 httpUtils.createSuccessResponse("Success password setting for sign-up : " + user.getEmail(), found.value()),
-                httpUtils.getCurrentVersionUri("auth/profile")
+                httpUtils.getCurrentVersionPath("auth/profile")
         );
     }
 
@@ -268,7 +268,7 @@ public class AuthController {
 
         return httpUtils.createResponseEntityWithRedirect(
                 httpUtils.createSuccessResponse("Success email confirmation for reset-password : " + email, found.value()),
-                httpUtils.getCurrentVersionUri("auth/reset-password")
+                httpUtils.getCurrentVersionPath("auth/reset-password")
         );
     }
 
