@@ -8,11 +8,11 @@ public class ConfirmationTokenCreatedEvent  {
 
     private final String email;
     private final String token;
-    private final String redirectResourcePath;
+    private final String linkPathResource;
 
     public ConfirmationTokenCreatedEvent(ConfirmationToken savedToken) {
         this.email = savedToken.getEmail();
         this.token = savedToken.getToken();
-        this.redirectResourcePath = savedToken.getTokenType().getRedirectResourcePath();
+        this.linkPathResource = savedToken.getTokenType().getLinkPathResource();
     }
 }
