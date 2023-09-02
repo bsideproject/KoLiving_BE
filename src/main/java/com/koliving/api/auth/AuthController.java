@@ -130,12 +130,12 @@ public class AuthController {
         User newUser = User.builder()
                 .email(email)
                 .build();
-
         userService.save(newUser);
 
+        String params = "?email=" + email;
         return httpUtils.createResponseEntityWithRedirect(
                 httpUtils.createSuccessResponse("Success email confirmation for sign-up : " + email, found.value()),
-                httpUtils.getFrontUrl(ConfirmationTokenType.SIGN_UP.getRedirectPath())
+                httpUtils.getFrontUrl(ConfirmationTokenType.SIGN_UP.getRedirectPath() + params)
         );
     }
 
