@@ -21,6 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.util.Locale;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.LOCATION;
@@ -49,6 +50,10 @@ public class HttpUtils {
 
     public String getFrontUrl(String path) {
         return frontProperties.getOrigin() + path;
+    }
+
+    public Locale getLocaleForLanguage(Locale locale) {
+        return Locale.forLanguageTag(locale.getLanguage());
     }
 
     public String resolveToken(HttpServletRequest request) throws AuthenticationException {
