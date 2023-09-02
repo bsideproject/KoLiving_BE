@@ -27,10 +27,10 @@ public class Language {
     @Id
     private Long id;
 
-    @Column(name = "LOCALE")
+    @Column(name = "LOCALE", length = 20)
     private String locale;
 
-    @Column(name = "MESSAGE_KEY")
+    @Column(name = "MESSAGE_KEY", length = 210)
     private String messageKey;
 
     @Column(name = "MESSAGE_PATTERN")
