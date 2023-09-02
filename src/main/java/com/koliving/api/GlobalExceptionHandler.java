@@ -45,6 +45,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = {DuplicateResourceException.class, NonExistentResourceException.class})
     public ResponseEntity<ResponseDto<String>> handleRequestException(RuntimeException e, Locale locale) {
+        locale = httpUtils.getLocaleForLanguage(locale);
+
         return httpUtils.createResponseEntity(
                 httpUtils.createFailureResponse(getErrorMessage(e, locale), badRequest.value())
         );
@@ -52,6 +54,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = IllegalArgumentException.class)
     public ResponseEntity<ResponseDto<String>> handleIllegalArgumentException(IllegalArgumentException e, Locale locale) {
+        locale = httpUtils.getLocaleForLanguage(locale);
+
         String messageKey = e.getMessage();
         String errorMessage = messageSource.getMessage(messageKey, null, locale);
 
@@ -62,6 +66,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = ConfirmationTokenException.class)
     public ResponseEntity<ResponseDto<ConfirmationTokenErrorDto>> handleAuthException(ConfirmationTokenException e, Locale locale) {
+        locale = httpUtils.getLocaleForLanguage(locale);
+
         String messageKey = e.getMessage();
         String errorMessage = messageSource.getMessage(messageKey, null, locale);
 
@@ -101,6 +107,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = AccessDeniedException.class) // Authorization
     public ResponseEntity<ResponseDto<String>> handleAccessDeniedException(RuntimeException e, Locale locale) {
+        locale = httpUtils.getLocaleForLanguage(locale);
+
         String messageKey = e.getMessage();
         String errorMessage = messageSource.getMessage(messageKey, null, locale);
 

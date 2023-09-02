@@ -1,6 +1,7 @@
 package com.koliving.api.email;
 
 import com.koliving.api.properties.EmailProperties;
+import com.koliving.api.utils.HttpUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +31,13 @@ public class EmailService implements IEmailService {
     private final MessageSource messageSource;
     private final EmailTemplateUtil emailTemplateUtil;
     private final EmailProperties emailProperties;
+    private final HttpUtils httpUtils;
 
     @Async
     @Override
     public void send(MailType type, String to, String link) {
         try {
-            Locale currentLocale = getLocaleForLanguage(LocaleContextHolder.getLocale());
+            Locale currentLocale = httpUtils.getLocaleForLanguage(LocaleContextHolder.getLocale());
 
             String title = "KOLIVING";
             String subtitle = messageSource.getMessage("auth_email_subtitle", null, currentLocale);
@@ -66,9 +68,5 @@ public class EmailService implements IEmailService {
             log.error("failed to send email", e);
             throw new MailSendException("Failed to send email", e);
         }
-    }
-
-    private Locale getLocaleForLanguage(Locale locale) {
-        return Locale.forLanguageTag(locale.getLanguage());
     }
 }
