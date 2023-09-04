@@ -84,8 +84,7 @@ public class SecurityConfig {
         LoginFilter loginFilter = createLoginFilter(authenticationManager);
         JwtAuthenticationFilter jwtAuthenticationFilter = createJwtAuthenticationFilter();
 
-        http.cors().configurationSource(corsConfigurationSource())
-            .and()
+        http.cors(cors -> cors.disable())
             .headers()
             .frameOptions().disable()
             .and()
