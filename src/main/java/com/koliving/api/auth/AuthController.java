@@ -97,14 +97,14 @@ public class AuthController {
         },
         responses = {
             @ApiResponse(responseCode = "302", description = "이메일 인증 성공",
-                headers = {@Header(name = "Location", schema = @Schema(type = "string", example = "/api/{current-version}/auth/password"))},
+                headers = {@Header(name = "Location", schema = @Schema(type = "string", example = "/signup/step2"))},
                 content = @Content(
                     schema = @Schema(implementation = ResponseDto.class),
                     examples = {@ExampleObject(name = "Success", value = "{\"responseCode\": 302, \"data\": \"Success email confirmation for sign-up : test@koliving.com\"}"),}
                 )
             ),
             @ApiResponse(responseCode = "400", description = "이메일 인증 실패 - 유효하지 않은 토큰",
-                headers = {@Header(name = "Location", schema = @Schema(type = "string", example = "/api/{current-version}/auth/login"))},
+                headers = {@Header(name = "Location", schema = @Schema(type = "string", example = "/login"))},
                 content = @Content(
                     schema = @Schema(implementation = ResponseDto.class),
                     examples = {
@@ -117,9 +117,9 @@ public class AuthController {
                 content = @Content(
                     schema = @Schema(implementation = ResponseDto.class),
                     examples = {
-                        @ExampleObject(name = "Email authentication completed", description = "(Location Header) : \"/api/{current-version}/auth/password\"", value = "{\"responseCode\":401,\"error\":{\"errorMessage\" :\"The confirmation token already confirmed\",\"email\":\"test@koliving.com\"}}"),
-                        @ExampleObject(name = "Setting up the password completed", description = "(Location Header) : \"/api/{current-version}/auth/profile\"", value = "{\"responseCode\":401,\"error\":{\"errorMessage\" :\"The confirmation token already confirmed\",\"email\":\"test@koliving.com\"}}"),
-                        @ExampleObject(name = "A registered user", description = "(Location Header) : \"/api/{current-version}/auth/login\"", value = "{\"responseCode\":401,\"error\":{\"errorMessage\" :\"The confirmation token already confirmed\",\"email\":\"test@koliving.com\"}}")
+                        @ExampleObject(name = "Email authentication completed", description = "(Location Header) : \"/signup/step2\"", value = "{\"responseCode\":401,\"error\":{\"errorMessage\" :\"The confirmation token already confirmed\",\"email\":\"test@koliving.com\"}}"),
+                        @ExampleObject(name = "Setting up the password completed", description = "(Location Header) : \"/signup/step3\"", value = "{\"responseCode\":401,\"error\":{\"errorMessage\" :\"The confirmation token already confirmed\",\"email\":\"test@koliving.com\"}}"),
+                        @ExampleObject(name = "A registered user", description = "(Location Header) : \"/login\"", value = "{\"responseCode\":401,\"error\":{\"errorMessage\" :\"The confirmation token already confirmed\",\"email\":\"test@koliving.com\"}}")
                     }
                 )
             )
