@@ -1,6 +1,7 @@
 package com.koliving.api.validation;
 
 import com.koliving.api.annotation.PasswordConstraint;
+import com.koliving.api.exception.PasswordInvalidException;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -20,6 +21,6 @@ public class PasswordValidator implements ConstraintValidator<PasswordConstraint
             return true;
         }
 
-        throw new IllegalArgumentException("invalid_password : " + password);
+        throw new PasswordInvalidException("invalid_password : " + password);
     }
 }

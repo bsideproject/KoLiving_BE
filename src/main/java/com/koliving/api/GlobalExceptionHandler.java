@@ -8,6 +8,7 @@ import com.koliving.api.dto.ValidationResult;
 import com.koliving.api.exception.ConfirmationTokenException;
 import com.koliving.api.exception.DuplicateResourceException;
 import com.koliving.api.exception.NonExistentResourceException;
+import com.koliving.api.exception.PasswordInvalidException;
 import com.koliving.api.i18n.MessageSource;
 import com.koliving.api.token.confirmation.ConfirmationToken;
 import com.koliving.api.token.confirmation.ConfirmationTokenService;
@@ -61,6 +62,15 @@ public class GlobalExceptionHandler {
 
         return httpUtils.createResponseEntity(
                 httpUtils.createFailureResponse(errorMessage, badRequest.value())
+        );
+    }
+
+    @ExceptionHandler(value = PasswordInvalidException.class)
+    public ResponseEntity<ResponseDto<String>> handlePasswordInvalidException(PasswordInvalidException e, Locale locale) {
+        locale = httpUtils.getLocaleForLanguage(locale);
+
+        return httpUtils.createResponseEntity(
+                httpUtils.createFailureResponse(getErrorMessage(e, locale), badRequest.value())
         );
     }
 
