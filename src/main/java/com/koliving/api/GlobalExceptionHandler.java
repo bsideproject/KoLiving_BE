@@ -142,7 +142,7 @@ public class GlobalExceptionHandler {
         User user = (User) userService.loadUserByUsername(email);
         SignUpStatus currentSignUpStatus = user.getSignUpStatus();
 
-        return getRedirectUrl(currentSignUpStatus.getRedirectPath());
+        return getRedirectUrl(currentSignUpStatus.getRedirectUrl());
     }
 
     private String getErrorMessage(RuntimeException e, Locale locale) {

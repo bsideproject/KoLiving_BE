@@ -9,6 +9,7 @@ import com.koliving.api.dto.ResponseDto;
 import com.koliving.api.exception.DuplicateResourceException;
 import com.koliving.api.exception.NonExistentResourceException;
 import com.koliving.api.token.confirmation.ConfirmationTokenType;
+import com.koliving.api.user.SignUpStatus;
 import com.koliving.api.user.User;
 import com.koliving.api.user.UserPropertyEditor;
 import com.koliving.api.user.UserService;
@@ -147,7 +148,7 @@ public class AuthController {
         },
         responses = {
             @ApiResponse(responseCode = "302", description = "비밀번호 설정 성공",
-                headers = {@Header(name = "Location", schema = @Schema(type = "string", example = "/api/{current-version}/auth/profile"))},
+                headers = {@Header(name = "Location", schema = @Schema(type = "string", example = "/signup/step3"))},
                 content = @Content(
                     schema = @Schema(implementation = ResponseDto.class),
                     examples = {@ExampleObject(name = "Success", value = "{\"responseCode\": 302, \"data\": \"Success password setting for sign-up : test@koliving.com\"}"),}
@@ -164,9 +165,12 @@ public class AuthController {
     public ResponseEntity setPassword(final @Valid @RequestBody PasswordDto passwordDto, @RequestParam("email") @Parameter(hidden = true) User user) {
         userService.setPassword(user, passwordDto.password());
 
+        String email = user.getEmail();
+        String params = "?email=" + email;
+
         return httpUtils.createResponseEntityWithRedirect(
-                httpUtils.createSuccessResponse("Success password setting for sign-up : " + user.getEmail(), found.value()),
-                httpUtils.getCurrentVersionPath("auth/profile")
+                httpUtils.createSuccessResponse("Success password setting for sign-up : " + email, found.value()),
+                httpUtils.getFrontUrl(SignUpStatus.PROFILE_INFORMATION_PENDING.getRedirectUrl() + params)
         );
     }
 
