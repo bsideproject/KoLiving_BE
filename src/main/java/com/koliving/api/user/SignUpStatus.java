@@ -9,9 +9,9 @@ public enum SignUpStatus {
     PROFILE_INFORMATION_PENDING("/signup/step3"),
     COMPLETED("/login");
 
-    private final String redirectPath;
+    private final String redirectUrl;
 
-    SignUpStatus(String redirectPath) {
-        this.redirectPath = redirectPath;
+    SignUpStatus(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
     }
 }
