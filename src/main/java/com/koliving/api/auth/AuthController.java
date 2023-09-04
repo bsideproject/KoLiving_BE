@@ -240,14 +240,14 @@ public class AuthController {
         },
         responses = {
             @ApiResponse(responseCode = "302", description = "이메일 인증 성공",
-                headers = {@Header(name = "Location", schema = @Schema(type = "string", example = "/api/{current-version}/auth/reset-password"))},
+                headers = {@Header(name = "Location", schema = @Schema(type = "string", example = "/resetPassword/step1"))},
                 content = @Content(
                     schema = @Schema(implementation = ResponseDto.class),
                     examples = {@ExampleObject(name = "Success", value = "{\"responseCode\": 302, \"data\": \"Success email confirmation for reset-password : test@koliving.com\"}"),}
                 )
             ),
             @ApiResponse(responseCode = "400", description = "이메일 인증 실패 - 유효하지 않은 토큰",
-                headers = {@Header(name = "Location", schema = @Schema(type = "string", example = "/api/{current-version}/auth/login"))},
+                headers = {@Header(name = "Location", schema = @Schema(type = "string", example = "/login"))},
                 content = @Content(
                     schema = @Schema(implementation = ResponseDto.class),
                     examples = {
@@ -257,7 +257,7 @@ public class AuthController {
                 )
             ),
             @ApiResponse(responseCode = "401", description = "이메일 인증 실패 - 이미 인증에 성공한 토큰",
-                headers = {@Header(name = "Location", schema = @Schema(type = "string", example = "/api/{current-version}/auth/reset-password"))},
+                headers = {@Header(name = "Location", schema = @Schema(type = "string", example = "/resetPassword/step1"))},
                 content = @Content(
                     schema = @Schema(implementation = ResponseDto.class),
                     examples = {
@@ -270,9 +270,10 @@ public class AuthController {
     public ResponseEntity<ResponseDto<String>> checkAuthEmailForResetPassword(@RequestParam String token, @RequestParam String email) {
         authFacade.checkAuthMail(token, email);
 
+        String params = "?email=" + email;
         return httpUtils.createResponseEntityWithRedirect(
                 httpUtils.createSuccessResponse("Success email confirmation for reset-password : " + email, found.value()),
-                httpUtils.getCurrentVersionPath("auth/reset-password")
+                httpUtils.getFrontUrl(ConfirmationTokenType.RESET_PASSWORD.getRedirectPath() + params)
         );
     }
 
