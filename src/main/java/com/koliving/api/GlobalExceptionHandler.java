@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -71,6 +72,18 @@ public class GlobalExceptionHandler {
 
         return httpUtils.createResponseEntity(
                 httpUtils.createFailureResponse(getErrorMessage(e, locale), badRequest.value())
+        );
+    }
+
+    @ExceptionHandler(value = UsernameNotFoundException.class)
+    public ResponseEntity<ResponseDto<String>> handleUsernameNotFoundException(UsernameNotFoundException e, Locale locale) {
+        locale = httpUtils.getLocaleForLanguage(locale);
+        String email = extractEmail(e);
+
+        String errorMessage = messageSource.getMessage("email_not_exists", new Object[]{email}, locale);
+
+        return httpUtils.createResponseEntity(
+                httpUtils.createFailureResponse(errorMessage, badRequest.value())
         );
     }
 
@@ -132,6 +145,12 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleError(KolivingServiceException e) {
         log.error("handleError", e);
         return ErrorResponse.valueOf(e.getError());
+    }
+
+    private String extractEmail(UsernameNotFoundException e) {
+        String message = e.getMessage();
+
+        return message.substring(message.lastIndexOf("email"), message.indexOf("not")).trim();
     }
 
     private String getRedirectUrl(String path) {
