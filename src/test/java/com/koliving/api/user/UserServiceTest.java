@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -62,6 +63,22 @@ class UserServiceTest {
         });
 
         verify(userRepository, times(1)).findByEmail(anyString());
+    }
+
+    @Test
+    @DisplayName("save() 성공 : 신규 회원 DB 저장")
+    void save_success() {
+        String dummyEmail = "test@koliving.com";
+        String dummyPassword = "KolivingPwd!@";
+        User dummyUser = createUser(dummyEmail, dummyPassword);
+
+        when(userRepository.save(any(User.class))).thenReturn(dummyUser);
+        User savedUser = userService.save(dummyUser);
+
+        verify(userRepository, times(1)).save(dummyUser);
+
+        assertEquals(savedUser.getEmail(), dummyEmail);
+        assertEquals(savedUser.getPassword(), dummyPassword);
     }
 
     @Test
