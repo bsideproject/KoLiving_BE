@@ -1,10 +1,5 @@
 package com.koliving.api.room.infra;
 
-import static com.koliving.api.fixtures.LocationFixture.성동구;
-import static com.koliving.api.fixtures.MaintenanceFixture.관리비_없음;
-import static com.koliving.api.fixtures.RoomInfoFixture.스튜디오_방1_욕실1_룸메1;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.koliving.api.location.domain.Location;
 import com.koliving.api.location.domain.LocationType;
 import com.koliving.api.location.infra.LocationRepository;
@@ -12,19 +7,24 @@ import com.koliving.api.room.domain.Furnishing;
 import com.koliving.api.room.domain.FurnishingType;
 import com.koliving.api.room.domain.Money;
 import com.koliving.api.room.domain.Room;
-import com.koliving.api.room.domain.RoomType;
 import com.koliving.api.room.domain.info.Quantity;
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
+import static com.koliving.api.fixtures.LocationFixture.성동구;
+import static com.koliving.api.fixtures.MaintenanceFixture.관리비_없음;
+import static com.koliving.api.fixtures.RoomInfoFixture.스튜디오_방1_욕실1_룸메1;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("룸 리파지토리 테스트")
 @DataJpaTest
@@ -55,7 +55,6 @@ class RoomRepositoryTest {
         final Location location = locationRepository.save(
             Location.valueOf(
                 "seongsu",
-                "성수",
                 LocationType.DONG,
                 locationRepository.save(성동구)
             )
@@ -97,7 +96,6 @@ class RoomRepositoryTest {
         final Location location = locationRepository.save(
             Location.valueOf(
                 "seongsu",
-                "성수",
                 LocationType.DONG,
                 locationRepository.save(성동구)
             )

@@ -1,26 +1,27 @@
 package com.koliving.api.location.application;
 
-import static com.koliving.api.fixtures.LocationFixture.성동구;
-import static com.koliving.api.fixtures.LocationFixture.성수동;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.koliving.api.location.application.dto.LocationResponse;
 import com.koliving.api.location.application.dto.LocationSaveRequest;
 import com.koliving.api.location.application.dto.LocationUpdateRequest;
 import com.koliving.api.location.domain.Location;
 import com.koliving.api.location.domain.LocationType;
 import com.koliving.api.location.infra.LocationRepository;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.Optional;
+
+import static com.koliving.api.fixtures.LocationFixture.성동구;
+import static com.koliving.api.fixtures.LocationFixture.성수동;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @DisplayName("지역 서비스 테스트")
 @ExtendWith(MockitoExtension.class)
@@ -40,7 +41,7 @@ class LocationServiceTest {
     public void create() {
         // given
         final LocationSaveRequest given =
-            new LocationSaveRequest("seongdong", "성동", LocationType.GU, null);
+            new LocationSaveRequest("seongdong", LocationType.GU, null);
         when(locationRepository.save(any())).thenReturn(location);
         when(location.getId()).thenReturn(1L);
 
@@ -68,16 +69,15 @@ class LocationServiceTest {
     @DisplayName("지역명을 수정할 수 있다")
     public void update() {
         // given
-        final Location given = Location.valueOf("seongdong", "성동", LocationType.GU, null);
+        final Location given = Location.valueOf("seongdong", LocationType.GU, null);
         when(locationRepository.findById(any()))
             .thenReturn(Optional.of(given));
 
         // then
-        locationService.update(1L, LocationUpdateRequest.valueOf("gwangjin","광진"));
+        locationService.update(1L, LocationUpdateRequest.valueOf("gwangjin"));
 
         // then
-        assertThat(given.getEnName()).isEqualTo("gwangjin");
-        assertThat(given.getKrName()).isEqualTo("광진");
+        assertThat(given.getName()).isEqualTo("gwangjin");
     }
 
     @Test
