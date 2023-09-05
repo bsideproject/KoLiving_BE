@@ -1,12 +1,12 @@
 package com.koliving.api.location.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import com.koliving.api.base.ServiceError;
 import com.koliving.api.base.exception.KolivingServiceException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지역 도메인 테스트")
 class LocationTest {
@@ -15,7 +15,7 @@ class LocationTest {
     @DisplayName("지역 도메인 생성")
     public void create() {
         // given
-        final Location actual = Location.valueOf("seongdong", "성동", LocationType.GU);
+        final Location actual = Location.valueOf("seongdong", LocationType.GU);
 
         // then
         assertThat(actual.displayName()).isEqualTo("seongdong-gu");
@@ -29,7 +29,7 @@ class LocationTest {
 
         // when & then
         assertThatThrownBy(
-            () -> Location.valueOf("jayang3", "자양3", LocationType.DONG)
+            () -> Location.valueOf("jayang3", LocationType.DONG)
         ).isInstanceOf(KolivingServiceException.class)
             .hasMessageContaining(ServiceError.INVALID_LOCATION.getMessage());
     }
@@ -38,12 +38,12 @@ class LocationTest {
     @DisplayName("지역이 최상위인 경우 upperLocation을 가질 수 없다")
     public void notRequiredUpperLocation() {
         // given
-        final Location upperLocation = Location.valueOf("gwangjin", "광진", LocationType.GU);
+        final Location upperLocation = Location.valueOf("gwangjin", LocationType.GU);
         assertThat(LocationType.GU.isTopLocation()).isTrue();
 
         // when & then
         assertThatThrownBy(
-            () -> Location.valueOf("seongdong", "성동", LocationType.GU, upperLocation)
+            () -> Location.valueOf("seongdong", LocationType.GU, upperLocation)
         ).isInstanceOf(KolivingServiceException.class)
             .hasMessageContaining(ServiceError.INVALID_LOCATION.getMessage());
     }
