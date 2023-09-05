@@ -1,5 +1,6 @@
 package com.koliving.api.user;
 
+import com.koliving.api.user.application.dto.UserResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,7 +11,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.koliving.api.user.UserUtils.createUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -118,5 +122,32 @@ class UserServiceTest {
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
         assertFalse(userService.isEqualPassword(mismatchedPassword, savedPassword));
+    }
+
+    @Test
+    @DisplayName("list() 성공 : 회원 목록을 UserResponse 매핑 및 리스트 리턴")
+    void list_success() {
+        String dummyEmail = "test@koliving.com";
+        User dummyUser = createUser(dummyEmail);
+
+        String dummyEmail2 = "test2@koliving.com";
+        User dummyUser2 = createUser(dummyEmail2);
+
+        String dummyEmail3 = "test3@koliving.com";
+        User dummyUser3 = createUser(dummyEmail3);
+
+        List<User> userList = Arrays.asList(dummyUser, dummyUser2, dummyUser3);
+
+        when(userRepository.findAll()).thenReturn(userList);
+        List<UserResponse> actual = userService.list();
+
+        verify(userRepository, times(1)).findAll();
+
+        List<UserResponse> expected = userList.stream()
+                .map(UserResponse::valueOf)
+                .collect(Collectors.toList());
+
+        assertTrue(actual.equals(expected));
+        assertTrue(actual.containsAll(expected));
     }
 }
