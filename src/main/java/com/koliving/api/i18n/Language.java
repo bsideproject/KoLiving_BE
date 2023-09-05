@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,6 +17,9 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 @Entity(name = "TB_LANGUAGE")
+@Table(uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"LOCALE", "MESSAGE_KEY"})
+})
 @Getter
 @ToString
 @SQLDelete(sql = "UPDATE TB_LANGUAGE SET deleted = true WHERE id = ?")
@@ -26,9 +31,11 @@ public class Language extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
+
+    @Column(name = "LOCALE", length = 20)
     private String locale;
 
-    @Column(name = "MESSAGE_KEY")
+    @Column(name = "MESSAGE_KEY", length = 210)
     private String messageKey;
 
     @Column(name = "MESSAGE_PATTERN")

@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -33,7 +34,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import java.util.Arrays;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @EnableWebSecurity
 @Configuration
@@ -61,17 +64,17 @@ public class SecurityConfig {
     @PostConstruct
     private void init() {
         AUTHENTICATION_WHITELIST = new String[]{
-            httpUtils.getCurrentVersionUri("auth/**"),
-            httpUtils.getCurrentVersionUri("management/**"),
-            httpUtils.getCurrentVersionUri("**"),
+            httpUtils.getCurrentVersionPath("auth/**"),
+            httpUtils.getCurrentVersionPath("management/**"),
+            httpUtils.getCurrentVersionPath("**"),
             "/api-docs/**",
             "/swagger-ui/**",
             "/swagger-resources/**"
         };
 
         AUTHORIZATION_WHITELIST = new String[]{
-            httpUtils.getCurrentVersionUri("login"),
-            httpUtils.getCurrentVersionUri("logout"),
+            httpUtils.getCurrentVersionPath("login"),
+            httpUtils.getCurrentVersionPath("logout"),
         };
     }
 
@@ -83,8 +86,7 @@ public class SecurityConfig {
         LoginFilter loginFilter = createLoginFilter(authenticationManager);
         JwtAuthenticationFilter jwtAuthenticationFilter = createJwtAuthenticationFilter();
 
-        http.cors().configurationSource(corsConfigurationSource())
-            .and()
+        http.cors(withDefaults())
             .headers()
             .frameOptions().disable()
             .and()
@@ -95,13 +97,14 @@ public class SecurityConfig {
             .authorizeHttpRequests(req -> {
                 req
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(AUTHENTICATION_WHITELIST).permitAll()
                     .requestMatchers(AUTHORIZATION_WHITELIST).permitAll()
                     .anyRequest().authenticated();
             })
             .logout(config -> {
-                config.logoutUrl(httpUtils.getCurrentVersionUri("logout"))
-                    .logoutSuccessUrl(httpUtils.getCurrentVersionUri("login"))
+                config.logoutUrl(httpUtils.getCurrentVersionPath("logout"))
+                    .logoutSuccessUrl(httpUtils.getCurrentVersionPath("login"))
                     .logoutSuccessHandler(logoutSuccessHandler);
             }).exceptionHandling(config -> {
                 config.authenticationEntryPoint(authenticationEntryPoint)
@@ -130,9 +133,9 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(List.of("*"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -144,7 +147,7 @@ public class SecurityConfig {
 
     private LoginFilter createLoginFilter(AuthenticationManager authenticationManager) {
         LoginFilter loginFilter = new LoginFilter(authenticationManager, objectMapper, validator);
-        loginFilter.setFilterProcessesUrl(httpUtils.getCurrentVersionUri("login"));
+        loginFilter.setFilterProcessesUrl(httpUtils.getCurrentVersionPath("login"));
         loginFilter.setAuthenticationSuccessHandler(loginSuccessHandler);
         loginFilter.setAuthenticationFailureHandler(loginFailureHandler);
         loginFilter.afterPropertiesSet();

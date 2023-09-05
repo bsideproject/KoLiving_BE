@@ -19,6 +19,6 @@ public class EventListener {
         phase = TransactionPhase.AFTER_COMMIT
     )
     public void onConfirmationTokenCreated(ConfirmationTokenCreatedEvent event) {
-        confirmationTokenService.sendEmail(event.getEmail(), event.getToken(), event.getRedirectResourcePath());
+        confirmationTokenService.sendEmail(event.getEmail(), event.getToken(), event.getLinkPathResource());
     }
 }

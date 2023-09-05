@@ -44,7 +44,7 @@ public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
             httpUtils.setResponseWithRedirect(
                     response,
                     httpUtils.createFailureResponse(errorMessage, HttpServletResponse.SC_UNAUTHORIZED),
-                    httpUtils.getCurrentVersionUri("login")
+                    httpUtils.getCurrentVersionPath("login")
             );
         } catch (BlackListTokenException e) {
             String errorMessage = messageSource.getMessage(e.getMessage(), null, locale);
@@ -52,7 +52,7 @@ public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
             httpUtils.setResponseWithRedirect(
                     response,
                     httpUtils.createFailureResponse(errorMessage, HttpServletResponse.SC_UNAUTHORIZED),
-                    httpUtils.getCurrentVersionUri("login")
+                    httpUtils.getCurrentVersionPath("login")
             );
         } catch (RuntimeException e) {
             httpUtils.setResponse(

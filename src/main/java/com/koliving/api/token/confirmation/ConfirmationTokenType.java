@@ -4,11 +4,14 @@ import lombok.Getter;
 
 @Getter
 public enum ConfirmationTokenType {
-    SIGN_UP("auth/sign-up/confirm"), RESET_PASSWORD("auth/reset-password/confirm");
+    SIGN_UP("auth/sign-up/confirm", "/signup/step2"),
+    RESET_PASSWORD("auth/reset-password/confirm", "/resetPassword/step1");
 
-    private final String redirectResourcePath;
+    private final String linkPathResource;
+    private final String redirectPath;
 
-    ConfirmationTokenType(String redirectResourcePath) {
-        this.redirectResourcePath = redirectResourcePath;
+    ConfirmationTokenType(String linkPathResource, String redirectPath) {
+        this.linkPathResource = linkPathResource;
+        this.redirectPath = redirectPath;
     }
 }

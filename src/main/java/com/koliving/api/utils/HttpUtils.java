@@ -2,6 +2,7 @@ package com.koliving.api.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.koliving.api.dto.ResponseDto;
+import com.koliving.api.properties.FrontProperties;
 import com.koliving.api.properties.JwtProperties;
 import com.koliving.api.properties.ServerProperties;
 import jakarta.servlet.http.Cookie;
@@ -20,6 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.util.Locale;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.LOCATION;
@@ -36,13 +38,22 @@ public class HttpUtils {
     private final ObjectMapper objectMapper;
     private final JwtProperties jwtProperties;
     private final ServerProperties serverProperties;
+    private final FrontProperties frontProperties;
 
-    public String getCurrentVersionUri(String uri) {
-        return String.format("/api/%s/%s", serverProperties.getCurrentVersion(), uri);
+    public String getCurrentVersionPath(String path) {
+        return String.format("/api/%s/%s", serverProperties.getCurrentVersion(), path);
     }
 
-    public String getCurrentVersionUrl(String uri) {
-        return serverProperties.getOrigin() + getCurrentVersionUri(uri);
+    public String getCurrentVersionUrl(String path) {
+        return serverProperties.getOrigin() + getCurrentVersionPath(path);
+    }
+
+    public String getFrontUrl(String path) {
+        return frontProperties.getOrigin() + path;
+    }
+
+    public Locale getLocaleForLanguage(Locale locale) {
+        return Locale.forLanguageTag(locale.getLanguage());
     }
 
     public String resolveToken(HttpServletRequest request) throws AuthenticationException {
