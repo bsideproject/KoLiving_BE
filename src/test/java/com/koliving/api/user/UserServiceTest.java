@@ -82,6 +82,23 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("setPassword() 성공 : 회원 비밀번호 설정")
+    void setPassword_success() {
+        String dummyEmail = "test@koliving.com";
+        String dummyPassword = "KolivingPwd!@";
+        User dummyUser = createUser(dummyEmail, dummyPassword);
+
+        String encodedPassword = "encoded_password";
+
+        when(passwordEncoder.encode(anyString())).thenReturn(encodedPassword);
+        userService.setPassword(dummyUser, dummyPassword);
+
+        verify(passwordEncoder, times(1)).encode(dummyPassword);
+
+        assertEquals(dummyUser.getPassword(), encodedPassword);
+    }
+
+    @Test
     @DisplayName("isEqualPassword() 성공 : 저장된 암호 패스워드의 원시 패스워드 여부 확인")
     void isEqualPassword_success() {
         String dummyPassword = "KolivingPwd!@";
