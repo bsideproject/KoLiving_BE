@@ -63,4 +63,26 @@ class UserServiceTest {
 
         verify(userRepository, times(1)).findByEmail(anyString());
     }
+
+    @Test
+    @DisplayName("isEqualPassword() 성공 : 저장된 암호 패스워드의 원시 패스워드 여부 확인")
+    void isEqualPassword_success() {
+        String dummyPassword = "KolivingPwd!@";
+        String savedPassword = "encoded password";
+
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
+
+        assertTrue(userService.isEqualPassword(dummyPassword, savedPassword));
+    }
+
+    @Test
+    @DisplayName("isEqualPassword() 실패 : 저장된 암호 패스워드의 원시 패스워드 여부 확인")
+    void isEqualPassword_failure_mismatched_password() {
+        String mismatchedPassword = "wrong password";
+        String savedPassword = "encoded password";
+
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
+
+        assertFalse(userService.isEqualPassword(mismatchedPassword, savedPassword));
+    }
 }
