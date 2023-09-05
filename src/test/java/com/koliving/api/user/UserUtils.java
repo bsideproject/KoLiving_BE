@@ -1,6 +1,9 @@
 package com.koliving.api.user;
 
-class UserUtils {
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+
+public class UserUtils {
 
     public static User createUser(String dummyEmail) {
         User newUser = User.builder()
@@ -17,5 +20,9 @@ class UserUtils {
 
         newUser.setPassword(dummyPassword);
         return newUser;
+    }
+
+    public static Authentication createAuthentication(Object principal, String dummyPassword) {
+        return new UsernamePasswordAuthenticationToken(principal, dummyPassword);
     }
 }
