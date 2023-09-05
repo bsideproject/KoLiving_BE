@@ -3,6 +3,7 @@ package com.koliving.api.room.domain;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.koliving.api.base.domain.BaseEntity;
 import com.koliving.api.location.domain.Location;
 import com.koliving.api.room.domain.info.RoomInfo;
 import jakarta.persistence.AttributeOverride;
@@ -27,14 +28,17 @@ import java.util.Set;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
-//TODO Room 도메인생성
 
 @Getter
 @Entity(name = "TB_ROOM")
-@EqualsAndHashCode(of = "id")
+@SQLDelete(sql = "UPDATE TB_ROOM SET deleted = true WHERE id = ?")
+@Where(clause = "deleted = false")
+@EqualsAndHashCode(of = "id", callSuper = false)
 @NoArgsConstructor(access = PROTECTED)
-public class Room {
+public class Room extends BaseEntity {
 
     @Transient
     public static final Long MAX_DEPOSIT = 500_000_000L;
