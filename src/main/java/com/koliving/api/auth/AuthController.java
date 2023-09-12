@@ -147,11 +147,11 @@ public class AuthController {
             @Parameter(name = "email", required = true, description = "User's email", example = "test@koliving.com")
         },
         responses = {
-            @ApiResponse(responseCode = "302", description = "비밀번호 설정 성공",
+            @ApiResponse(responseCode = "204", description = "비밀번호 설정 성공",
                 headers = {@Header(name = "Location", schema = @Schema(type = "string", example = "/signup/step3"))},
                 content = @Content(
                     schema = @Schema(implementation = ResponseDto.class),
-                    examples = {@ExampleObject(name = "Success", value = "{\"responseCode\": 302, \"data\": \"Success password setting for sign-up : test@koliving.com\"}"),}
+                    examples = {@ExampleObject(name = "Success", value = "{\"responseCode\": 204, \"data\": \"Success password setting for sign-up : test@koliving.com\"}"),}
                 )
             ),
             @ApiResponse(responseCode = "400", description = "유효하지 않은 비밀번호 입력값",
@@ -169,7 +169,7 @@ public class AuthController {
         String params = "?email=" + email;
 
         return httpUtils.createResponseEntityWithRedirect(
-                httpUtils.createSuccessResponse("Success password setting for sign-up : " + email, found.value()),
+                httpUtils.createSuccessResponse("Success password setting for sign-up : " + email, noContent.value()),
                 httpUtils.getFrontUrl(SignUpStatus.PROFILE_INFORMATION_PENDING.getRedirectUrl() + params)
         );
     }
