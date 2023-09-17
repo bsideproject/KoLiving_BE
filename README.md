@@ -6,7 +6,6 @@
 <img src="https://img.shields.io/badge/linux-FCC624?style=for-the-badge&logo=linux&logoColor=black"> 
 <img src="https://img.shields.io/badge/github%20actions-2088FF?style=for-the-badge&logo=github%20actions&logoColor=black"> 
 <img src="https://img.shields.io/badge/thymeleaf-005F0F?style=for-the-badge&logo=Thymeleaf&logoColor=black">
-<img src="https://img.shields.io/badge/s3-569A31?style=for-the-badge&logo=Amazon%20S3&logoColor=white">
 <img src="https://img.shields.io/badge/s3-569A31?style=for-the-badge&logo=Amazon%20S3&logoColor=white"> 
 <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white"> 
 <img src="https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white">
