@@ -33,7 +33,7 @@ public class EmailService implements IEmailService {
     private final EmailProperties emailProperties;
     private final HttpUtils httpUtils;
 
-    @Async
+    @Async("mailExecutor")
     @Override
     public void send(MailType type, String to, String link) {
         try {
