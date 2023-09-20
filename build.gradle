@@ -35,12 +35,17 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.1.RELEASE'
     implementation 'io.github.autoparams:autoparams:1.1.1'
     implementation 'com.google.guava:guava:32.1.2-jre'
+    implementation "com.querydsl:querydsl-jpa:5.0.0:jakarta"
+    implementation "com.querydsl:querydsl-apt:5.0.0:jakarta"
 
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 }
 
 jar {
@@ -50,6 +55,7 @@ jar {
 test {
     useJUnitPlatform()
 }
+
 
 task copyGitSubmodule(type: Copy) {
     from './config'

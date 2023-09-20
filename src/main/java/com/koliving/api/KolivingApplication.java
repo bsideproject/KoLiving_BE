@@ -1,12 +1,21 @@
 package com.koliving.api;
 
+import com.google.common.collect.Sets;
 import com.koliving.api.i18n.Language;
 import com.koliving.api.i18n.LanguageRepository;
 import com.koliving.api.location.domain.Location;
 import com.koliving.api.location.infra.LocationRepository;
 import com.koliving.api.room.domain.Furnishing;
 import com.koliving.api.room.domain.FurnishingType;
+import com.koliving.api.room.domain.Maintenance;
+import com.koliving.api.room.domain.Money;
+import com.koliving.api.room.domain.Room;
+import com.koliving.api.room.domain.RoomType;
+import com.koliving.api.room.domain.info.Quantity;
+import com.koliving.api.room.domain.info.RoomInfo;
 import com.koliving.api.room.infra.FurnishingRepository;
+import com.koliving.api.room.infra.RoomRepository;
+import com.koliving.api.room.infra.RoomRepositoryQueryDsl;
 import jakarta.annotation.PostConstruct;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -16,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
@@ -43,13 +53,32 @@ public class KolivingApplication {
     CommandLineRunner commandLineRunner(
         FurnishingRepository furnishingRepository,
         LocationRepository locationRepository,
-        LanguageRepository languageRepository
+        LanguageRepository languageRepository,
+        RoomRepository roomRepository
     ) {
         return args -> {
             initFurnishings(furnishingRepository);
             initLocations(locationRepository);
             initLanguages(languageRepository);
+            //FIXME 테스트 후 제거 예정
+            initRooms(roomRepository, locationRepository);
         };
+    }
+
+    private void initRooms(RoomRepository roomRepository, LocationRepository locationRepository) {
+        Location location = locationRepository.findByName("Songjeong").get();
+        roomRepository.save(
+            Room.valueOf(
+                location,
+                RoomInfo.valueOf(RoomType.STUDIO, Quantity.ONE, Quantity.ONE, Quantity.ONE),
+                Money.empty(),
+                Money.empty(),
+                Maintenance.empty(),
+                Sets.newHashSet(),
+                LocalDate.of(2023, 8, 29),
+                "설명이에요"
+            )
+        );
     }
 
     private void initLanguages(LanguageRepository languageRepository) {
