@@ -1,5 +1,6 @@
 package com.koliving.api.room.infra;
 
+import com.koliving.api.BaseDataJpaTest;
 import com.koliving.api.location.domain.Location;
 import com.koliving.api.location.domain.LocationType;
 import com.koliving.api.location.infra.LocationRepository;
@@ -26,9 +27,9 @@ import static com.koliving.api.fixtures.MaintenanceFixture.관리비_없음;
 import static com.koliving.api.fixtures.RoomInfoFixture.스튜디오_방1_욕실1_룸메1;
 import static org.assertj.core.api.Assertions.assertThat;
 
+
 @DisplayName("룸 리파지토리 테스트")
-@DataJpaTest
-class RoomRepositoryTest {
+class RoomRepositoryTest extends BaseDataJpaTest {
 
     @Autowired
     private LocationRepository locationRepository;

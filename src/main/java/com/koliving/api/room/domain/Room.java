@@ -68,7 +68,7 @@ public class Room extends BaseEntity {
     @Embedded
     private RoomInfo roomInfo;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(orphanRemoval = true)
     @JoinTable(
         name = "TB_ROOM_FURNISHINGS",
         joinColumns = @JoinColumn(name = "room_id"),
@@ -83,6 +83,7 @@ public class Room extends BaseEntity {
     private String description;
 
     private Room(Location location, RoomInfo roomInfo, Money deposit, Money monthlyRent, Maintenance maintenance, Set<Furnishing> furnishings, LocalDate availableDate, String description) {
+        validate(deposit, monthlyRent);
         this.location = location;
         this.roomInfo = roomInfo;
         this.deposit = deposit;
@@ -91,6 +92,10 @@ public class Room extends BaseEntity {
         this.furnishings = furnishings;
         this.availableDate = availableDate;
         this.description = description;
+    }
+
+    private void validate(Money deposit, Money monthlyRent) {
+        //TODO 최대값 validation 추가
     }
 
     public static Room valueOf(
