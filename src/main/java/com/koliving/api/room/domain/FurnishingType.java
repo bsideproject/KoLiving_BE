@@ -18,4 +18,12 @@ public enum FurnishingType {
     TV("TV");
 
     private final String description;
+
+    public boolean isBed() {
+        return this == BED;
+    }
+
+    public boolean isTV() {
+        return this == TV;
+    }
 }

@@ -1,12 +1,20 @@
 package com.koliving.api;
 
+import com.google.common.collect.Sets;
 import com.koliving.api.i18n.Language;
 import com.koliving.api.i18n.LanguageRepository;
 import com.koliving.api.location.domain.Location;
 import com.koliving.api.location.infra.LocationRepository;
 import com.koliving.api.room.domain.Furnishing;
 import com.koliving.api.room.domain.FurnishingType;
+import com.koliving.api.room.domain.Maintenance;
+import com.koliving.api.room.domain.Money;
+import com.koliving.api.room.domain.Room;
+import com.koliving.api.room.domain.RoomType;
+import com.koliving.api.room.domain.info.Quantity;
+import com.koliving.api.room.domain.info.RoomInfo;
 import com.koliving.api.room.infra.FurnishingRepository;
+import com.koliving.api.room.infra.RoomRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -16,6 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
@@ -43,13 +52,68 @@ public class KolivingApplication {
     CommandLineRunner commandLineRunner(
         FurnishingRepository furnishingRepository,
         LocationRepository locationRepository,
-        LanguageRepository languageRepository
+        LanguageRepository languageRepository,
+        RoomRepository roomRepository
     ) {
         return args -> {
             initFurnishings(furnishingRepository);
             initLocations(locationRepository);
             initLanguages(languageRepository);
+            //FIXME 테스트 후 제거 예정
+            initRooms(roomRepository, locationRepository, furnishingRepository);
         };
+    }
+
+    private void initRooms(RoomRepository roomRepository, LocationRepository locationRepository, FurnishingRepository furnishingRepository) {
+        Location location = locationRepository.findByName("Songjeong").get();
+        Location location2 = locationRepository.findByName("Huam").get();
+        Location location3 = locationRepository.findByName("Amsaje 1").get();
+        List<Furnishing> furnishings = furnishingRepository.findAll();
+
+        Furnishing tv = furnishings.stream()
+            .filter(it -> it.getType().isTV())
+            .findFirst().get();
+
+        Furnishing bed = furnishings.stream()
+            .filter(it -> it.getType().isBed())
+            .findFirst().get();
+
+        roomRepository.saveAll(
+            List.of(
+                Room.valueOf(
+                    location,
+                    RoomInfo.valueOf(RoomType.STUDIO, Quantity.ONE, Quantity.ONE, Quantity.ONE),
+                    Money.empty(),
+                    Money.empty(),
+                    Maintenance.empty(),
+                    Sets.newHashSet(),
+                    LocalDate.of(2023, 8, 29),
+                    "성동구 송정동) STUDIO, 방1, 욕실1, 룸메1 보증금X 월세X 관리비X 가구X 2023.08.29 입주"
+                ),
+                Room.valueOf(
+                    location2,
+                    RoomInfo.valueOf(RoomType.ONE_BED_FLATS, Quantity.ONE, Quantity.TWO, Quantity.TWO),
+                    Money.valueOf(5_000_000),
+                    Money.empty(),
+                    Maintenance.empty(),
+                    Sets.newHashSet(),
+                    LocalDate.of(2023, 8, 30),
+                    "용산구 후암동) ONE_BED_FLATS, 방1, 욕실2, 룸메2 보증금 5_000_000 월세X 관리비X 가구X 2023.08.30 입주"
+                ),
+                Room.valueOf(
+                    location3,
+                    RoomInfo.valueOf(RoomType.ONE_BED_FLATS, Quantity.ONE, Quantity.TWO, Quantity.TWO),
+                    Money.valueOf(5_000_000),
+                    Money.valueOf(300_000),
+                    Maintenance.empty(),
+                    Sets.newHashSet(tv, bed),
+                    LocalDate.now(),
+                    "강동구 암사제1동) ONE_BED_FLATS, 방1, 욕실2, 룸메2 보증금 5_000_000 월세300_000 관리비X 가구X 2023.08.30 입주"
+                )
+            )
+        );
+
+
     }
 
     private void initLanguages(LanguageRepository languageRepository) {

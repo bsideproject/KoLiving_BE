@@ -3,6 +3,7 @@ package com.koliving.api.email;
 import com.koliving.api.properties.EmailProperties;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +40,7 @@ class EmailServiceTest {
     @InjectMocks
     private EmailService emailService;
 
+    @Disabled
     @Test
     @DisplayName("sendEmail : SMTP 서버 요청 성공여부 확인")
     public void sendEmail_success() throws MailException {

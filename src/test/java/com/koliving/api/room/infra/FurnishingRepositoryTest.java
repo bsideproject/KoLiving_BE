@@ -1,18 +1,19 @@
 package com.koliving.api.room.infra;
 
+import com.koliving.api.BaseDataJpaTest;
 import com.koliving.api.room.domain.Furnishing;
 import com.koliving.api.room.domain.FurnishingType;
-import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
+
 @DisplayName("가구 리포지토리 테스트")
-class FurnishingRepositoryTest {
+class FurnishingRepositoryTest extends BaseDataJpaTest {
 
     @Autowired
     private FurnishingRepository furnishingRepository;
