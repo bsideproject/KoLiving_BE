@@ -71,7 +71,7 @@ public class RoomController {
             ),
         })
     @PostMapping("/search")
-    public ResponseEntity<Page<Room>> search(Pageable pageable, @ParameterObject RoomSearchCondition condition) {
+    public ResponseEntity<Page<Room>> search(@ParameterObject @PageableDefault Pageable pageable, @ParameterObject RoomSearchCondition condition) {
         return ResponseEntity.ok()
             .body(roomService.search(pageable, condition));
     }
