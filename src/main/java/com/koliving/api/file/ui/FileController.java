@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
+import java.util.List;
 
 @Tag(name = "파일 API", description = "FILE API")
 @Slf4j
@@ -39,5 +41,20 @@ public class FileController {
         ImageFile response = fileService.upload(file);
         return ResponseEntity.created(URI.create("api/v1/files/" + response.getId()))
             .body(response);
+    }
+
+    @Operation(
+        summary = "파일 리스트 조회",
+        description = "파일 리스트를 조회한다",
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "조회 성공"
+            )
+        })
+    @GetMapping
+    public ResponseEntity<List<ImageFile>> list() {
+        return ResponseEntity.ok()
+            .body(fileService.list());
     }
 }

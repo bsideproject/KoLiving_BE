@@ -1,35 +1,34 @@
 package com.koliving.api.room.domain;
 
-import static jakarta.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PROTECTED;
-
 import com.koliving.api.base.domain.BaseEntity;
+import com.koliving.api.file.domain.ImageFile;
 import com.koliving.api.location.domain.Location;
 import com.koliving.api.room.domain.info.RoomInfo;
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 
 @Getter
@@ -68,7 +67,7 @@ public class Room extends BaseEntity {
     @Embedded
     private RoomInfo roomInfo;
 
-    @OneToMany(orphanRemoval = true)
+    @ManyToMany
     @JoinTable(
         name = "TB_ROOM_FURNISHINGS",
         joinColumns = @JoinColumn(name = "room_id"),
@@ -82,8 +81,16 @@ public class Room extends BaseEntity {
     @Lob
     private String description;
 
-    private Room(Location location, RoomInfo roomInfo, Money deposit, Money monthlyRent, Maintenance maintenance, Set<Furnishing> furnishings, LocalDate availableDate, String description) {
-        validate(deposit, monthlyRent);
+    @OneToMany
+    @JoinTable(
+        name = "TB_ROOM_IMAGES",
+        joinColumns = @JoinColumn(name = "room_id"),
+        inverseJoinColumns = @JoinColumn(name = "file_id")
+    )
+    private Set<ImageFile> imageFiles;
+
+    private Room(Location location, RoomInfo roomInfo, Money deposit, Money monthlyRent, Maintenance maintenance, Set<Furnishing> furnishings, LocalDate availableDate, String description, Set<ImageFile> imageFiles) {
+        validate(deposit, monthlyRent, imageFiles);
         this.location = location;
         this.roomInfo = roomInfo;
         this.deposit = deposit;
@@ -92,9 +99,10 @@ public class Room extends BaseEntity {
         this.furnishings = furnishings;
         this.availableDate = availableDate;
         this.description = description;
+        this.imageFiles = imageFiles;
     }
 
-    private void validate(Money deposit, Money monthlyRent) {
+    private void validate(Money deposit, Money monthlyRent, Set<ImageFile> imageFiles) {
         //TODO 최대값 validation 추가
     }
 
@@ -106,14 +114,12 @@ public class Room extends BaseEntity {
         Maintenance maintenance,
         Set<Furnishing> furnishings,
         LocalDate availableDate,
-        String description
+        String description,
+        Set<ImageFile> imageFiles
     ) {
-        return new Room(location, info, deposit, monthlyRent, maintenance, furnishings, availableDate, description);
+        return new Room(location, info, deposit, monthlyRent, maintenance, furnishings, availableDate, description, imageFiles);
     }
 
-    //TODO 이미지
-    @Transient
-    private List<Long> images;
 
     //TODO 유저
     @Transient
