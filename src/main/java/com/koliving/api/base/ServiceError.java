@@ -16,6 +16,7 @@ public enum ServiceError {
     INVALID_MAINTENANCE_FEE(BAD_REQUEST, "0004", "관리비 금액이 유효하지 않음"),
     ILLEGAL_MAINTENANCE(BAD_REQUEST, "0005", "관리비 객체 생성 유효성 실패"),
     ILLEGAL_ROOM_INFO(BAD_REQUEST, "0006", "방 정보 객체 생성 유효성 실패"),
+    UPLOAD_FAIL(BAD_REQUEST, "0007", "파일 업로드 실패"),
 
     ;
 
