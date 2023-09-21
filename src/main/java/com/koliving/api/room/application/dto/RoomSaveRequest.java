@@ -1,5 +1,6 @@
 package com.koliving.api.room.application.dto;
 
+import com.koliving.api.file.domain.ImageFile;
 import com.koliving.api.location.domain.Location;
 import com.koliving.api.room.domain.Furnishing;
 import com.koliving.api.room.domain.Maintenance;
@@ -60,7 +61,10 @@ public record RoomSaveRequest(
     LocalDate availableDate,
 
     @Schema(description = "상세 설명")
-    String description
+    String description,
+
+    @Schema(description = "이미지 고유키 리스트")
+    Set<Long> imageIds
 ) {
 
     public Money toDeposit() {
@@ -90,7 +94,7 @@ public record RoomSaveRequest(
         );
     }
 
-    public Room toEntity(Location location, Set<Furnishing> furnishings) {
+    public Room toEntity(Location location, Set<Furnishing> furnishings, Set<ImageFile> imageFiles) {
         return Room.valueOf(
             location,
             toRoomInfo(),
@@ -99,7 +103,8 @@ public record RoomSaveRequest(
             toMaintenance(),
             furnishings,
             availableDate(),
-            description()
+            description(),
+            imageFiles
         );
     }
 }

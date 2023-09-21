@@ -1,5 +1,6 @@
 package com.koliving.api.room.application.dto;
 
+import com.koliving.api.file.domain.ImageFile;
 import com.koliving.api.location.application.dto.LocationResponse;
 import com.koliving.api.room.domain.Furnishing;
 import com.koliving.api.room.domain.Maintenance;
@@ -50,7 +51,7 @@ public record RoomResponse(
     MockUser mockUser,
 
     @Schema(description = "방 이미지 정보")
-    List<MockImage> images
+    Set<ImageFile> images
 
 ) {
 
@@ -66,11 +67,7 @@ public record RoomResponse(
             entity.getAvailableDate(),
             entity.getDescription(),
             new MockUser(),
-            List.of(
-                new MockImage(1L, "https://t1.daumcdn.net/cfile/tistory/1748214B5084D30720"),
-                new MockImage(2L, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_bK96glRFn6xYetjiVvcsGpH8KimDQXPulA&usqp=CAU"),
-                new MockImage(3L, "https://cdn-icons-png.flaticon.com/512/3135/3135823.png")
-            )
+            entity.getImageFiles()
         );
     }
 
@@ -85,12 +82,5 @@ public record RoomResponse(
 
     public enum Gender {
         MALE, FEMALE
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class MockImage {
-        private Long id;
-        private String url;
     }
 }

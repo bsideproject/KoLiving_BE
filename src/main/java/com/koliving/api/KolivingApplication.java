@@ -1,6 +1,8 @@
 package com.koliving.api;
 
 import com.google.common.collect.Sets;
+import com.koliving.api.file.domain.ImageFile;
+import com.koliving.api.file.infra.ImageFileRepository;
 import com.koliving.api.i18n.Language;
 import com.koliving.api.i18n.LanguageRepository;
 import com.koliving.api.location.domain.Location;
@@ -37,7 +39,8 @@ import static com.koliving.api.location.domain.LocationType.GU;
 @SpringBootApplication
 @ConfigurationPropertiesScan("com.koliving.api.properties")
 public class KolivingApplication {
-
+    private static final String SAVED_FILE = "https://kr.object.ncloudstorage.com/backend-bucket/images/42202f9c-9f06-4199-b602-2e8fb85e5741";
+    private static final String SAVED_FILE2 = "https://backend-bucket.kr.object.ncloudstorage.com/images/64ba2192-28ef-4210-b27d-dabc66fc511b";
     public static void main(String[] args) {
         SpringApplication.run(KolivingApplication.class, args);
     }
@@ -53,21 +56,36 @@ public class KolivingApplication {
         FurnishingRepository furnishingRepository,
         LocationRepository locationRepository,
         LanguageRepository languageRepository,
-        RoomRepository roomRepository
+        RoomRepository roomRepository,
+        ImageFileRepository imageFileRepository
     ) {
         return args -> {
+            initImageFiles(imageFileRepository);
             initFurnishings(furnishingRepository);
             initLocations(locationRepository);
             initLanguages(languageRepository);
             //FIXME 테스트 후 제거 예정
-            initRooms(roomRepository, locationRepository, furnishingRepository);
+            initRooms(roomRepository, locationRepository, furnishingRepository, imageFileRepository);
         };
     }
 
-    private void initRooms(RoomRepository roomRepository, LocationRepository locationRepository, FurnishingRepository furnishingRepository) {
+    private void initImageFiles(ImageFileRepository imageFileRepository) {
+        imageFileRepository.saveAll(
+            List.of(
+                ImageFile.valueOf(SAVED_FILE, 3000L),
+                ImageFile.valueOf(SAVED_FILE2, 2000L)
+            )
+        );
+    }
+
+    private void initRooms(RoomRepository roomRepository, LocationRepository locationRepository, FurnishingRepository furnishingRepository, ImageFileRepository imageFileRepository) {
         Location location = locationRepository.findByName("Songjeong").get();
         Location location2 = locationRepository.findByName("Huam").get();
         Location location3 = locationRepository.findByName("Amsaje 1").get();
+        ImageFile imageFile = imageFileRepository.findByPath(SAVED_FILE).get();
+        ImageFile imageFile2 = imageFileRepository.findByPath(SAVED_FILE2).get();
+
+
         List<Furnishing> furnishings = furnishingRepository.findAll();
 
         Furnishing tv = furnishings.stream()
@@ -88,7 +106,11 @@ public class KolivingApplication {
                     Maintenance.empty(),
                     Sets.newHashSet(),
                     LocalDate.of(2023, 8, 29),
-                    "성동구 송정동) STUDIO, 방1, 욕실1, 룸메1 보증금X 월세X 관리비X 가구X 2023.08.29 입주"
+                    "성동구 송정동) STUDIO, 방1, 욕실1, 룸메1 보증금X 월세X 관리비X 가구X 2023.08.29 입주",
+                    Sets.newHashSet(
+                        imageFile,
+                        imageFile2
+                    )
                 ),
                 Room.valueOf(
                     location2,
@@ -98,7 +120,8 @@ public class KolivingApplication {
                     Maintenance.empty(),
                     Sets.newHashSet(),
                     LocalDate.of(2023, 8, 30),
-                    "용산구 후암동) ONE_BED_FLATS, 방1, 욕실2, 룸메2 보증금 5_000_000 월세X 관리비X 가구X 2023.08.30 입주"
+                    "용산구 후암동) ONE_BED_FLATS, 방1, 욕실2, 룸메2 보증금 5_000_000 월세X 관리비X 가구X 2023.08.30 입주",
+                    Sets.newHashSet()
                 ),
                 Room.valueOf(
                     location3,
@@ -108,7 +131,8 @@ public class KolivingApplication {
                     Maintenance.empty(),
                     Sets.newHashSet(tv, bed),
                     LocalDate.now(),
-                    "강동구 암사제1동) ONE_BED_FLATS, 방1, 욕실2, 룸메2 보증금 5_000_000 월세300_000 관리비X 가구X 2023.08.30 입주"
+                    "강동구 암사제1동) ONE_BED_FLATS, 방1, 욕실2, 룸메2 보증금 5_000_000 월세300_000 관리비X 가구X 2023.08.30 입주",
+                    Sets.newHashSet()
                 )
             )
         );

@@ -5,6 +5,8 @@ import static com.koliving.api.base.ServiceError.RECORD_NOT_EXIST;
 import com.google.common.collect.Sets;
 import com.koliving.api.base.ServiceError;
 import com.koliving.api.base.exception.KolivingServiceException;
+import com.koliving.api.file.domain.ImageFile;
+import com.koliving.api.file.infra.ImageFileRepository;
 import com.koliving.api.location.domain.Location;
 import com.koliving.api.location.infra.LocationRepository;
 import com.koliving.api.room.application.dto.RoomResponse;
@@ -38,6 +40,7 @@ public class RoomService {
     private final FurnishingRepository furnishingRepository;
     private final LocationRepository locationRepository;
     private final RoomRepository roomRepository;
+    private final ImageFileRepository imageFileRepository;
 
     public List<RoomResponse> list() {
         return roomRepository.findAll()
@@ -48,14 +51,23 @@ public class RoomService {
 
     @Transactional
     public Long save(RoomSaveRequest request) {
-        final Room room = roomRepository.save(
-            request.toEntity(
-                getLocationById(request.locationId()),
-                getFurnishingsByIds(request.furnishingIds())
-            )
+        Room room = request.toEntity(
+            getLocationById(request.locationId()),
+            getFurnishingsByIds(request.furnishingIds()),
+            getImageFiles(request.imageIds())
         );
+        final Room savedRoom = roomRepository.save(room);
 
-        return room.getId();
+        return savedRoom.getId();
+    }
+
+    private Set<ImageFile> getImageFiles(Set<Long> imageIds) {
+        List<ImageFile> images = imageFileRepository.findAllById(imageIds);
+
+        if (images.size() != imageIds.size()) {
+            throw new IllegalArgumentException();
+        }
+        return Sets.newHashSet(images);
     }
 
     private Set<Furnishing> getFurnishingsByIds(Set<Long> furnishingIds) {
