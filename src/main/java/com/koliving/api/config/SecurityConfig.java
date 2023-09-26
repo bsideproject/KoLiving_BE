@@ -27,6 +27,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -109,11 +110,11 @@ public class SecurityConfig {
             }).exceptionHandling(config -> {
                 config.authenticationEntryPoint(authenticationEntryPoint)
                     .accessDeniedHandler(accessDeniedHandler);
-            });
+            })
         //TODO filter 순서 조정 필요
 //            .addFilterBefore(customExceptionHandlerFilter, HeaderWriterFilter.class)
-//            .addFilterAfter(loginFilter, LogoutFilter.class)
-//            .addFilterAfter(jwtAuthenticationFilter, loginFilter.getClass());
+//            .addFilterAfter(jwtAuthenticationFilter, loginFilter.getClass())
+            .addFilterAfter(loginFilter, LogoutFilter.class);
 
         return http.build();
     }
