@@ -1,6 +1,6 @@
 package com.koliving.api.auth.login;
 
-import com.koliving.api.user.UserService;
+import com.koliving.api.user.application.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;

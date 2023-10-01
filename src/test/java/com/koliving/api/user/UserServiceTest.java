@@ -1,5 +1,6 @@
 package com.koliving.api.user;
 
+import com.koliving.api.user.application.UserService;
 import com.koliving.api.user.application.dto.UserResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

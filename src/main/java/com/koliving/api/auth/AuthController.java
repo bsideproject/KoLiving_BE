@@ -1,5 +1,8 @@
 package com.koliving.api.auth;
 
+import com.koliving.api.auth.application.dto.TokenRequest;
+import com.koliving.api.auth.application.dto.TokenResponse;
+import com.koliving.api.base.ErrorResponse;
 import com.koliving.api.dto.AuthEmailRequestDto;
 import com.koliving.api.dto.JwtTokenDto;
 import com.koliving.api.dto.PasswordDto;
@@ -12,7 +15,7 @@ import com.koliving.api.token.confirmation.ConfirmationTokenType;
 import com.koliving.api.user.SignUpStatus;
 import com.koliving.api.user.User;
 import com.koliving.api.user.UserPropertyEditor;
-import com.koliving.api.user.UserService;
+import com.koliving.api.user.application.UserService;
 import com.koliving.api.utils.HttpUtils;
 import com.koliving.api.validation.EmailDuplicationValidator;
 import com.koliving.api.validation.EmailPresenceValidator;
@@ -302,6 +305,32 @@ public class AuthController {
 
         return new ResponseEntity<>(noContent);
     }
+
+    @PostMapping("token/create")
+    @Operation(
+        summary = "토큰 발급",
+        description = "사용자 토큰 발급",
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "토큰 발급 성공",
+                content = @Content(schema = @Schema(implementation = TokenResponse.class))
+            ),
+            @ApiResponse(
+                responseCode = "401",
+                description = "인증 실패",
+                content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            )
+        }
+    )
+    public ResponseEntity<TokenResponse> createToken(
+        @RequestBody TokenRequest request) {
+        TokenResponse response = authFacade.createToken(request);
+        return ResponseEntity.ok()
+            .body(response);
+    }
+
+
 
     private void checkEmailDuplication(AuthEmailRequestDto authEmailRequestDto, Validator validator) {
         BeanPropertyBindingResult errors = new BeanPropertyBindingResult(authEmailRequestDto, "authEmailRequestDto");
