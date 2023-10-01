@@ -21,6 +21,6 @@ public class PasswordValidator implements ConstraintValidator<PasswordConstraint
             return true;
         }
 
-        throw new PasswordInvalidException("invalid_password : " + password);
+        throw new PasswordInvalidException("invalid_password:" + password);
     }
 }
