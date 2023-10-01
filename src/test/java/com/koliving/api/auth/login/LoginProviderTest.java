@@ -1,7 +1,7 @@
 package com.koliving.api.auth.login;
 
 import com.koliving.api.user.User;
-import com.koliving.api.user.UserService;
+import com.koliving.api.user.application.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,6 +1,10 @@
-package com.koliving.api.user;
+package com.koliving.api.user.application;
 
+import com.koliving.api.user.User;
+import com.koliving.api.user.UserRepository;
 import com.koliving.api.user.application.dto.UserResponse;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -8,9 +12,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -24,7 +25,7 @@ public class UserService implements IUserService, UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) {
         return userRepository.findByEmail(email).orElseThrow(() ->
-                new UsernameNotFoundException(String.format("User with email %s not found", email)));
+            new UsernameNotFoundException(String.format("User with email %s not found", email)));
     }
 
     @Override

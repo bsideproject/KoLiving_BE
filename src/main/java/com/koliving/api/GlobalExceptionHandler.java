@@ -15,7 +15,7 @@ import com.koliving.api.token.confirmation.ConfirmationTokenService;
 import com.koliving.api.token.confirmation.ConfirmationTokenType;
 import com.koliving.api.user.SignUpStatus;
 import com.koliving.api.user.User;
-import com.koliving.api.user.UserService;
+import com.koliving.api.user.application.UserService;
 import com.koliving.api.utils.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
