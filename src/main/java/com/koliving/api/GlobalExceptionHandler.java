@@ -1,5 +1,8 @@
 package com.koliving.api;
 
+import static com.koliving.api.token.confirmation.ConfirmationTokenType.RESET_PASSWORD;
+import static com.koliving.api.token.confirmation.ConfirmationTokenType.SIGN_UP;
+
 import com.koliving.api.base.ErrorResponse;
 import com.koliving.api.base.exception.KolivingServiceException;
 import com.koliving.api.dto.ConfirmationTokenErrorDto;
@@ -17,6 +20,7 @@ import com.koliving.api.user.SignUpStatus;
 import com.koliving.api.user.User;
 import com.koliving.api.user.application.UserService;
 import com.koliving.api.utils.HttpUtils;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,11 +30,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.Locale;
-
-import static com.koliving.api.token.confirmation.ConfirmationTokenType.RESET_PASSWORD;
-import static com.koliving.api.token.confirmation.ConfirmationTokenType.SIGN_UP;
 
 @Slf4j
 @RestControllerAdvice
@@ -50,45 +49,49 @@ public class GlobalExceptionHandler {
         locale = httpUtils.getLocaleForLanguage(locale);
 
         return httpUtils.createResponseEntity(
-                httpUtils.createFailureResponse(getErrorMessage(e, locale), badRequest.value())
+            httpUtils.createFailureResponse(getErrorMessage(e, locale), badRequest.value())
         );
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<ResponseDto<String>> handleIllegalArgumentException(IllegalArgumentException e, Locale locale) {
+    public ResponseEntity<ResponseDto<String>> handleIllegalArgumentException(IllegalArgumentException e,
+        Locale locale) {
         locale = httpUtils.getLocaleForLanguage(locale);
 
         String messageKey = e.getMessage();
         String errorMessage = messageSource.getMessage(messageKey, null, locale);
 
         return httpUtils.createResponseEntity(
-                httpUtils.createFailureResponse(errorMessage, badRequest.value())
+            httpUtils.createFailureResponse(errorMessage, badRequest.value())
         );
     }
 
     @ExceptionHandler(value = PasswordInvalidException.class)
-    public ResponseEntity<ResponseDto<String>> handlePasswordInvalidException(PasswordInvalidException e, Locale locale) {
+    public ResponseEntity<ResponseDto<String>> handlePasswordInvalidException(PasswordInvalidException e,
+        Locale locale) {
         locale = httpUtils.getLocaleForLanguage(locale);
 
         return httpUtils.createResponseEntity(
-                httpUtils.createFailureResponse(getErrorMessage(e, locale), badRequest.value())
+            httpUtils.createFailureResponse(getErrorMessage(e, locale), badRequest.value())
         );
     }
 
     @ExceptionHandler(value = UsernameNotFoundException.class)
-    public ResponseEntity<ResponseDto<String>> handleUsernameNotFoundException(UsernameNotFoundException e, Locale locale) {
+    public ResponseEntity<ResponseDto<String>> handleUsernameNotFoundException(UsernameNotFoundException e,
+        Locale locale) {
         locale = httpUtils.getLocaleForLanguage(locale);
         String email = extractEmail(e);
 
         String errorMessage = messageSource.getMessage("email_not_exists", new Object[]{email}, locale);
 
         return httpUtils.createResponseEntity(
-                httpUtils.createFailureResponse(errorMessage, badRequest.value())
+            httpUtils.createFailureResponse(errorMessage, badRequest.value())
         );
     }
 
     @ExceptionHandler(value = ConfirmationTokenException.class)
-    public ResponseEntity<ResponseDto<ConfirmationTokenErrorDto>> handleAuthException(ConfirmationTokenException e, Locale locale) {
+    public ResponseEntity<ResponseDto<ConfirmationTokenErrorDto>> handleAuthException(ConfirmationTokenException e,
+        Locale locale) {
         locale = httpUtils.getLocaleForLanguage(locale);
 
         String messageKey = e.getMessage();
@@ -111,20 +114,21 @@ public class GlobalExceptionHandler {
         }
 
         return httpUtils.createResponseEntityWithRedirect(
-                httpUtils.createFailureResponse(
-                        new ConfirmationTokenErrorDto(errorMessage, email),
-                        status.value()
-                ),
-                redirectPath
+            httpUtils.createFailureResponse(
+                new ConfirmationTokenErrorDto(errorMessage, email),
+                status.value()
+            ),
+            redirectPath
         );
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public ResponseEntity<ResponseDto<ValidationResult>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ResponseDto<ValidationResult>> handleMethodArgumentNotValidException(
+        MethodArgumentNotValidException e) {
         ValidationResult errors = ValidationResult.of(e);
 
         return httpUtils.createResponseEntity(
-                httpUtils.createFailureResponse(errors, badRequest.value())
+            httpUtils.createFailureResponse(errors, badRequest.value())
         );
     }
 
@@ -136,15 +140,16 @@ public class GlobalExceptionHandler {
         String errorMessage = messageSource.getMessage(messageKey, null, locale);
 
         return httpUtils.createResponseEntityWithRedirect(
-                httpUtils.createFailureResponse(errorMessage, unauthorized.value()),
-                httpUtils.getCurrentVersionPath("login")
+            httpUtils.createFailureResponse(errorMessage, unauthorized.value()),
+            httpUtils.getCurrentVersionPath("login")
         );
     }
 
     @ExceptionHandler(value = KolivingServiceException.class)
-    public ErrorResponse handleError(KolivingServiceException e) {
+    public ResponseEntity<ErrorResponse> handleError(KolivingServiceException e) {
         log.error("handleError", e);
-        return ErrorResponse.valueOf(e.getError());
+        return ResponseEntity.status(e.getStatus())
+            .body(ErrorResponse.valueOf(e.getError()));
     }
 
     private String extractEmail(UsernameNotFoundException e) {
