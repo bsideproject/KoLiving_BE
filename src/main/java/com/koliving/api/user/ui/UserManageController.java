@@ -1,6 +1,6 @@
 package com.koliving.api.user.ui;
 
-import com.koliving.api.user.UserService;
+import com.koliving.api.user.application.UserService;
 import com.koliving.api.user.application.dto.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

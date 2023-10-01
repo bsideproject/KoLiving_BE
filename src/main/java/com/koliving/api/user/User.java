@@ -135,4 +135,9 @@ public class User implements UserDetails {
         // TODO : need field related to password expiration
         return true;
     }
+
+    public boolean checkPassword(String password) {
+        return this.password.equals(password);
+    }
+
 }

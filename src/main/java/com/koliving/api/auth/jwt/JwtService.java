@@ -50,12 +50,7 @@ public class JwtService implements IJwtService {
 
     @Override
     public void registerBlackList(String accessToken, Date expirationDate) {
-        BlackAccessToken blackAccessToken = BlackAccessToken.builder()
-                .accessToken(accessToken)
-                .expirationTime(expirationDate)
-                .build();
-
-        blackListRepository.save(blackAccessToken);
+        blackListRepository.save(new BlackAccessToken(accessToken, expirationDate));
     }
 
     @Override
@@ -75,12 +70,7 @@ public class JwtService implements IJwtService {
 
     @Override
     public String saveRefreshToken(String email, String newRTValue) {
-        RefreshToken newRT = RefreshToken.builder()
-                .email(email)
-                .token(newRTValue)
-                .build();
-
-        return refreshTokenRepository.save(newRT);
+        return refreshTokenRepository.save(new RefreshToken(email, newRTValue));
     }
 
     private Claims getClaims(String token) {
