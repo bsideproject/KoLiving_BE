@@ -184,7 +184,10 @@ public class KolivingApplication {
                 Language.valueOf("ko", "email_not_exists", "존재하지 않는 이메일입니다 : {0}"),
 
                 Language.valueOf("en", "mismatched_password", "The Password and verification password does not match"),
-                Language.valueOf("ko", "mismatched_password", "비밀번호가 확인 비밀번호와 일치하지 않습니다")
+                Language.valueOf("ko", "mismatched_password", "비밀번호가 확인 비밀번호와 일치하지 않습니다"),
+
+                Language.valueOf("en", "invalid_password", "The Password is not valid"),
+                Language.valueOf("ko", "invalid_password", "유효하지 않은 비밀번호입니다.")
             )
         );
 

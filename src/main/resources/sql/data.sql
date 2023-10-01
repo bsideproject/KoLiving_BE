@@ -40,5 +40,8 @@ INSERT INTO TB_LANGUAGE (LOCALE, MESSAGE_KEY, MESSAGE_PATTERN) VALUES
        ('ko', 'email_not_exists', '존재하지 않는 이메일입니다 : {0}'),
 
        ('en', 'mismatched_password', 'The Password and verification password does not match'),
-       ('ko', 'mismatched_password', '비밀번호가 확인 비밀번호와 일치하지 않습니다')
+       ('ko', 'mismatched_password', '비밀번호가 확인 비밀번호와 일치하지 않습니다'),
+
+       ('en', 'invalid_password', 'The Password is not valid'),
+       ('ko', 'invalid_password', '유효하지 않은 비밀번호입니다')
 ;
