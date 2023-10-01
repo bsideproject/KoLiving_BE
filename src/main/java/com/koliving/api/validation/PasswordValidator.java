@@ -13,8 +13,8 @@ public class PasswordValidator implements ConstraintValidator<PasswordConstraint
     public boolean isValid(String value, ConstraintValidatorContext context) {
         String password = value.trim();
 
-        // 소문자, 숫자, 특수기호 필수
-        Pattern pattern = Pattern.compile("^(?=.*[a-z])(?=.*\\d).{6,30}$");
+        // 대소문자, 숫자 필수
+        Pattern pattern = Pattern.compile("^(?=.*[A-z])(?=.*\\d).{6,30}$");
         Matcher matcher = pattern.matcher(password);
 
         if (matcher.matches()) {
