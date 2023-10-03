@@ -43,5 +43,8 @@ INSERT INTO TB_LANGUAGE (LOCALE, MESSAGE_KEY, MESSAGE_PATTERN) VALUES
        ('ko', 'mismatched_password', '비밀번호가 확인 비밀번호와 일치하지 않습니다'),
 
        ('en', 'invalid_password', 'The Password is not valid'),
-       ('ko', 'invalid_password', '유효하지 않은 비밀번호입니다')
+       ('ko', 'invalid_password', '유효하지 않은 비밀번호입니다'),
+
+       ('en', 'black_list_token', 'This token is blacklisted'),
+       ('ko', 'black_list_token', '이 토큰은 블랙리스트에 등록되어 있습니다.')
 ;
