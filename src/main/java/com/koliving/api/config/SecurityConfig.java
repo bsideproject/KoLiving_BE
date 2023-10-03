@@ -12,6 +12,7 @@ import com.koliving.api.auth.login.LoginSuccessHandler;
 import com.koliving.api.utils.HttpUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -29,6 +31,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
+import org.springframework.security.web.header.HeaderWriterFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.cors.CorsConfiguration;
@@ -67,7 +70,6 @@ public class SecurityConfig {
         AUTHENTICATION_WHITELIST = new String[]{
             httpUtils.getCurrentVersionPath("auth/**"),
             httpUtils.getCurrentVersionPath("management/**"),
-            httpUtils.getCurrentVersionPath("**"),
             "/api-docs/**",
             "/swagger-ui/**",
             "/swagger-resources/**"
@@ -77,6 +79,13 @@ public class SecurityConfig {
             httpUtils.getCurrentVersionPath("login"),
             httpUtils.getCurrentVersionPath("logout"),
         };
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+                .requestMatchers(AUTHENTICATION_WHITELIST);
     }
 
     @Bean
@@ -107,13 +116,14 @@ public class SecurityConfig {
                 config.logoutUrl(httpUtils.getCurrentVersionPath("logout"))
                     .logoutSuccessUrl(httpUtils.getCurrentVersionPath("login"))
                     .logoutSuccessHandler(logoutSuccessHandler);
-            }).exceptionHandling(config -> {
+            })
+            .exceptionHandling(config -> {
                 config.authenticationEntryPoint(authenticationEntryPoint)
                     .accessDeniedHandler(accessDeniedHandler);
             })
         //TODO filter 순서 조정 필요
-//            .addFilterBefore(customExceptionHandlerFilter, HeaderWriterFilter.class)
-//            .addFilterAfter(jwtAuthenticationFilter, loginFilter.getClass())
+            .addFilterBefore(customExceptionHandlerFilter, HeaderWriterFilter.class)
+            .addFilterAfter(jwtAuthenticationFilter, loginFilter.getClass())
             .addFilterAfter(loginFilter, LogoutFilter.class);
 
         return http.build();
@@ -143,7 +153,7 @@ public class SecurityConfig {
     }
 
     private CustomExceptionHandlerFilter createExceptionHandlerFilter() {
-        return new CustomExceptionHandlerFilter(httpUtils, messageSource, localeResolver);
+        return new CustomExceptionHandlerFilter(jwtService, httpUtils, messageSource, localeResolver);
     }
 
     private LoginFilter createLoginFilter(AuthenticationManager authenticationManager) {
