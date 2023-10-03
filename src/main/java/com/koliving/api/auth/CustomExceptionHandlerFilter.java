@@ -1,5 +1,6 @@
 package com.koliving.api.auth;
 
+import com.koliving.api.auth.jwt.IJwtService;
 import com.koliving.api.dto.ValidationResult;
 import com.koliving.api.exception.BlackListTokenException;
 import com.koliving.api.exception.LoginInvalidException;
@@ -21,6 +22,7 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
 
+    private final IJwtService jwtService;
     private final HttpUtils httpUtils;
     private final MessageSource messageSource;
     private final LocaleResolver localeResolver;
@@ -47,11 +49,9 @@ public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
                     httpUtils.getCurrentVersionPath("login")
             );
         } catch (BlackListTokenException e) {
-            String errorMessage = messageSource.getMessage(e.getMessage(), null, locale);
-
             httpUtils.setResponseWithRedirect(
                     response,
-                    httpUtils.createFailureResponse(errorMessage, HttpServletResponse.SC_UNAUTHORIZED),
+                    httpUtils.createFailureResponse(getErrorMessage(e, locale), HttpServletResponse.SC_UNAUTHORIZED),
                     httpUtils.getCurrentVersionPath("login")
             );
         } catch (RuntimeException e) {
@@ -60,5 +60,15 @@ public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
                     httpUtils.createFailureResponse("mapping error", HttpServletResponse.SC_BAD_REQUEST)
             );
         }
+    }
+
+    private String getErrorMessage(RuntimeException e, Locale locale) {
+        String[] messageKeyAndEmail = e.getMessage().split(":");
+        String messageKey = messageKeyAndEmail[0];
+        String email = messageKeyAndEmail[1];
+
+        String errorMessage = messageSource.getMessage(messageKey, new Object[]{email}, locale);
+
+        return errorMessage;
     }
 }
