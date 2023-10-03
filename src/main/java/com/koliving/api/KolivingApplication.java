@@ -187,7 +187,10 @@ public class KolivingApplication {
                 Language.valueOf("ko", "mismatched_password", "비밀번호가 확인 비밀번호와 일치하지 않습니다"),
 
                 Language.valueOf("en", "invalid_password", "The Password is not valid"),
-                Language.valueOf("ko", "invalid_password", "유효하지 않은 비밀번호입니다.")
+                Language.valueOf("ko", "invalid_password", "유효하지 않은 비밀번호입니다."),
+
+                Language.valueOf("en", "black_list_token", "This token is blacklisted"),
+                Language.valueOf("ko", "black_list_token", "이 토큰은 블랙리스트에 등록되어 있습니다")
             )
         );
 

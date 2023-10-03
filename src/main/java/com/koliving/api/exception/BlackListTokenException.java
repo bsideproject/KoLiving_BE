@@ -5,7 +5,10 @@ import lombok.Getter;
 @Getter
 public class BlackListTokenException extends RuntimeException {
 
-    public BlackListTokenException(String message) {
-        super(message);
+    private final String email;
+
+    public BlackListTokenException(String email) {
+        super("black_list_token:" + email);
+        this.email = email;
     }
 }
