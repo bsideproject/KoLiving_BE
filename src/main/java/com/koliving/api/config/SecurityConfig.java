@@ -153,7 +153,7 @@ public class SecurityConfig {
     }
 
     private CustomExceptionHandlerFilter createExceptionHandlerFilter() {
-        return new CustomExceptionHandlerFilter(jwtService, httpUtils, messageSource, localeResolver);
+        return new CustomExceptionHandlerFilter(httpUtils, messageSource, localeResolver);
     }
 
     private LoginFilter createLoginFilter(AuthenticationManager authenticationManager) {
