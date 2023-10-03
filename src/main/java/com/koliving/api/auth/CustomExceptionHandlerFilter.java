@@ -1,6 +1,5 @@
 package com.koliving.api.auth;
 
-import com.koliving.api.auth.jwt.IJwtService;
 import com.koliving.api.dto.ValidationResult;
 import com.koliving.api.exception.BlackListTokenException;
 import com.koliving.api.exception.LoginInvalidException;
@@ -23,7 +22,6 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
 
-    private final IJwtService jwtService;
     private final HttpUtils httpUtils;
     private final MessageSource messageSource;
     private final LocaleResolver localeResolver;
