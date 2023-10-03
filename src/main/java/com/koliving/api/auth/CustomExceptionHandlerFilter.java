@@ -5,6 +5,7 @@ import com.koliving.api.dto.ValidationResult;
 import com.koliving.api.exception.BlackListTokenException;
 import com.koliving.api.exception.LoginInvalidException;
 import com.koliving.api.utils.HttpUtils;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -39,6 +40,14 @@ public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
             httpUtils.setResponse(
                     response,
                     httpUtils.createFailureResponse(errors, HttpServletResponse.SC_BAD_REQUEST)
+            );
+        } catch (ExpiredJwtException e) {
+            String errorMessage = messageSource.getMessage(e.getMessage(), null, locale);
+
+            httpUtils.setResponseWithRedirect(
+                    response,
+                    httpUtils.createFailureResponse(errorMessage, HttpServletResponse.SC_UNAUTHORIZED),
+                    httpUtils.getCurrentVersionPath("token/create")
             );
         } catch (AuthenticationException | JwtException e) {
             String errorMessage = messageSource.getMessage(e.getMessage(), null, locale);

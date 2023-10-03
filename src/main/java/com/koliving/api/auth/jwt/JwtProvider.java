@@ -59,8 +59,9 @@ public class JwtProvider {
                 .parseClaimsJws(token)
                 .getBody();
         } catch (ExpiredJwtException e) {
+
             log.error("access token has expired");
-            throw new JwtException("expired_token");
+            throw new ExpiredJwtException(null, null, "expired_token");
         } catch (MalformedJwtException e) {
             log.error("malformed jwt token");
             throw new JwtException("malformed_token");
