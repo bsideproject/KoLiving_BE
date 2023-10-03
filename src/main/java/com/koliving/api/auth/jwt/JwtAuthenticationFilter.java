@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String accessToken = httpUtils.resolveToken(request);
         jwtProvider.validateToken(accessToken);
         if (jwtService.isBlackList(accessToken)) {
-            throw new BlackListTokenException("black_list_token");
+            throw new BlackListTokenException(jwtService.extractEmail(accessToken));
         }
 
         this.setAuthentication(accessToken);
