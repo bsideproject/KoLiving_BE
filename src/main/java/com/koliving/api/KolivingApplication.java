@@ -1,5 +1,8 @@
 package com.koliving.api;
 
+import static com.koliving.api.location.domain.LocationType.DONG;
+import static com.koliving.api.location.domain.LocationType.GU;
+
 import com.google.common.collect.Sets;
 import com.koliving.api.file.domain.ImageFile;
 import com.koliving.api.file.infra.ImageFileRepository;
@@ -13,11 +16,15 @@ import com.koliving.api.room.domain.Maintenance;
 import com.koliving.api.room.domain.Money;
 import com.koliving.api.room.domain.Room;
 import com.koliving.api.room.domain.RoomType;
-import com.koliving.api.room.domain.info.Quantity;
 import com.koliving.api.room.domain.info.RoomInfo;
 import com.koliving.api.room.infra.FurnishingRepository;
 import com.koliving.api.room.infra.RoomRepository;
 import jakarta.annotation.PostConstruct;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.TimeZone;
+import java.util.stream.Collectors;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,21 +33,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.stream.Collectors;
-
-import static com.koliving.api.location.domain.LocationType.DONG;
-import static com.koliving.api.location.domain.LocationType.GU;
-
 @EnableJpaAuditing
 @SpringBootApplication
 @ConfigurationPropertiesScan("com.koliving.api.properties")
 public class KolivingApplication {
+
     private static final String SAVED_FILE = "https://kr.object.ncloudstorage.com/backend-bucket/images/42202f9c-9f06-4199-b602-2e8fb85e5741";
     private static final String SAVED_FILE2 = "https://backend-bucket.kr.object.ncloudstorage.com/images/64ba2192-28ef-4210-b27d-dabc66fc511b";
+
     public static void main(String[] args) {
         SpringApplication.run(KolivingApplication.class, args);
     }
@@ -78,13 +78,13 @@ public class KolivingApplication {
         );
     }
 
-    private void initRooms(RoomRepository roomRepository, LocationRepository locationRepository, FurnishingRepository furnishingRepository, ImageFileRepository imageFileRepository) {
+    private void initRooms(RoomRepository roomRepository, LocationRepository locationRepository,
+        FurnishingRepository furnishingRepository, ImageFileRepository imageFileRepository) {
         Location location = locationRepository.findByName("Songjeong").get();
         Location location2 = locationRepository.findByName("Huam").get();
         Location location3 = locationRepository.findByName("Amsaje 1").get();
         ImageFile imageFile = imageFileRepository.findByPath(SAVED_FILE).get();
         ImageFile imageFile2 = imageFileRepository.findByPath(SAVED_FILE2).get();
-
 
         List<Furnishing> furnishings = furnishingRepository.findAll();
 
@@ -100,7 +100,7 @@ public class KolivingApplication {
             List.of(
                 Room.valueOf(
                     location,
-                    RoomInfo.valueOf(RoomType.STUDIO, Quantity.ONE, Quantity.ONE, Quantity.ONE),
+                    RoomInfo.valueOf(RoomType.STUDIO, 0, 1, 1),
                     Money.empty(),
                     Money.empty(),
                     Maintenance.empty(),
@@ -114,7 +114,7 @@ public class KolivingApplication {
                 ),
                 Room.valueOf(
                     location2,
-                    RoomInfo.valueOf(RoomType.ONE_BED_FLATS, Quantity.ONE, Quantity.TWO, Quantity.TWO),
+                    RoomInfo.valueOf(RoomType.ONE_BED_FLATS, 1, 2, 2),
                     Money.valueOf(5_000_000),
                     Money.empty(),
                     Maintenance.empty(),
@@ -125,7 +125,7 @@ public class KolivingApplication {
                 ),
                 Room.valueOf(
                     location3,
-                    RoomInfo.valueOf(RoomType.ONE_BED_FLATS, Quantity.ONE, Quantity.TWO, Quantity.TWO),
+                    RoomInfo.valueOf(RoomType.ONE_BED_FLATS, 1, 2, 2),
                     Money.valueOf(5_000_000),
                     Money.valueOf(300_000),
                     Maintenance.empty(),
@@ -152,13 +152,15 @@ public class KolivingApplication {
                 Language.valueOf("ko", "auth_email_subject", "이메일 인증을 완료하세요"),
                 Language.valueOf("en", "auth_email_subtitle", "Click the link below to proceed with authentication"),
                 Language.valueOf("ko", "auth_email_subtitle", "아래 링크를 클릭하셔서 인증을 진행하세요"),
-                Language.valueOf("en", "auth_email_link_guidance", "If the button doesn't work, copy and paste the link below into url"),
+                Language.valueOf("en", "auth_email_link_guidance",
+                    "If the button doesn't work, copy and paste the link below into url"),
                 Language.valueOf("ko", "auth_email_link_guidance", "버튼이 동작하지 않다면, 아래 링크를 url에 붙여 인증을 시도하세요"),
                 Language.valueOf("en", "expired_confirmation_token", "The confirmation token has expired"),
                 Language.valueOf("ko", "expired_confirmation_token", "만료된 확인 토큰입니다"),
                 Language.valueOf("en", "authenticated_confirmation_token", "The confirmation token already confirmed"),
                 Language.valueOf("ko", "authenticated_confirmation_token token", "이미 인증된 확인 토큰입니다"),
-                Language.valueOf("en", "ungenerated_confirmation_token", "The confirmation token is not a normal generated by the server"),
+                Language.valueOf("en", "ungenerated_confirmation_token",
+                    "The confirmation token is not a normal generated by the server"),
                 Language.valueOf("ko", "ungenerated_confirmation_token", "서버에 의해 생성된 정상 확인 토큰이 아닙니다"),
 
                 Language.valueOf("en", "login_exception", "The email or password you requested is invalid"),

@@ -24,23 +24,20 @@ public class RoomInfo {
     @Column(name = "room_type", nullable = false)
     private RoomType roomType;
 
-    @Enumerated(STRING)
     @Column(nullable = false)
-    private Quantity bedrooms;
+    private Integer bedrooms;
 
-    @Enumerated(STRING)
     @Column(nullable = false)
-    private Quantity bathrooms;
+    private Integer bathrooms;
 
-    @Enumerated(STRING)
     @Column(nullable = false)
-    private Quantity roommates;
+    private Integer roommates;
 
     private RoomInfo(
         RoomType roomType,
-        Quantity bedrooms,
-        Quantity bathrooms,
-        Quantity roommates
+        Integer bedrooms,
+        Integer bathrooms,
+        Integer roommates
     ) {
         validate(roomType, bedrooms, bathrooms, roommates);
         this.roomType = roomType;
@@ -49,7 +46,7 @@ public class RoomInfo {
         this.roommates = roommates;
     }
 
-    private void validate(RoomType roomType, Quantity bedrooms, Quantity bathrooms, Quantity roommates) {
+    private void validate(RoomType roomType, Integer bedrooms, Integer bathrooms, Integer roommates) {
         if (!roomType.isValidBedrooms(bedrooms)) {
             throw new KolivingServiceException(ServiceError.ILLEGAL_ROOM_INFO);
         }
@@ -63,7 +60,7 @@ public class RoomInfo {
         }
     }
 
-    public static RoomInfo valueOf(RoomType roomType, Quantity bedrooms, Quantity bathrooms, Quantity roommates) {
+    public static RoomInfo valueOf(RoomType roomType, Integer bedrooms, Integer bathrooms, Integer roommates) {
         return new RoomInfo(roomType, bedrooms, bathrooms, roommates);
     }
 }
