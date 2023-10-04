@@ -53,7 +53,7 @@ public class KolivingApplication {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 
-    @Profile("!test")
+    @Profile({"!test", "!dev"})
     @Bean
     CommandLineRunner commandLineRunner(
         FurnishingRepository furnishingRepository,
