@@ -99,6 +99,7 @@ public class SecurityConfig {
                 req
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/login").permitAll() // test
                     .requestMatchers(AUTHENTICATION_WHITELIST).permitAll()
                     .requestMatchers(AUTHORIZATION_WHITELIST).permitAll()
                     .anyRequest().authenticated();
@@ -137,6 +138,7 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("*"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

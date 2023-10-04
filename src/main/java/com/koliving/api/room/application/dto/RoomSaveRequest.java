@@ -7,7 +7,6 @@ import com.koliving.api.room.domain.Maintenance;
 import com.koliving.api.room.domain.Money;
 import com.koliving.api.room.domain.Room;
 import com.koliving.api.room.domain.RoomType;
-import com.koliving.api.room.domain.info.Quantity;
 import com.koliving.api.room.domain.info.RoomInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
@@ -24,14 +23,14 @@ public record RoomSaveRequest(
     @Schema(description = "방 구분 1.STUDIO 2.ONE_BED_FLATS 3.SHARE_HOUSE")
     RoomType roomType,
 
-    @Schema(description = "침실 수 ONE, TWO, THREE, FOUR, FIVE, SIX_OR_OVER")
-    Quantity bedrooms,
+    @Schema(description = "침실 수 1, 2, 3, 4....")
+    Integer bedrooms,
 
-    @Schema(description = "욕실 수 ONE, TWO, THREE, FOUR_OR_OVER")
-    Quantity bathrooms,
+    @Schema(description = "욕실 수 1, 2, 3, 4....")
+    Integer bathrooms,
 
-    @Schema(description = "룸메이트 수 ONE, TWO, THREE, FOUR, FIVE, SIX_OR_OVER")
-    Quantity roommates,
+    @Schema(description = "룸메이트 수 1, 2, 3, 4....")
+    Integer roommates,
 
     @Schema(description = "보증금(원)")
     Integer deposit,
