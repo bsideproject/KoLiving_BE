@@ -120,9 +120,6 @@ public class Room extends BaseEntity {
         return new Room(location, info, deposit, monthlyRent, maintenance, furnishings, availableDate, description, imageFiles);
     }
 
-
-    //TODO 유저
-    @Transient
     private Long userId;
 
 }

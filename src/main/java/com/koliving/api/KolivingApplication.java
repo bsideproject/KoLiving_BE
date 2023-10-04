@@ -19,6 +19,8 @@ import com.koliving.api.room.domain.RoomType;
 import com.koliving.api.room.domain.info.RoomInfo;
 import com.koliving.api.room.infra.FurnishingRepository;
 import com.koliving.api.room.infra.RoomRepository;
+import com.koliving.api.user.User;
+import com.koliving.api.user.UserRepository;
 import jakarta.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -32,6 +34,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @EnableJpaAuditing
 @SpringBootApplication
@@ -57,7 +60,9 @@ public class KolivingApplication {
         LocationRepository locationRepository,
         LanguageRepository languageRepository,
         RoomRepository roomRepository,
-        ImageFileRepository imageFileRepository
+        ImageFileRepository imageFileRepository,
+        UserRepository userRepository,
+        PasswordEncoder encoder
     ) {
         return args -> {
             initImageFiles(imageFileRepository);
@@ -66,7 +71,16 @@ public class KolivingApplication {
             initLanguages(languageRepository);
             //FIXME 테스트 후 제거 예정
             initRooms(roomRepository, locationRepository, furnishingRepository, imageFileRepository);
+            initUser(userRepository, encoder);
         };
+    }
+
+    private void initUser(UserRepository userRepository, PasswordEncoder encoder) {
+        final User user = User.builder()
+            .email("koliving@koliving.com")
+            .build();
+        user.setPassword(encoder.encode("test1234!@"));
+        userRepository.save(user);
     }
 
     private void initImageFiles(ImageFileRepository imageFileRepository) {
