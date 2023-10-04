@@ -71,8 +71,7 @@ public class SecurityConfig {
             httpUtils.getCurrentVersionPath("auth/**"),
             "/api-docs/**",
             "/swagger-ui/**",
-            "/swagger-resources/**",
-            "h2-console/**"
+            "/swagger-resources/**"
         };
 
         AUTHORIZATION_WHITELIST = new String[]{
@@ -100,13 +99,13 @@ public class SecurityConfig {
             .headers()
             .frameOptions().disable()
             .and()
+            .csrf().disable()
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
-            .csrf().disable()
             .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(req -> {
                 req
-                    //.requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
+                    .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/login").permitAll() // test
                     .requestMatchers(AUTHENTICATION_WHITELIST).permitAll()
