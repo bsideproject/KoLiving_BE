@@ -7,14 +7,18 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Slf4j
 @Tag(name = "가구 API", description = "FURNISHING API")
 @RestController
 @RequestMapping("api/v1/furnishings")
@@ -34,7 +38,9 @@ public class FurnishingController {
             ),
         })
     @GetMapping
-    public ResponseEntity<List<FurnishingResponse>> list() {
+    public ResponseEntity<List<FurnishingResponse>> list(@AuthenticationPrincipal Principal principal) {
+
+        log.info("principal: {}", principal);
         final List<FurnishingResponse> responses = furnishingService.list();
         return ResponseEntity.ok()
             .body(responses);

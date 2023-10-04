@@ -69,10 +69,10 @@ public class SecurityConfig {
     private void init() {
         AUTHENTICATION_WHITELIST = new String[]{
             httpUtils.getCurrentVersionPath("auth/**"),
-            httpUtils.getCurrentVersionPath("management/**"),
             "/api-docs/**",
             "/swagger-ui/**",
-            "/swagger-resources/**"
+            "/swagger-resources/**",
+            "h2-console/**"
         };
 
         AUTHORIZATION_WHITELIST = new String[]{
@@ -106,7 +106,7 @@ public class SecurityConfig {
             .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(req -> {
                 req
-                    .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
+                    //.requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/login").permitAll() // test
                     .requestMatchers(AUTHENTICATION_WHITELIST).permitAll()
@@ -145,7 +145,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "http://koliving.kro.kr"));
         configuration.setAllowedMethods(Arrays.asList("*"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
