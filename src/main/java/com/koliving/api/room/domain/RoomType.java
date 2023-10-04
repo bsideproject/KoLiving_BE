@@ -1,8 +1,6 @@
 package com.koliving.api.room.domain;
 
 
-import com.koliving.api.room.domain.info.Quantity;
-import java.util.EnumSet;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -10,28 +8,67 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum RoomType {
     STUDIO(
-        "studio",
-        EnumSet.of(Quantity.ONE),
-        Quantity.defaultBathrooms(),
-        Quantity.defaultRoommates()
-    ),
+        "studio"
+    ) {
+        @Override
+        public boolean isValidBedrooms(Integer count) {
+            return 0 == count;
+        }
+
+        @Override
+        public boolean isValidBathrooms(Integer count) {
+            return 1 <= count;
+        }
+
+        @Override
+        public boolean isValidRoommates(Integer count) {
+            return 1 <= count;
+        }
+    },
     ONE_BED_FLATS(
-        "1bed flats",
-        EnumSet.of(Quantity.ONE),
-        Quantity.defaultBathrooms(),
-        Quantity.defaultRoommates()
-    ),
+        "1bed flats"
+    ) {
+        @Override
+        public boolean isValidBedrooms(Integer count) {
+            return 1 == count;
+        }
+
+        @Override
+        public boolean isValidBathrooms(Integer count) {
+            return 1 <= count;
+        }
+
+        @Override
+        public boolean isValidRoommates(Integer count) {
+            return 1 <= count;
+        }
+    },
     SHARE_HOUSE(
-        "share house",
-        EnumSet.of(Quantity.TWO, Quantity.THREE, Quantity.FOUR, Quantity.FIVE, Quantity.SIX_OR_OVER),
-        Quantity.defaultBathrooms(),
-        Quantity.defaultRoommates()
-    );
+        "share house"
+    ) {
+        @Override
+        public boolean isValidBedrooms(Integer count) {
+            return 2 <= count;
+        }
+
+        @Override
+        public boolean isValidBathrooms(Integer count) {
+            return 1 <= count;
+        }
+
+        @Override
+        public boolean isValidRoommates(Integer count) {
+            return 1 <= count;
+        }
+    };
 
     private final String description;
-    private final EnumSet<Quantity> bedrooms;
-    private final EnumSet<Quantity> bathrooms;
-    private final EnumSet<Quantity> roommates;
+
+    public abstract boolean isValidBedrooms(Integer count);
+
+    public abstract boolean isValidBathrooms(Integer count);
+
+    public abstract boolean isValidRoommates(Integer count);
 
     public boolean isStudio() {
         return this == STUDIO;
@@ -43,17 +80,5 @@ public enum RoomType {
 
     public boolean isShareHouse() {
         return this == SHARE_HOUSE;
-    }
-
-    public boolean isValidBedrooms(Quantity quantity) {
-        return bedrooms.contains(quantity);
-    }
-
-    public boolean isValidBathrooms(Quantity quantity) {
-        return bathrooms.contains(quantity);
-    }
-
-    public boolean isValidRoommates(Quantity quantity) {
-        return roommates.contains(quantity);
     }
 }
