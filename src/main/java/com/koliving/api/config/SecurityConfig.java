@@ -39,6 +39,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -83,8 +84,8 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
-                .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
-                .requestMatchers(AUTHENTICATION_WHITELIST);
+            .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+            .requestMatchers(AUTHENTICATION_WHITELIST);
     }
 
     @Bean
@@ -121,7 +122,7 @@ public class SecurityConfig {
                 config.authenticationEntryPoint(authenticationEntryPoint)
                     .accessDeniedHandler(accessDeniedHandler);
             })
-        //TODO filter 순서 조정 필요
+            //TODO filter 순서 조정 필요
             .addFilterBefore(customExceptionHandlerFilter, HeaderWriterFilter.class)
             .addFilterAfter(jwtAuthenticationFilter, loginFilter.getClass())
             .addFilterAfter(loginFilter, LogoutFilter.class);
@@ -144,10 +145,19 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "http://koliving.kro.kr"));
-        configuration.setAllowedMethods(Arrays.asList("*"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
+        configuration.setAllowedOriginPatterns(
+            List.of(
+                "http://*.localhost:[*]",
+                "https://*.localhost:[*]",
+                "http://koliving.kro.kr:[*]",
+                "https://koliving.kro.kr:[*]"
+            )
+        );
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("*"));
+        configuration.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
