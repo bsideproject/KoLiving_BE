@@ -35,6 +35,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @EnableJpaAuditing
 @SpringBootApplication
@@ -46,6 +49,15 @@ public class KolivingApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(KolivingApplication.class, args);
+    }
+
+    @RequestMapping
+    @RestController
+    public static class IndexController {
+        @GetMapping
+        public String index() {
+            return "invoke";
+        }
     }
 
     @PostConstruct

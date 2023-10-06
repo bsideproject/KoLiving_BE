@@ -69,6 +69,7 @@ public class SecurityConfig {
     @PostConstruct
     private void init() {
         AUTHENTICATION_WHITELIST = new String[]{
+            "/",
             httpUtils.getCurrentVersionPath("auth/**"),
             "/api-docs/**",
             "/swagger-ui/**",
@@ -145,7 +146,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true);
+        //configuration.setAllowCredentials(true);
         configuration.setAllowedOriginPatterns(
             List.of(
                 "http://*.localhost:[*]",
