@@ -145,7 +145,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true);
+        //configuration.setAllowCredentials(true);
         configuration.setAllowedOriginPatterns(
             List.of(
                 "http://*.localhost:[*]",
