@@ -69,6 +69,7 @@ public class SecurityConfig {
     @PostConstruct
     private void init() {
         AUTHENTICATION_WHITELIST = new String[]{
+            "/",
             httpUtils.getCurrentVersionPath("auth/**"),
             "/api-docs/**",
             "/swagger-ui/**",
