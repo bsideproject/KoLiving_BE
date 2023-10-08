@@ -149,6 +149,7 @@ public class SecurityConfig {
         //configuration.setAllowCredentials(true);
         configuration.setAllowedOriginPatterns(
             List.of(
+                "http://localhost:3000",
                 "http://*.localhost:[*]",
                 "https://*.localhost:[*]",
                 "http://koliving.kro.kr:[*]",
