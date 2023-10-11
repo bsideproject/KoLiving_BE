@@ -123,9 +123,8 @@ public class AuthFacade {
             .orElseThrow(() -> new KolivingServiceException(UNAUTHORIZED));
         user.checkPassword(passwordEncoder.encode(request.password()));
 
-        //TODO refresh  토큰 존재 확인
         final JwtTokenDto jwtTokenDto = issueAuthTokens(user);
 
-        return TokenResponse.valueOf(jwtTokenDto.getAccessToken());
+        return TokenResponse.valueOf(jwtTokenDto.getAccessToken(), jwtTokenDto.getRefreshToken());
     }
 }

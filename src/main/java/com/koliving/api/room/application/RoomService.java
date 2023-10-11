@@ -13,7 +13,6 @@ import com.koliving.api.room.application.dto.RoomResponse;
 import com.koliving.api.room.application.dto.RoomSaveRequest;
 import com.koliving.api.room.application.dto.RoomSearchCondition;
 import com.koliving.api.room.domain.Furnishing;
-import com.koliving.api.room.domain.QRoom;
 import com.koliving.api.room.domain.Room;
 import com.koliving.api.room.infra.FurnishingRepository;
 import com.koliving.api.room.infra.RoomRepository;
@@ -21,9 +20,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.koliving.api.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,12 +50,12 @@ public class RoomService {
     }
 
     @Transactional
-    public Long save(RoomSaveRequest request) {
+    public Long save(RoomSaveRequest request, User user) {
         Room room = request.toEntity(
             getLocationById(request.locationId()),
             getFurnishingsByIds(request.furnishingIds()),
             getImageFiles(request.imageIds())
-        );
+        ).by(user);
         final Room savedRoom = roomRepository.save(room);
 
         return savedRoom.getId();
@@ -97,5 +97,10 @@ public class RoomService {
 
     public Page<Room> search(Pageable pageable, RoomSearchCondition condition) {
         return roomRepository.search(pageable, condition);
+    }
+
+    public Room findOne(Long id) {
+        return roomRepository.findByIdWithUser(id)
+            .orElseThrow(() -> new KolivingServiceException(RECORD_NOT_EXIST));
     }
 }

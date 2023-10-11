@@ -4,8 +4,10 @@ import static com.koliving.api.fixtures.LocationFixture.성동구;
 import static com.koliving.api.fixtures.MaintenanceFixture.관리비_없음;
 import static com.koliving.api.fixtures.RoomInfoFixture.스튜디오_방0_욕실1_룸메1;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.useRepresentation;
 
 import com.koliving.api.BaseDataJpaTest;
+import com.koliving.api.fixtures.UserFixture;
 import com.koliving.api.location.domain.Location;
 import com.koliving.api.location.domain.LocationType;
 import com.koliving.api.location.infra.LocationRepository;
@@ -19,6 +21,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+
+import com.koliving.api.user.User;
+import com.koliving.api.user.UserRepository;
 import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,6 +42,9 @@ class RoomRepositoryTest extends BaseDataJpaTest {
 
     @Autowired
     private RoomRepository roomRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
@@ -59,6 +67,11 @@ class RoomRepositoryTest extends BaseDataJpaTest {
             )
         );
 
+        User user = UserFixture.createUser();
+
+        userRepository.save(user);
+
+
         // when
         Room savedRoom = roomRepository.save(
             Room.valueOf(
@@ -71,7 +84,7 @@ class RoomRepositoryTest extends BaseDataJpaTest {
                 LocalDate.of(2023, 8, 29),
                 "설명이에요",
                 Collections.emptySet()
-            )
+            ).by(user)
         );
 
         Room actual = roomRepository.findById(savedRoom.getId())
@@ -101,6 +114,9 @@ class RoomRepositoryTest extends BaseDataJpaTest {
             )
         );
 
+        User user = UserFixture.createUser();
+        userRepository.save(user);
+
         final Furnishing tv = furnishingRepository.findByType(FurnishingType.TV)
             .orElseThrow(NoSuchElementException::new);
 
@@ -119,7 +135,7 @@ class RoomRepositoryTest extends BaseDataJpaTest {
                 LocalDate.of(2023, 8, 29),
                 "설명이에요",
                 Collections.emptySet()
-            )
+            ).by(user)
         );
 
         roomRepository.flush();

@@ -58,6 +58,9 @@ public class User implements UserDetails {
 
     private String description;
 
+    @Column
+    private String imageUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "USER_ROLE")
     private UserRole userRole;
@@ -139,5 +142,4 @@ public class User implements UserDetails {
     public boolean checkPassword(String password) {
         return this.password.equals(password);
     }
-
 }

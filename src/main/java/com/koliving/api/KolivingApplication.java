@@ -81,18 +81,17 @@ public class KolivingApplication {
             initFurnishings(furnishingRepository);
             initLocations(locationRepository);
             initLanguages(languageRepository);
-            //FIXME 테스트 후 제거 예정
-            initRooms(roomRepository, locationRepository, furnishingRepository, imageFileRepository);
-            initUser(userRepository, encoder);
+            User user = initUser(userRepository, encoder);
+            initRooms(roomRepository, locationRepository, furnishingRepository, imageFileRepository, user);
         };
     }
 
-    private void initUser(UserRepository userRepository, PasswordEncoder encoder) {
+    private User initUser(UserRepository userRepository, PasswordEncoder encoder) {
         final User user = User.builder()
             .email("koliving@koliving.com")
             .build();
         user.setPassword(encoder.encode("test1234!@"));
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     private void initImageFiles(ImageFileRepository imageFileRepository) {
@@ -105,7 +104,7 @@ public class KolivingApplication {
     }
 
     private void initRooms(RoomRepository roomRepository, LocationRepository locationRepository,
-        FurnishingRepository furnishingRepository, ImageFileRepository imageFileRepository) {
+        FurnishingRepository furnishingRepository, ImageFileRepository imageFileRepository, User user) {
         Location location = locationRepository.findByName("Songjeong").get();
         Location location2 = locationRepository.findByName("Huam").get();
         Location location3 = locationRepository.findByName("Amsaje 1").get();
@@ -137,7 +136,7 @@ public class KolivingApplication {
                         imageFile,
                         imageFile2
                     )
-                ),
+                ).by(user),
                 Room.valueOf(
                     location2,
                     RoomInfo.valueOf(RoomType.ONE_BED_FLATS, 1, 2, 2),
@@ -148,7 +147,7 @@ public class KolivingApplication {
                     LocalDate.of(2023, 8, 30),
                     "용산구 후암동) ONE_BED_FLATS, 방1, 욕실2, 룸메2 보증금 5_000_000 월세X 관리비X 가구X 2023.08.30 입주",
                     Sets.newHashSet()
-                ),
+                ).by(user),
                 Room.valueOf(
                     location3,
                     RoomInfo.valueOf(RoomType.ONE_BED_FLATS, 1, 2, 2),
@@ -159,7 +158,7 @@ public class KolivingApplication {
                     LocalDate.now(),
                     "강동구 암사제1동) ONE_BED_FLATS, 방1, 욕실2, 룸메2 보증금 5_000_000 월세300_000 관리비X 가구X 2023.08.30 입주",
                     Sets.newHashSet()
-                )
+                ).by(user)
             )
         );
 

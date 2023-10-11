@@ -1,9 +1,11 @@
 package com.koliving.api.room.domain;
 
 import com.koliving.api.base.domain.BaseEntity;
+import com.koliving.api.base.exception.KolivingServiceException;
 import com.koliving.api.file.domain.ImageFile;
 import com.koliving.api.location.domain.Location;
 import com.koliving.api.room.domain.info.RoomInfo;
+import com.koliving.api.user.User;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -25,8 +27,10 @@ import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
+import static com.koliving.api.base.ServiceError.ILLEGAL_ROOM_INFO;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -50,7 +54,11 @@ public class Room extends BaseEntity {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "location_id")
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @OneToOne
+    @JoinColumn(name = "location_id", nullable = false)
     private Location location;
 
     @Embedded
@@ -81,7 +89,7 @@ public class Room extends BaseEntity {
     @Lob
     private String description;
 
-    @OneToMany
+    @ManyToMany
     @JoinTable(
         name = "TB_ROOM_IMAGES",
         joinColumns = @JoinColumn(name = "room_id"),
@@ -102,10 +110,6 @@ public class Room extends BaseEntity {
         this.imageFiles = imageFiles;
     }
 
-    private void validate(Money deposit, Money monthlyRent, Set<ImageFile> imageFiles) {
-        //TODO 최대값 validation 추가
-    }
-
     public static Room valueOf(
         Location location,
         RoomInfo info,
@@ -120,6 +124,16 @@ public class Room extends BaseEntity {
         return new Room(location, info, deposit, monthlyRent, maintenance, furnishings, availableDate, description, imageFiles);
     }
 
-    private Long userId;
+    private void validate(Money deposit, Money monthlyRent, Set<ImageFile> imageFiles) {
+        //TODO 최대값 validation 추가
+    }
 
+    public Room by(User user) {
+        if (Objects.isNull(user)) {
+            throw new KolivingServiceException(ILLEGAL_ROOM_INFO);
+        }
+
+        this.user = user;
+        return this;
+    }
 }
