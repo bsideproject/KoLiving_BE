@@ -6,6 +6,7 @@ import com.koliving.api.room.application.dto.RoomResponse;
 import com.koliving.api.room.application.dto.RoomSaveRequest;
 import com.koliving.api.room.application.dto.RoomSearchCondition;
 import com.koliving.api.room.domain.Room;
+import com.koliving.api.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,12 +16,16 @@ import java.net.URI;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,8 +54,8 @@ public class RoomController {
             ),
         })
     @PostMapping
-    public ResponseEntity<Long> save(@RequestBody RoomSaveRequest request) {
-        final Long id = roomService.save(request);
+    public ResponseEntity<Long> save(@RequestBody RoomSaveRequest request, @AuthenticationPrincipal User user) {
+        final Long id = roomService.save(request, user);
 
         return ResponseEntity.created(URI.create("api/v1/rooms/" + id))
             .build();
@@ -74,5 +79,25 @@ public class RoomController {
     public ResponseEntity<Page<Room>> search(@ParameterObject @PageableDefault Pageable pageable, @ParameterObject RoomSearchCondition condition) {
         return ResponseEntity.ok()
             .body(roomService.search(pageable, condition));
+    }
+
+    @Operation(
+        summary = "방 조회",
+        description = "방을 조회합니다.",
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "방 조회 성공"
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "방 조회 실패",
+                content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+        })
+    @GetMapping("/{id}")
+    public ResponseEntity<Room> findById(@PathVariable Long id) {
+        return ResponseEntity.ok()
+            .body(roomService.findOne(id));
     }
 }

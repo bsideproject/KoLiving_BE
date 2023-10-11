@@ -7,7 +7,7 @@ public record TokenRequest(
     @Schema(description = "계정", example = "koliving@koliving.com")
     @NotEmpty String email,
 
-    @Schema(description = "비밀번호", example = "password1234")
+    @Schema(description = "비밀번호", example = "test1234!@")
     @NotEmpty String password
 ) {
 

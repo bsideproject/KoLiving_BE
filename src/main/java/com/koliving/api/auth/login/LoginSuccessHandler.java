@@ -6,6 +6,7 @@ import com.koliving.api.utils.HttpUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,5 +34,7 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
                 httpUtils.getCookieOfAccessToken(accessToken),
                 httpUtils.getCookieOfRefreshToken(refreshToken)
         );
+
+        response.addHeader(HttpHeaders.AUTHORIZATION, "bearer " + accessToken);
     }
 }
