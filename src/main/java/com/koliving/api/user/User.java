@@ -1,5 +1,6 @@
 package com.koliving.api.user;
 
+import com.koliving.api.base.exception.KolivingServiceException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,23 +23,27 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.swing.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+
+import static com.koliving.api.base.ServiceError.UNAUTHORIZED;
 
 @Entity(name = "TB_USER")
 @DynamicInsert
 @DynamicUpdate
 @Getter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(of = "id", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User implements UserDetails {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String email;
     private String password;
@@ -90,6 +95,16 @@ public class User implements UserDetails {
         this.userRole = UserRole.USER;
     }
 
+    private User(String email, String password, UserRole userRole) {
+        this.email = email;
+        this.password = password;
+        this.userRole = userRole;
+    }
+
+    public static User valueOf(String email, String encodedPassword, UserRole role) {
+        return new User(email, encodedPassword, role);
+    }
+
     public void setPassword(String password) {
         this.password = password;
         this.signUpStatus = SignUpStatus.PROFILE_INFORMATION_PENDING;
@@ -139,7 +154,9 @@ public class User implements UserDetails {
         return true;
     }
 
-    public boolean checkPassword(String password) {
-        return this.password.equals(password);
+    public void checkPassword(PasswordEncoder passwordEncoder, String rawPassword) {
+        if (!passwordEncoder.matches(rawPassword, this.password)) {
+            throw new KolivingServiceException(UNAUTHORIZED);
+        }
     }
 }

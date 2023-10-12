@@ -12,19 +12,23 @@ import com.koliving.api.auth.login.LoginSuccessHandler;
 import com.koliving.api.utils.HttpUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
@@ -32,13 +36,11 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.header.HeaderWriterFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -69,7 +71,6 @@ public class SecurityConfig {
     @PostConstruct
     private void init() {
         AUTHENTICATION_WHITELIST = new String[]{
-            "/",
             httpUtils.getCurrentVersionPath("auth/**"),
             "/api-docs/**",
             "/swagger-ui/**",
@@ -85,6 +86,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
+            .requestMatchers(PathRequest.toH2Console())
             .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
             .requestMatchers(AUTHENTICATION_WHITELIST);
     }
@@ -98,20 +100,14 @@ public class SecurityConfig {
         JwtAuthenticationFilter jwtAuthenticationFilter = createJwtAuthenticationFilter();
 
         http.cors(withDefaults())
-            .headers()
-            .frameOptions().disable()
-            .and()
             .csrf().disable()
-            .formLogin(AbstractHttpConfigurer::disable)
-            .httpBasic(AbstractHttpConfigurer::disable)
             .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(req -> {
                 req
-                    .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
-                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/login").permitAll() // test
                     .requestMatchers(AUTHENTICATION_WHITELIST).permitAll()
                     .requestMatchers(AUTHORIZATION_WHITELIST).permitAll()
+                    .requestMatchers("/api/v1/management/**").hasRole("ADMIN")
+                    .requestMatchers("/api/v1/**").hasRole("USER")
                     .anyRequest().authenticated();
             })
             .logout(config -> {
@@ -123,7 +119,6 @@ public class SecurityConfig {
                 config.authenticationEntryPoint(authenticationEntryPoint)
                     .accessDeniedHandler(accessDeniedHandler);
             })
-            //TODO filter 순서 조정 필요
             .addFilterBefore(customExceptionHandlerFilter, HeaderWriterFilter.class)
             .addFilterAfter(jwtAuthenticationFilter, loginFilter.getClass())
             .addFilterAfter(loginFilter, LogoutFilter.class);

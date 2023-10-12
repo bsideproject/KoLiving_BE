@@ -121,7 +121,8 @@ public class AuthFacade {
     public TokenResponse createToken(TokenRequest request) {
         final User user = userRepository.findByEmail(request.email())
             .orElseThrow(() -> new KolivingServiceException(UNAUTHORIZED));
-        user.checkPassword(passwordEncoder.encode(request.password()));
+
+        user.checkPassword(passwordEncoder, request.password());
 
         final JwtTokenDto jwtTokenDto = issueAuthTokens(user);
 

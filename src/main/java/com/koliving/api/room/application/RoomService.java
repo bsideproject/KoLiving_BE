@@ -1,7 +1,5 @@
 package com.koliving.api.room.application;
 
-import static com.koliving.api.base.ServiceError.RECORD_NOT_EXIST;
-
 import com.google.common.collect.Sets;
 import com.koliving.api.base.ServiceError;
 import com.koliving.api.base.exception.KolivingServiceException;
@@ -16,11 +14,6 @@ import com.koliving.api.room.domain.Furnishing;
 import com.koliving.api.room.domain.Room;
 import com.koliving.api.room.infra.FurnishingRepository;
 import com.koliving.api.room.infra.RoomRepository;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.koliving.api.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,6 +21,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.koliving.api.base.ServiceError.FORBIDDEN;
+import static com.koliving.api.base.ServiceError.RECORD_NOT_EXIST;
+import static com.koliving.api.base.ServiceError.UNAUTHORIZED;
 
 /**
  * author : haedoang date : 2023/08/26 description :
@@ -43,7 +45,7 @@ public class RoomService {
     private final ImageFileRepository imageFileRepository;
 
     public List<RoomResponse> list() {
-        return roomRepository.findAll()
+        return roomRepository.findAllWithUser()
             .stream()
             .map(RoomResponse::valueOf)
             .collect(Collectors.toList());
@@ -102,5 +104,23 @@ public class RoomService {
     public Room findOne(Long id) {
         return roomRepository.findByIdWithUser(id)
             .orElseThrow(() -> new KolivingServiceException(RECORD_NOT_EXIST));
+    }
+
+    @Transactional
+    public void deleteRoomById(Long id) {
+        Room room = roomRepository.findByIdWithUser(id)
+            .orElseThrow(() -> new KolivingServiceException(RECORD_NOT_EXIST));
+
+        room.delete();
+    }
+
+    @Transactional
+    public void deleteRoomById(Long id, User user) {
+        Room room = roomRepository.findById(id).orElseThrow(() -> new KolivingServiceException(RECORD_NOT_EXIST));
+        if (!room.checkUser(user)) {
+            throw new KolivingServiceException(FORBIDDEN);
+        }
+
+        room.delete();
     }
 }
