@@ -38,9 +38,7 @@ public class FurnishingController {
             ),
         })
     @GetMapping
-    public ResponseEntity<List<FurnishingResponse>> list(@AuthenticationPrincipal Principal principal) {
-
-        log.info("principal: {}", principal);
+    public ResponseEntity<List<FurnishingResponse>> list() {
         final List<FurnishingResponse> responses = furnishingService.list();
         return ResponseEntity.ok()
             .body(responses);

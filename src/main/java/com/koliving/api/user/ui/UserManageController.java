@@ -24,7 +24,7 @@ public class UserManageController {
     private final UserService userService;
 
     @Operation(
-        summary = "회원 리스트 등록",
+        summary = "회원 리스트 조회",
         description = "회원 리스트를 조회합니다.",
         responses = {
             @ApiResponse(

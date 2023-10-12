@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -99,5 +100,25 @@ public class RoomController {
     public ResponseEntity<Room> findById(@PathVariable Long id) {
         return ResponseEntity.ok()
             .body(roomService.findOne(id));
+    }
+
+    @Operation(
+        summary = "방 삭제",
+        description = "방을 삭제합니다.",
+        responses = {
+            @ApiResponse(
+                responseCode = "204",
+                description = "방 삭제 성공"
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "방 삭제 실패",
+                content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+        })
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteById(Long id, @AuthenticationPrincipal User user) {
+        roomService.deleteRoomById(id, user);
+        return ResponseEntity.noContent().build();
     }
 }

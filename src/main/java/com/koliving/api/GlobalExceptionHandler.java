@@ -1,9 +1,11 @@
 package com.koliving.api;
 
+import static com.koliving.api.base.ServiceError.*;
 import static com.koliving.api.token.confirmation.ConfirmationTokenType.RESET_PASSWORD;
 import static com.koliving.api.token.confirmation.ConfirmationTokenType.SIGN_UP;
 
 import com.koliving.api.base.ErrorResponse;
+import com.koliving.api.base.ServiceError;
 import com.koliving.api.base.exception.KolivingServiceException;
 import com.koliving.api.dto.ConfirmationTokenErrorDto;
 import com.koliving.api.dto.ResponseDto;
@@ -133,16 +135,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = AccessDeniedException.class) // Authorization
-    public ResponseEntity<ResponseDto<String>> handleAccessDeniedException(RuntimeException e, Locale locale) {
-        locale = httpUtils.getLocaleForLanguage(locale);
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(RuntimeException e, Locale locale) {
+        log.error("accessDeniedException", e);
 
-        String messageKey = e.getMessage();
-        String errorMessage = messageSource.getMessage(messageKey, null, locale);
-
-        return httpUtils.createResponseEntityWithRedirect(
-            httpUtils.createFailureResponse(errorMessage, unauthorized.value()),
-            httpUtils.getCurrentVersionPath("login")
-        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .body(ErrorResponse.valueOf(FORBIDDEN));
     }
 
     @ExceptionHandler(value = KolivingServiceException.class)

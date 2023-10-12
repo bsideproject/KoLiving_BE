@@ -2,10 +2,8 @@ package com.koliving.api.room.infra;
 
 import com.koliving.api.room.application.dto.RoomSearchCondition;
 import com.koliving.api.room.domain.FurnishingType;
-import com.koliving.api.room.domain.QFurnishing;
 import com.koliving.api.room.domain.Room;
 import com.koliving.api.room.domain.RoomType;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
