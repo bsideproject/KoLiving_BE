@@ -21,6 +21,7 @@ import com.koliving.api.room.infra.FurnishingRepository;
 import com.koliving.api.room.infra.RoomRepository;
 import com.koliving.api.user.User;
 import com.koliving.api.user.UserRepository;
+import com.koliving.api.user.UserRole;
 import jakarta.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -51,15 +52,6 @@ public class KolivingApplication {
         SpringApplication.run(KolivingApplication.class, args);
     }
 
-    @RequestMapping
-    @RestController
-    public static class IndexController {
-        @GetMapping
-        public String index() {
-            return "invoke";
-        }
-    }
-
     @PostConstruct
     void started() {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -87,10 +79,11 @@ public class KolivingApplication {
     }
 
     private User initUser(UserRepository userRepository, PasswordEncoder encoder) {
-        final User user = User.builder()
-            .email("koliving@koliving.com")
-            .build();
-        user.setPassword(encoder.encode("test1234!@"));
+        final User user = User.valueOf("koliving@koliving.com", encoder.encode("test1234!@"), UserRole.USER);
+        final User user2 = User.valueOf("koliving2@koliving.com", encoder.encode("test1234!@"), UserRole.USER);
+        final User manager = User.valueOf("manager@koliving.com", encoder.encode("test1234!@"), UserRole.ADMIN);
+
+        userRepository.saveAll(List.of(user2, manager));
         return userRepository.save(user);
     }
 

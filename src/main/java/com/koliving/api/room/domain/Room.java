@@ -16,7 +16,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 import lombok.EqualsAndHashCode;
@@ -31,6 +30,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import static com.koliving.api.base.ServiceError.ILLEGAL_ROOM_INFO;
+import static com.koliving.api.base.ServiceError.UNAUTHORIZED;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -135,5 +135,9 @@ public class Room extends BaseEntity {
 
         this.user = user;
         return this;
+    }
+
+    public boolean checkUser(User user) {
+        return this.user.equals(user);
     }
 }

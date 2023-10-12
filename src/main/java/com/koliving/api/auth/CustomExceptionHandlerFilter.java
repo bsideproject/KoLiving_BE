@@ -31,6 +31,7 @@ public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
         Locale locale = localeResolver.resolveLocale(request);
 
         try {
+
             filterChain.doFilter(request, response);
         } catch (LoginInvalidException e) {
             ValidationResult errors = ValidationResult.of(e.getErrors(), messageSource, locale);
