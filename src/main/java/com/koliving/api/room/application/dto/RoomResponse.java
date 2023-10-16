@@ -8,11 +8,9 @@ import com.koliving.api.room.domain.Money;
 import com.koliving.api.room.domain.Room;
 import com.koliving.api.room.domain.info.RoomInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 /**
  * author : haedoang date : 2023/08/26 description :
@@ -48,11 +46,10 @@ public record RoomResponse(
     String description,
 
     @Schema(description = "유저 정보")
-    MockUser mockUser,
+    WriterResponse user,
 
     @Schema(description = "방 이미지 정보")
     Set<ImageFile> images
-
 ) {
 
     public static RoomResponse valueOf(Room entity) {
@@ -66,21 +63,8 @@ public record RoomResponse(
             entity.getFurnishings(),
             entity.getAvailableDate(),
             entity.getDescription(),
-            new MockUser(),
+            WriterResponse.of(entity.getUser()),
             entity.getImageFiles()
         );
-    }
-
-    @Getter
-    public static class MockUser {
-        private final String firstName = "NAMI";
-        private final String lastName = "OH";
-        private final String profileImage = "https://cdn-icons-png.flaticon.com/512/3135/3135823.png";
-        private final int age = 30;
-        private final Gender gender = Gender.FEMALE;
-    }
-
-    public enum Gender {
-        MALE, FEMALE
     }
 }

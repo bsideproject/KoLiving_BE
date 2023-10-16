@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import static com.koliving.api.base.ServiceError.FORBIDDEN;
 import static com.koliving.api.base.ServiceError.RECORD_NOT_EXIST;
-import static com.koliving.api.base.ServiceError.UNAUTHORIZED;
 
 /**
  * author : haedoang date : 2023/08/26 description :
@@ -97,7 +96,7 @@ public class RoomService {
         return location;
     }
 
-    public Page<Room> search(Pageable pageable, RoomSearchCondition condition) {
+    public Page<RoomResponse> search(Pageable pageable, RoomSearchCondition condition) {
         return roomRepository.search(pageable, condition);
     }
 
