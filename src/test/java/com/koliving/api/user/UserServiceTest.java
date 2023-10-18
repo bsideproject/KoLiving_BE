@@ -146,7 +146,7 @@ class UserServiceTest {
 
         List<UserResponse> expected = userList.stream()
                 .map(UserResponse::valueOf)
-                .collect(Collectors.toList());
+                .toList();
 
         assertTrue(actual.equals(expected));
         assertTrue(actual.containsAll(expected));

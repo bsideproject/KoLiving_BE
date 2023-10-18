@@ -1,6 +1,7 @@
 package com.koliving.api.user;
 
 import com.koliving.api.base.exception.KolivingServiceException;
+import com.koliving.api.file.domain.ImageFile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -8,6 +9,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AccessLevel;
@@ -25,7 +29,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.swing.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -61,10 +64,12 @@ public class User implements UserDetails {
     @Column(name = "BIRTH_DATE")
     private LocalDate birthDate;
 
+    @Lob
     private String description;
 
-    @Column
-    private String imageUrl;
+    @OneToOne
+    @JoinColumn(name = "IMAGE_FILE_ID")
+    private ImageFile imageFile;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "USER_ROLE")
@@ -95,16 +100,26 @@ public class User implements UserDetails {
         this.userRole = UserRole.USER;
     }
 
-    private User(String email, String password, UserRole userRole) {
+    private User(String email, String password, String firstName, String lastName, Gender gender, LocalDate birthDate, String description, ImageFile imageFile, UserRole userRole) {
         this.email = email;
         this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.description = description;
+        this.imageFile = imageFile;
         this.userRole = userRole;
     }
 
+    @Deprecated
     public static User valueOf(String email, String encodedPassword, UserRole role) {
-        return new User(email, encodedPassword, role);
+        return new User(email, encodedPassword, null, null, null, null, null,null, role);
     }
 
+    public static User of(ImageFile imageFile, Gender gender, String firstName, String lastName, LocalDate birthDate, String description) {
+        return new User(null, null, firstName, lastName, gender, birthDate,description, imageFile, null);
+    }
     public void setPassword(String password) {
         this.password = password;
         this.signUpStatus = SignUpStatus.PROFILE_INFORMATION_PENDING;
@@ -158,5 +173,14 @@ public class User implements UserDetails {
         if (!passwordEncoder.matches(rawPassword, this.password)) {
             throw new KolivingServiceException(UNAUTHORIZED);
         }
+    }
+
+    public void update(User updatable) {
+        this.imageFile = updatable.imageFile;
+        this.firstName = updatable.firstName;
+        this.lastName = updatable.lastName;
+        this.gender = updatable.gender;
+        this.birthDate = updatable.birthDate;
+        this.description = updatable.description;
     }
 }
