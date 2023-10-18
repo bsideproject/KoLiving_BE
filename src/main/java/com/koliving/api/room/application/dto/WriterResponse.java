@@ -5,6 +5,7 @@ import com.koliving.api.user.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Schema(description = "작성자 정보")
 public record WriterResponse(
@@ -17,11 +18,16 @@ public record WriterResponse(
     Gender gender,
     @Schema(description = "작성자 생년월일")
     LocalDate birthDate,
+
+    @Schema(description = "작성자 소개")
+    String description,
+
     @Schema(description = "작성자 프로필 URL")
     String imageUrl
 ) {
 
     public static WriterResponse of(User entity) {
-        return new WriterResponse(entity.getFirstName(), entity.getLastName(), entity.getGender(), entity.getBirthDate(), entity.getImageUrl());
+        String imageUrl = Objects.isNull(entity.getImageFile()) ? null : entity.getImageFile().getPath();
+        return new WriterResponse(entity.getFirstName(), entity.getLastName(), entity.getGender(), entity.getBirthDate(), entity.getDescription(), imageUrl);
     }
 }
