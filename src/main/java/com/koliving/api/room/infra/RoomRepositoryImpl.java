@@ -1,5 +1,6 @@
 package com.koliving.api.room.infra;
 
+import com.koliving.api.room.application.dto.RoomResponse;
 import com.koliving.api.room.application.dto.RoomSearchCondition;
 import com.koliving.api.room.domain.FurnishingType;
 import com.koliving.api.room.domain.Room;
@@ -15,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.koliving.api.room.domain.QRoom.room;
 
@@ -23,7 +25,7 @@ public class RoomRepositoryImpl implements RoomRepositoryQueryDsl {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Room> search(Pageable pageable, RoomSearchCondition condition) {
+    public Page<RoomResponse> search(Pageable pageable, RoomSearchCondition condition) {
         List<Room> rooms = queryFactory.selectFrom(room)
             .where(
                 filterByLocationIds(condition.locationIds()),
@@ -50,8 +52,9 @@ public class RoomRepositoryImpl implements RoomRepositoryQueryDsl {
             .fetch()
             .size();
 
-
-        return PageableExecutionUtils.getPage(rooms, pageable, () -> count);
+        return PageableExecutionUtils.getPage(rooms.stream()
+            .map(RoomResponse::valueOf)
+            .collect(Collectors.toList()), pageable, () -> count);
     }
 
     private BooleanExpression filterByFurnishings(List<FurnishingType> furnishingTypes) {
