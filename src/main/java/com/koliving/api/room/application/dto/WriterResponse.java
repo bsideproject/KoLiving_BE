@@ -16,6 +16,7 @@ public record WriterResponse(
 
     @Schema(description = "작성자 성별")
     Gender gender,
+
     @Schema(description = "작성자 생년월일")
     LocalDate birthDate,
 

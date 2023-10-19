@@ -31,7 +31,7 @@ public record RoomSearchCondition(
     @Schema(description = "룸 타입", example = "STUDIO, ONE_BED_FLATS")
     List<RoomType> types,
 
-    @Schema(description = "가구류", example = "TV, DOOR_LOCK")
-    List<FurnishingType> furnishingTypes
+    @Schema(description = "가구류 ID", example = "1,2,3")
+        List<Long> furnishingTypes
     ) {
 }

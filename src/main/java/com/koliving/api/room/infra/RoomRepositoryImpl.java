@@ -1,27 +1,26 @@
 package com.koliving.api.room.infra;
 
+import static com.koliving.api.room.domain.QRoom.room;
+
 import com.koliving.api.room.application.dto.RoomResponse;
 import com.koliving.api.room.application.dto.RoomSearchCondition;
-import com.koliving.api.room.domain.FurnishingType;
 import com.koliving.api.room.domain.Room;
 import com.koliving.api.room.domain.RoomType;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static com.koliving.api.room.domain.QRoom.room;
-
 @RequiredArgsConstructor
 public class RoomRepositoryImpl implements RoomRepositoryQueryDsl {
+
     private final JPAQueryFactory queryFactory;
 
     @Override
@@ -38,7 +37,6 @@ public class RoomRepositoryImpl implements RoomRepositoryQueryDsl {
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
-
 
         long count = queryFactory.selectFrom(room)
             .where(
@@ -57,12 +55,15 @@ public class RoomRepositoryImpl implements RoomRepositoryQueryDsl {
             .collect(Collectors.toList()), pageable, () -> count);
     }
 
-    private BooleanExpression filterByFurnishings(List<FurnishingType> furnishingTypes) {
+    private BooleanExpression filterByFurnishings(List<Long> furnishingTypes) {
         if (CollectionUtils.isEmpty(furnishingTypes)) {
             return null;
         }
 
-        return room.furnishings.any().type.in(furnishingTypes);
+        return room.furnishings
+            .any()
+            .id
+            .in(furnishingTypes);
     }
 
     private BooleanExpression filterByTypes(List<RoomType> types) {
@@ -70,7 +71,9 @@ public class RoomRepositoryImpl implements RoomRepositoryQueryDsl {
             return null;
         }
 
-        return room.roomInfo.roomType.in(types);
+        return room.roomInfo
+            .roomType
+            .in(types);
     }
 
     private BooleanExpression filterByAvailableDate(LocalDate localDate) {
