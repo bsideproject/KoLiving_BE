@@ -1,5 +1,6 @@
 package com.koliving.api.room.infra;
 
+import static com.koliving.api.room.domain.QLike.like;
 import static com.koliving.api.room.domain.QRoom.room;
 
 import com.koliving.api.room.application.dto.RoomResponse;
@@ -50,6 +51,10 @@ public class RoomRepositoryImpl implements RoomRepositoryQueryDsl {
             .fetch()
             .size();
 
+        return getRoomResponses(pageable, rooms, count);
+    }
+
+    private Page<RoomResponse> getRoomResponses(Pageable pageable, List<Room> rooms, long count) {
         return PageableExecutionUtils.getPage(rooms.stream()
             .map(RoomResponse::valueOf)
             .collect(Collectors.toList()), pageable, () -> count);
@@ -116,5 +121,23 @@ public class RoomRepositoryImpl implements RoomRepositoryQueryDsl {
         }
 
         return null;
+    }
+
+    @Override
+    public Page<RoomResponse> likedRooms(Pageable pageable, Long userId) {
+        List<Room> rooms = queryFactory.select(like.room)
+            .from(like)
+            .where(like.user.id.eq(userId))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+        long count = queryFactory.select(like.room)
+            .from(like)
+            .where(like.user.id.eq(userId))
+            .fetch()
+            .size();
+
+        return getRoomResponses(pageable, rooms, count);
     }
 }

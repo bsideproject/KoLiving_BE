@@ -1,5 +1,8 @@
 package com.koliving.api.room.application;
 
+import static com.koliving.api.base.ServiceError.FORBIDDEN;
+import static com.koliving.api.base.ServiceError.RECORD_NOT_EXIST;
+
 import com.google.common.collect.Sets;
 import com.koliving.api.base.ServiceError;
 import com.koliving.api.base.exception.KolivingServiceException;
@@ -11,24 +14,22 @@ import com.koliving.api.room.application.dto.RoomResponse;
 import com.koliving.api.room.application.dto.RoomSaveRequest;
 import com.koliving.api.room.application.dto.RoomSearchCondition;
 import com.koliving.api.room.domain.Furnishing;
+import com.koliving.api.room.domain.Like;
 import com.koliving.api.room.domain.Room;
 import com.koliving.api.room.infra.FurnishingRepository;
+import com.koliving.api.room.infra.LikeRepository;
 import com.koliving.api.room.infra.RoomRepository;
 import com.koliving.api.user.User;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static com.koliving.api.base.ServiceError.FORBIDDEN;
-import static com.koliving.api.base.ServiceError.RECORD_NOT_EXIST;
 
 /**
  * author : haedoang date : 2023/08/26 description :
@@ -42,6 +43,7 @@ public class RoomService {
     private final LocationRepository locationRepository;
     private final RoomRepository roomRepository;
     private final ImageFileRepository imageFileRepository;
+    private final LikeRepository likeRepository;
 
     public List<RoomResponse> list() {
         return roomRepository.findAllWithUser()
@@ -100,9 +102,11 @@ public class RoomService {
         return roomRepository.search(pageable, condition);
     }
 
-    public Room findOne(Long id) {
-        return roomRepository.findByIdWithUser(id)
+    public RoomResponse findOne(Long id) {
+        final Room room = roomRepository.findByIdWithUser(id)
             .orElseThrow(() -> new KolivingServiceException(RECORD_NOT_EXIST));
+
+        return RoomResponse.valueOf(room);
     }
 
     @Transactional
@@ -121,5 +125,16 @@ public class RoomService {
         }
 
         room.delete();
+    }
+
+    @Transactional
+    public void likeRoom(Long id, User user) {
+        Room room = roomRepository.findById(id).orElseThrow(() -> new KolivingServiceException(RECORD_NOT_EXIST));
+        final Like like = Like.of(room, user);
+        likeRepository.save(like);
+    }
+
+    public Page<RoomResponse> findLikeRoomByUser(Pageable pageable, User user) {
+        return roomRepository.likedRooms(pageable, user.getId());
     }
 }
