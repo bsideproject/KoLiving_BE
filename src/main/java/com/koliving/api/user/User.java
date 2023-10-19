@@ -1,5 +1,7 @@
 package com.koliving.api.user;
 
+import static com.koliving.api.base.ServiceError.UNAUTHORIZED;
+
 import com.koliving.api.base.exception.KolivingServiceException;
 import com.koliving.api.file.domain.ImageFile;
 import jakarta.persistence.Column;
@@ -14,6 +16,10 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -28,13 +34,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-
-import static com.koliving.api.base.ServiceError.UNAUTHORIZED;
 
 @Entity(name = "TB_USER")
 @DynamicInsert
@@ -100,7 +99,8 @@ public class User implements UserDetails {
         this.userRole = UserRole.USER;
     }
 
-    private User(String email, String password, String firstName, String lastName, Gender gender, LocalDate birthDate, String description, ImageFile imageFile, UserRole userRole) {
+    private User(String email, String password, String firstName, String lastName, Gender gender, LocalDate birthDate,
+        String description, ImageFile imageFile, UserRole userRole) {
         this.email = email;
         this.password = password;
         this.firstName = firstName;
@@ -114,12 +114,14 @@ public class User implements UserDetails {
 
     @Deprecated
     public static User valueOf(String email, String encodedPassword, UserRole role) {
-        return new User(email, encodedPassword, null, null, null, null, null,null, role);
+        return new User(email, encodedPassword, null, null, null, null, null, null, role);
     }
 
-    public static User of(ImageFile imageFile, Gender gender, String firstName, String lastName, LocalDate birthDate, String description) {
-        return new User(null, null, firstName, lastName, gender, birthDate,description, imageFile, null);
+    public static User of(ImageFile imageFile, Gender gender, String firstName, String lastName, LocalDate birthDate,
+        String description) {
+        return new User(null, null, firstName, lastName, gender, birthDate, description, imageFile, null);
     }
+
     public void setPassword(String password) {
         this.password = password;
         this.signUpStatus = SignUpStatus.PROFILE_INFORMATION_PENDING;

@@ -11,6 +11,7 @@ import java.util.Objects;
 public record WriterResponse(
     @Schema(description = "작성자 이름")
     String firstName,
+
     @Schema(description = "작성자 성")
     String lastName,
 

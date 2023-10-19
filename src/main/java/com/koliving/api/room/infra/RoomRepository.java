@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.repository.query.Param;
 
 public interface RoomRepository extends JpaRepository<Room, Long>, RoomRepositoryQueryDsl {
 
@@ -13,6 +14,6 @@ public interface RoomRepository extends JpaRepository<Room, Long>, RoomRepositor
     List<Room> findAllWithUser();
 
     @Query("select r from TB_ROOM r join fetch r.user u where r.id=:id")
-    Optional<Room> findByIdWithUser(Long id);
+    Optional<Room> findByIdWithUser(@Param("id") Long id);
 
 }

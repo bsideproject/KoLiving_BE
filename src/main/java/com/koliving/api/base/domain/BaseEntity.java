@@ -19,11 +19,11 @@ public abstract class BaseEntity {
     private boolean deleted = Boolean.FALSE;
 
     @CreatedDate
-    @Column(nullable = false)
+    @Column(nullable = false, name = "CREATED_AT")
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(nullable = false)
+    @Column(nullable = false, name = "UPDATED_AT")
     private LocalDateTime updatedAt;
 
     public void delete() {
