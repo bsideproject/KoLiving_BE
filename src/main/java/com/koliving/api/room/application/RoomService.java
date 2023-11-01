@@ -22,6 +22,7 @@ import com.koliving.api.room.infra.RoomRepository;
 import com.koliving.api.user.User;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -103,23 +104,18 @@ public class RoomService {
     }
 
     public RoomResponse findOne(Long id) {
-        final Room room = roomRepository.findByIdWithUser(id)
-            .orElseThrow(() -> new KolivingServiceException(RECORD_NOT_EXIST));
-
-        return RoomResponse.valueOf(room);
+        return RoomResponse.valueOf(getRoom(id));
     }
 
     @Transactional
     public void deleteRoomById(Long id) {
-        Room room = roomRepository.findByIdWithUser(id)
-            .orElseThrow(() -> new KolivingServiceException(RECORD_NOT_EXIST));
-
+        Room room = getRoom(id);
         room.delete();
     }
 
     @Transactional
     public void deleteRoomById(Long id, User user) {
-        Room room = roomRepository.findById(id).orElseThrow(() -> new KolivingServiceException(RECORD_NOT_EXIST));
+        Room room = getRoom(id);
         if (!room.checkUser(user)) {
             throw new KolivingServiceException(FORBIDDEN);
         }
@@ -128,13 +124,24 @@ public class RoomService {
     }
 
     @Transactional
-    public void likeRoom(Long id, User user) {
-        Room room = roomRepository.findById(id).orElseThrow(() -> new KolivingServiceException(RECORD_NOT_EXIST));
+    public void likeRoom(Long roomId, User user) {
+        Room room = getRoom(roomId);
         final Like like = Like.of(room, user);
-        likeRepository.save(like);
+
+        likeRepository.findByRoomId(roomId)
+            .ifPresentOrElse(
+                likeRepository::delete,
+                () -> likeRepository.save(like)
+            );
+        ;
     }
 
     public Page<RoomResponse> findLikeRoomByUser(Pageable pageable, User user) {
         return roomRepository.likedRooms(pageable, user.getId());
+    }
+
+    private Room getRoom(Long id) {
+        return roomRepository.findByIdWithUser(id)
+            .orElseThrow(() -> new KolivingServiceException(RECORD_NOT_EXIST));
     }
 }

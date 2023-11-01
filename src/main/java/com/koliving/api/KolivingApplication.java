@@ -12,12 +12,14 @@ import com.koliving.api.location.domain.Location;
 import com.koliving.api.location.infra.LocationRepository;
 import com.koliving.api.room.domain.Furnishing;
 import com.koliving.api.room.domain.FurnishingType;
+import com.koliving.api.room.domain.Like;
 import com.koliving.api.room.domain.Maintenance;
 import com.koliving.api.room.domain.Money;
 import com.koliving.api.room.domain.Room;
 import com.koliving.api.room.domain.RoomType;
 import com.koliving.api.room.domain.info.RoomInfo;
 import com.koliving.api.room.infra.FurnishingRepository;
+import com.koliving.api.room.infra.LikeRepository;
 import com.koliving.api.room.infra.RoomRepository;
 import com.koliving.api.user.User;
 import com.koliving.api.user.UserRepository;
@@ -65,6 +67,7 @@ public class KolivingApplication {
         LanguageRepository languageRepository,
         RoomRepository roomRepository,
         ImageFileRepository imageFileRepository,
+        LikeRepository likeRepository,
         UserRepository userRepository,
         PasswordEncoder encoder
     ) {
@@ -74,7 +77,7 @@ public class KolivingApplication {
             initLocations(locationRepository);
             initLanguages(languageRepository);
             User user = initUser(userRepository, encoder);
-            initRooms(roomRepository, locationRepository, furnishingRepository, imageFileRepository, user);
+            initRooms(roomRepository, locationRepository, furnishingRepository, imageFileRepository, likeRepository, user);
         };
     }
 
@@ -97,7 +100,7 @@ public class KolivingApplication {
     }
 
     private void initRooms(RoomRepository roomRepository, LocationRepository locationRepository,
-        FurnishingRepository furnishingRepository, ImageFileRepository imageFileRepository, User user) {
+        FurnishingRepository furnishingRepository, ImageFileRepository imageFileRepository, LikeRepository likeRepository, User user) {
         Location location = locationRepository.findByName("Songjeong").get();
         Location location2 = locationRepository.findByName("Huam").get();
         Location location3 = locationRepository.findByName("Amsaje 1").get();
@@ -155,7 +158,7 @@ public class KolivingApplication {
             )
         );
 
-
+        likeRepository.save(Like.of(roomRepository.findAll().get(0), user));
     }
 
     private void initLanguages(LanguageRepository languageRepository) {
