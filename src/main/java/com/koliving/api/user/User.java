@@ -20,12 +20,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -114,7 +117,7 @@ public class User implements UserDetails {
 
     @Deprecated
     public static User valueOf(String email, String encodedPassword, UserRole role) {
-        return new User(email, encodedPassword, null, null, null, null, null, null, role);
+        return new User(email, encodedPassword, RandomStringUtils.randomAlphabetic(5), RandomStringUtils.randomAlphabetic(4), Gender.MALE, LocalDate.now(), RandomStringUtils.randomAlphabetic(200), null, role);
     }
 
     public static User of(ImageFile imageFile, Gender gender, String firstName, String lastName, LocalDate birthDate,

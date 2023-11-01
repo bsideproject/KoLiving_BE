@@ -74,7 +74,8 @@ public class SecurityConfig {
             httpUtils.getCurrentVersionPath("auth/**"),
             "/api-docs/**",
             "/swagger-ui/**",
-            "/swagger-resources/**"
+            "/swagger-resources/**",
+            "/api/v1/rooms/search"
         };
 
         AUTHORIZATION_WHITELIST = new String[]{

@@ -1,5 +1,6 @@
 package com.koliving.api.room.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.koliving.api.user.Gender;
 import com.koliving.api.user.User;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,9 +28,11 @@ public record WriterResponse(
     @Schema(description = "작성자 프로필 URL")
     String imageUrl
 ) {
+    @JsonIgnore
+    private static final String defaultProfile = "https://kr.object.ncloudstorage.com/backend-bucket/images/profiles/def_img.png";
 
     public static WriterResponse of(User entity) {
-        String imageUrl = Objects.isNull(entity.getImageFile()) ? null : entity.getImageFile().getPath();
+        String imageUrl = Objects.isNull(entity.getImageFile()) ? defaultProfile : entity.getImageFile().getPath();
         return new WriterResponse(entity.getFirstName(), entity.getLastName(), entity.getGender(), entity.getBirthDate(), entity.getDescription(), imageUrl);
     }
 }
