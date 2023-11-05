@@ -4,6 +4,8 @@ import static com.koliving.api.location.domain.LocationType.DONG;
 import static com.koliving.api.location.domain.LocationType.GU;
 
 import com.google.common.collect.Sets;
+import com.koliving.api.email.IEmailService;
+import com.koliving.api.email.MailType;
 import com.koliving.api.file.domain.ImageFile;
 import com.koliving.api.file.infra.ImageFileRepository;
 import com.koliving.api.i18n.Language;
@@ -21,9 +23,11 @@ import com.koliving.api.room.domain.info.RoomInfo;
 import com.koliving.api.room.infra.FurnishingRepository;
 import com.koliving.api.room.infra.LikeRepository;
 import com.koliving.api.room.infra.RoomRepository;
-import com.koliving.api.user.User;
-import com.koliving.api.user.UserRepository;
-import com.koliving.api.user.UserRole;
+import com.koliving.api.user.domain.Notification;
+import com.koliving.api.user.domain.User;
+import com.koliving.api.user.infra.NotificationRepository;
+import com.koliving.api.user.infra.UserRepository;
+import com.koliving.api.user.domain.UserRole;
 import jakarta.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -38,9 +42,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @EnableJpaAuditing
 @SpringBootApplication
@@ -69,25 +70,33 @@ public class KolivingApplication {
         ImageFileRepository imageFileRepository,
         LikeRepository likeRepository,
         UserRepository userRepository,
-        PasswordEncoder encoder
+        PasswordEncoder encoder,
+        NotificationRepository notificationRepository
     ) {
         return args -> {
             initImageFiles(imageFileRepository);
             initFurnishings(furnishingRepository);
             initLocations(locationRepository);
             initLanguages(languageRepository);
-            User user = initUser(userRepository, encoder);
+            User user = initUser(userRepository, encoder, notificationRepository);
             initRooms(roomRepository, locationRepository, furnishingRepository, imageFileRepository, likeRepository, user);
         };
     }
 
-    private User initUser(UserRepository userRepository, PasswordEncoder encoder) {
+    private User initUser(UserRepository userRepository, PasswordEncoder encoder, NotificationRepository notificationRepository) {
         final User user = User.valueOf("koliving@koliving.com", encoder.encode("test1234!@"), UserRole.USER);
         final User user2 = User.valueOf("koliving2@koliving.com", encoder.encode("test1234!@"), UserRole.USER);
         final User manager = User.valueOf("manager@koliving.com", encoder.encode("test1234!@"), UserRole.ADMIN);
 
-        userRepository.saveAll(List.of(user2, manager));
-        return userRepository.save(user);
+        userRepository.saveAll(List.of(user, manager));
+        userRepository.save(user2);
+
+        // 알림
+        notificationRepository.save(Notification.of(user, user2));
+        notificationRepository.save(Notification.of(manager, user));
+        notificationRepository.save(Notification.of(user2, user));
+
+        return user2;
     }
 
     private void initImageFiles(ImageFileRepository imageFileRepository) {
@@ -171,8 +180,12 @@ public class KolivingApplication {
                 Language.valueOf("ko", "email_duplication", "이미 존재하는 이메일입니다 : {0}"),
                 Language.valueOf("en", "auth_email_subject", "Confirm your email"),
                 Language.valueOf("ko", "auth_email_subject", "이메일 인증을 완료하세요"),
+                Language.valueOf("en", "contact_email_subject", "Someone is interested in your posts."),
+                Language.valueOf("ko", "contact_email_subject", "누군가 당신의 게시글에 관심이 있어요."),
                 Language.valueOf("en", "auth_email_subtitle", "Click the link below to proceed with authentication"),
                 Language.valueOf("ko", "auth_email_subtitle", "아래 링크를 클릭하셔서 인증을 진행하세요"),
+                Language.valueOf("en", "contact_email_subtitle", "Possible roommate has shown interest in your room!"),
+                Language.valueOf("ko", "contact_email_subtitle", "룸메이트가 당신의 방에 관심을 보였습니다!"),
                 Language.valueOf("en", "auth_email_link_guidance",
                     "If the button doesn't work, copy and paste the link below into url"),
                 Language.valueOf("ko", "auth_email_link_guidance", "버튼이 동작하지 않다면, 아래 링크를 url에 붙여 인증을 시도하세요"),

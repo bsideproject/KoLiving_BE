@@ -1,8 +1,8 @@
 package com.koliving.api.room.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.koliving.api.user.Gender;
-import com.koliving.api.user.User;
+import com.koliving.api.user.domain.Gender;
+import com.koliving.api.user.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;

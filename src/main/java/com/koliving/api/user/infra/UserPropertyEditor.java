@@ -1,6 +1,7 @@
-package com.koliving.api.user;
+package com.koliving.api.user.infra;
 
 import com.koliving.api.user.application.UserService;
+import com.koliving.api.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

@@ -3,7 +3,7 @@ package com.koliving.api.room.domain;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.koliving.api.base.domain.BaseEntity;
-import com.koliving.api.user.User;
+import com.koliving.api.user.domain.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;

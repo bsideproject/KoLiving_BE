@@ -1,8 +1,8 @@
 package com.koliving.api.my.application.dto;
 
 import com.koliving.api.file.domain.ImageFile;
-import com.koliving.api.user.Gender;
-import com.koliving.api.user.User;
+import com.koliving.api.user.domain.Gender;
+import com.koliving.api.user.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.Nullable;
 

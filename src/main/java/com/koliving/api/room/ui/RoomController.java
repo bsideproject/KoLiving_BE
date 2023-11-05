@@ -2,10 +2,11 @@ package com.koliving.api.room.ui;
 
 import com.koliving.api.base.ErrorResponse;
 import com.koliving.api.room.application.RoomService;
+import com.koliving.api.room.application.dto.RoomContactRequest;
 import com.koliving.api.room.application.dto.RoomResponse;
 import com.koliving.api.room.application.dto.RoomSaveRequest;
 import com.koliving.api.room.application.dto.RoomSearchCondition;
-import com.koliving.api.user.User;
+import com.koliving.api.user.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,6 +18,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -138,6 +140,27 @@ public class RoomController {
     public ResponseEntity<Void> likeRoom(@PathVariable Long id, @AuthenticationPrincipal User user) {
         roomService.likeRoom(id, user);
         return ResponseEntity.noContent()
+            .build();
+    }
+
+    @Operation(
+        summary = "방 연락하기",
+        description = "방 소유자에게 연락을 한다",
+        responses = {
+            @ApiResponse(
+                responseCode = "201",
+                description = "방 연락 요청 성공"
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "방 연락 요청 실패",
+                content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+        })
+    @PostMapping("/{id}/contact")
+    public ResponseEntity<Void> contactRoom(@RequestBody RoomContactRequest request, @AuthenticationPrincipal User user) {
+        roomService.contact(request, user);
+        return ResponseEntity.status(HttpStatus.CREATED)
             .build();
     }
 }

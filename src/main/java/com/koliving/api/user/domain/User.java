@@ -1,9 +1,11 @@
-package com.koliving.api.user;
+package com.koliving.api.user.domain;
 
 import static com.koliving.api.base.ServiceError.UNAUTHORIZED;
 
+import com.koliving.api.base.domain.BaseEntity;
 import com.koliving.api.base.exception.KolivingServiceException;
 import com.koliving.api.file.domain.ImageFile;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,17 +15,20 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.UUID;
+import java.util.List;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,7 +50,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @ToString
 @EqualsAndHashCode(of = "id", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User implements UserDetails {
+public class User extends BaseEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -95,6 +100,12 @@ public class User implements UserDetails {
     @Column(name = "LAST_MODIFIED_DATE")
     private LocalDateTime lastModifiedDate;
 
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
+    private List<Notification> receivedNotifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    private List<Notification> sentNotifications = new ArrayList<>();
+
     @Builder
     public User(String email) {
         this.email = email;
@@ -139,6 +150,14 @@ public class User implements UserDetails {
         this.signUpStatus = SignUpStatus.COMPLETED;
     }
 
+    public void addReceivedNotification(Notification notification) {
+        this.receivedNotifications.add(notification);
+    }
+
+    public void addSentNotification(Notification notification) {
+        this.sentNotifications.add(notification);
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String role = userRole.getSecurityName();
@@ -178,6 +197,18 @@ public class User implements UserDetails {
         if (!passwordEncoder.matches(rawPassword, this.password)) {
             throw new KolivingServiceException(UNAUTHORIZED);
         }
+    }
+
+    public String getFullName() {
+        return String.format("%s %s", firstName, lastName);
+    }
+
+    public int getAge() {
+        return Period.between(birthDate, LocalDate.now()).getYears();
+    }
+
+    public String getImageProfile() {
+        return Objects.isNull(this.getImageFile()) ? null : this.imageFile.getPath();
     }
 
     public void update(User updatable) {

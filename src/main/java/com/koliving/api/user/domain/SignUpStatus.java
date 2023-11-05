@@ -1,4 +1,4 @@
-package com.koliving.api.user;
+package com.koliving.api.user.domain;
 
 import lombok.Getter;
 

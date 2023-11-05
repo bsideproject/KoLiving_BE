@@ -5,7 +5,7 @@ import com.koliving.api.base.exception.KolivingServiceException;
 import com.koliving.api.file.domain.ImageFile;
 import com.koliving.api.location.domain.Location;
 import com.koliving.api.room.domain.info.RoomInfo;
-import com.koliving.api.user.User;
+import com.koliving.api.user.domain.User;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -30,7 +30,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import static com.koliving.api.base.ServiceError.ILLEGAL_ROOM_INFO;
-import static com.koliving.api.base.ServiceError.UNAUTHORIZED;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 

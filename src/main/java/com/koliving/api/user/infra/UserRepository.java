@@ -1,5 +1,6 @@
-package com.koliving.api.user;
+package com.koliving.api.user.infra;
 
+import com.koliving.api.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

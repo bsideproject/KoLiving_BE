@@ -1,5 +1,6 @@
 package com.koliving.api.user;
 
+import com.koliving.api.user.domain.User;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
