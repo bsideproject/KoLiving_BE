@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:value="${title}"></title>
+<style>
+    .grid-container {
+        display: grid; 
+        place-items: center;
+    }
+    .text {
+        color: black;
+        font-size: 18px;
+        font-family: Pretendard;
+        font-weight: 700;
+        line-height: 28px;  
+        word-wrap: break-word;
+    }
+</style>
+</head>
+<body>
+    <div class="grid-container" style="background: white;">
+        <div>
+          <h1><img src="cid:logo"/></h1>
+        </div>
+        <div>
+          <span th:text="${subtitle}"/>
+        </div>
+        <div style="background-color: whitesmoke; padding:5px">
+          <div style="width: 525px">
+            <span class="text">Room link: </span><a th:href="${roomLink}" target="_blank" th:text="${roomLink}"/><br/>
+            <span class="text">Message: </span><span class="text" th:text="${message}"/><br/>
+            <span class="text">Contact info: </span><span class="text" th:text="${contact}"/><br/>
+            <span class="text">Sender’s Profile: </span>
+        </div>
+        <div style="background-color: #FF8E00; margin-top: 20px;">
+          <div>
+            <div>
+                <img th:src="${userImageProfile}" alt="userProfile"/>
+            </div>
+            <div th:text="${userName}"/>
+            <div>
+                <span class="text" th:text="${userAge}"/><span class="text"> years old</span>
+                <span class="text">|</span>            
+                <span class="text" th:text="${userGender}"/>
+          </div>
+          <div th:text="${userDescription}"/>
+        </div>
+      </div>
+</body>
+</html>

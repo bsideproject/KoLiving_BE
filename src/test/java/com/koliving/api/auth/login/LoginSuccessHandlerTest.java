@@ -3,7 +3,7 @@ package com.koliving.api.auth.login;
 import com.koliving.api.auth.AuthFacade;
 import com.koliving.api.dto.JwtTokenDto;
 import com.koliving.api.dto.ResponseDto;
-import com.koliving.api.user.User;
+import com.koliving.api.user.domain.User;
 import com.koliving.api.utils.HttpUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;

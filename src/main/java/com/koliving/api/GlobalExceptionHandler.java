@@ -5,7 +5,6 @@ import static com.koliving.api.token.confirmation.ConfirmationTokenType.RESET_PA
 import static com.koliving.api.token.confirmation.ConfirmationTokenType.SIGN_UP;
 
 import com.koliving.api.base.ErrorResponse;
-import com.koliving.api.base.ServiceError;
 import com.koliving.api.base.exception.KolivingServiceException;
 import com.koliving.api.dto.ConfirmationTokenErrorDto;
 import com.koliving.api.dto.ResponseDto;
@@ -18,8 +17,8 @@ import com.koliving.api.i18n.MessageSource;
 import com.koliving.api.token.confirmation.ConfirmationToken;
 import com.koliving.api.token.confirmation.ConfirmationTokenService;
 import com.koliving.api.token.confirmation.ConfirmationTokenType;
-import com.koliving.api.user.SignUpStatus;
-import com.koliving.api.user.User;
+import com.koliving.api.user.domain.SignUpStatus;
+import com.koliving.api.user.domain.User;
 import com.koliving.api.user.application.UserService;
 import com.koliving.api.utils.HttpUtils;
 import java.util.Locale;

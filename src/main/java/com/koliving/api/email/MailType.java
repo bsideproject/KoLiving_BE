@@ -1,7 +1,8 @@
 package com.koliving.api.email;
 
 public enum MailType {
-    AUTH("auth-email-template");
+    AUTH("auth-email-template"),
+    CONTACT("contact-email-template");
 
     private final String template;
 

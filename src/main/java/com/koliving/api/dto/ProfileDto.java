@@ -1,6 +1,6 @@
 package com.koliving.api.dto;
 
-import com.koliving.api.user.Gender;
+import com.koliving.api.user.domain.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

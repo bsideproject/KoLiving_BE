@@ -1,12 +1,16 @@
 package com.koliving.api.email;
 
 import com.koliving.api.properties.EmailProperties;
+import com.koliving.api.properties.FrontProperties;
+import com.koliving.api.room.infra.RoomContactEvent;
+import com.koliving.api.user.domain.User;
 import com.koliving.api.utils.HttpUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
+import org.springframework.context.event.EventListener;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailException;
@@ -32,6 +36,43 @@ public class EmailService implements IEmailService {
     private final EmailTemplateUtil emailTemplateUtil;
     private final EmailProperties emailProperties;
     private final HttpUtils httpUtils;
+
+    @Async("mailExecutor")
+    @Override
+    public void sendRoomContact(String to, String contact, String message, User sender, String link) {
+        try {
+            Locale currentLocale = httpUtils.getLocaleForLanguage(LocaleContextHolder.getLocale());
+
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("title", "KOLIVING");
+            variables.put("subtitle", messageSource.getMessage("contact_email_subtitle", null, currentLocale));
+            variables.put("contact", contact);
+            variables.put("message", message);
+            variables.put("roomLink", link);
+            variables.put("userName", sender.getFullName());
+            variables.put("userAge", sender.getAge());
+            variables.put("userImageProfile", sender.getImageProfile());
+            variables.put("userGender", sender.getGender());
+            variables.put("userDescription", sender.getDescription());
+
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            helper.setSubject(messageSource.getMessage("contact_email_subject", null, currentLocale));
+            helper.setTo(to);
+            helper.setText(emailTemplateUtil.generateEmail(MailType.CONTACT, variables), true);
+            helper.setFrom(emailProperties.getUsername());
+            helper.addInline("logo", new ClassPathResource("static/image/logo-black.jpg"));
+
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            log.error("failed to generate email", e);
+            throw new MailParseException("failed to generate email", e);
+        } catch (MailException e) {
+            log.error("failed to send email", e);
+            throw new MailSendException("Failed to send email", e);
+        }
+    }
 
     @Async("mailExecutor")
     @Override
