@@ -2,6 +2,8 @@ package com.koliving.api.user;
 
 import com.koliving.api.user.application.UserService;
 import com.koliving.api.user.application.dto.UserResponse;
+import com.koliving.api.user.domain.User;
+import com.koliving.api.user.infra.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.koliving.api.user.UserUtils.createUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;

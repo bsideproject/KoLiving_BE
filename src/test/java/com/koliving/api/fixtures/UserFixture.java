@@ -1,6 +1,6 @@
 package com.koliving.api.fixtures;
 
-import com.koliving.api.user.User;
+import com.koliving.api.user.domain.User;
 
 import java.util.UUID;
 

@@ -4,7 +4,8 @@ import com.koliving.api.base.ErrorResponse;
 import com.koliving.api.my.application.dto.UserProfileUpdateRequest;
 import com.koliving.api.room.application.RoomService;
 import com.koliving.api.room.application.dto.RoomResponse;
-import com.koliving.api.user.User;
+import com.koliving.api.user.application.dto.NotificationResponse;
+import com.koliving.api.user.domain.User;
 import com.koliving.api.user.application.UserService;
 import com.koliving.api.user.application.dto.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -96,6 +98,27 @@ public class MyController {
     public ResponseEntity<Page<RoomResponse>> getLikedRooms(Pageable pageable, @AuthenticationPrincipal User user) {
         final Page<RoomResponse> responses = roomService.findLikeRoomByUser(pageable, user);
 
+        return ResponseEntity.ok()
+            .body(responses);
+    }
+
+    @Operation(
+        summary = "알림 조회",
+        description = "알림 리스트 조회합니다",
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "알림 리스트 조회 성공"
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "알림 리스트 조회 실패",
+                content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+        })
+    @GetMapping("/notification")
+    public ResponseEntity<List<NotificationResponse>> getNotifications(@AuthenticationPrincipal User user) {
+        List<NotificationResponse> responses = userService.getNotifications(user);
         return ResponseEntity.ok()
             .body(responses);
     }

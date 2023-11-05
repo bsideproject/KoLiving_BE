@@ -4,7 +4,6 @@ import static com.koliving.api.fixtures.LocationFixture.성동구;
 import static com.koliving.api.fixtures.MaintenanceFixture.관리비_없음;
 import static com.koliving.api.fixtures.RoomInfoFixture.스튜디오_방0_욕실1_룸메1;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.useRepresentation;
 
 import com.koliving.api.BaseDataJpaTest;
 import com.koliving.api.fixtures.UserFixture;
@@ -22,8 +21,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import com.koliving.api.user.User;
-import com.koliving.api.user.UserRepository;
+import com.koliving.api.user.domain.User;
+import com.koliving.api.user.infra.UserRepository;
 import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

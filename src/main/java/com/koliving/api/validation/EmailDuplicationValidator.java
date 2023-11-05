@@ -1,8 +1,8 @@
 package com.koliving.api.validation;
 
 import com.koliving.api.dto.AuthEmailRequestDto;
-import com.koliving.api.user.User;
-import com.koliving.api.user.UserRepository;
+import com.koliving.api.user.domain.User;
+import com.koliving.api.user.infra.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;

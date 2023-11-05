@@ -3,7 +3,6 @@ package com.koliving.api.room.ui;
 import com.koliving.api.base.ErrorResponse;
 import com.koliving.api.room.application.RoomService;
 import com.koliving.api.room.application.dto.RoomResponse;
-import com.koliving.api.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,14 +11,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import static java.lang.Boolean.*;
 
 @Tag(name = "[관리자] 룸 관리 API", description = "관리자 룸 관리 API")
 @RestController

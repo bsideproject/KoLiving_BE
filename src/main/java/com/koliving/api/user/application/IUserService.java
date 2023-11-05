@@ -1,7 +1,7 @@
 package com.koliving.api.user.application;
 
 
-import com.koliving.api.user.User;
+import com.koliving.api.user.domain.User;
 import com.koliving.api.user.application.dto.UserResponse;
 
 import java.util.List;
