@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface LikeRepository extends JpaRepository<Like, Long> {
 
-    Optional<Like> findByRoomId(Long roomId);
+    Optional<Like> findByRoomIdAndUserId(Long roomId, Long userId);
 }

@@ -137,7 +137,7 @@ public class RoomService {
         Room room = getRoom(roomId);
         final Like like = Like.of(room, user);
 
-        likeRepository.findByRoomId(roomId)
+        likeRepository.findByRoomIdAndUserId(roomId, user.getId())
             .ifPresentOrElse(
                 likeRepository::delete,
                 () -> likeRepository.save(like)
