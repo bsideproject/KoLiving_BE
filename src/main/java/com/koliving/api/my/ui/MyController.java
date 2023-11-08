@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-@Tag(name = "MY API", description = "MY API")
+@Tag(name = "마이페이지 API", description = "MY API")
 @RestController
 @RequestMapping("api/v1/my")
 @RequiredArgsConstructor
