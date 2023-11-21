@@ -46,6 +46,7 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
+    @Transactional
     public void setPassword(User user, String password) {
         String encodedPassword = passwordEncoder.encode(password);
         user.setPassword(encodedPassword);
