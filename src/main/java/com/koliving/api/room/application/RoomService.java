@@ -159,9 +159,8 @@ public class RoomService {
         final Room room = getRoom(request.roomId());
         final Notification notification = Notification.of(user, room.getUser());
         room.getUser().addReceivedNotification(notification);
-        emailService.sendRoomContact("haedoang@naver.com", request.contactInfo(), request.message(), user, getRoomDetailUrl(room.getId()));
+        emailService.sendRoomContact(room.getUser().getEmail(), request.contactInfo(), request.message(), user, getRoomDetailUrl(room.getId()));
     }
-
 
     public String getRoomDetailUrl(Long roomId) {
         return String.format("%s/room/%d", frontProperties.getOrigin(), roomId);
