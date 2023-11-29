@@ -5,6 +5,7 @@ import com.koliving.api.my.application.dto.UserProfileUpdateRequest;
 import com.koliving.api.room.application.RoomService;
 import com.koliving.api.room.application.dto.RoomResponse;
 import com.koliving.api.user.application.dto.NotificationResponse;
+import com.koliving.api.user.domain.NotifyType;
 import com.koliving.api.user.domain.User;
 import com.koliving.api.user.application.UserService;
 import com.koliving.api.user.application.dto.UserResponse;
@@ -20,9 +21,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -86,7 +89,8 @@ public class MyController {
         responses = {
             @ApiResponse(
                 responseCode = "200",
-                description = "좋아요 게시글 조회 성공"
+                description = "좋아요 게시글 조회 성공",
+                content = @Content(schema = @Schema(implementation = RoomResponse.class))
             ),
             @ApiResponse(
                 responseCode = "400",
@@ -108,7 +112,8 @@ public class MyController {
         responses = {
             @ApiResponse(
                 responseCode = "200",
-                description = "알림 리스트 조회 성공"
+                description = "알림 리스트 조회 성공",
+                content = @Content(schema = @Schema(implementation = NotificationResponse.class))
             ),
             @ApiResponse(
                 responseCode = "400",
@@ -117,9 +122,50 @@ public class MyController {
             ),
         })
     @GetMapping("/notification")
-    public ResponseEntity<List<NotificationResponse>> getNotifications(@AuthenticationPrincipal User user) {
-        List<NotificationResponse> responses = userService.getNotifications(user);
+    public ResponseEntity<List<NotificationResponse>> getNotifications(@RequestParam(name = "notifyType", defaultValue = "ALL") NotifyType notifyType, @AuthenticationPrincipal User user) {
+        List<NotificationResponse> responses = userService.getNotifications(notifyType, user);
         return ResponseEntity.ok()
             .body(responses);
+    }
+
+    @Operation(
+        summary = "알림 확인하기",
+        description = "알림을 확인합니다",
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "알림 확인 성공"
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "알림 확인 실패",
+                content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+        })
+    @PutMapping("/notification/{id}")
+    public ResponseEntity<Void> notificationConfirmed(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        userService.notificationConfirmed(id, user);
+        return ResponseEntity.ok()
+            .build();
+    }
+
+    @Operation(
+        summary = "수신 새 알림 조회",
+        description = "수신 새 알림을 조회합니다",
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "수신 새 알림 확인 성공"
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "수신 새 알림 확인 실패",
+                content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+        })
+    @GetMapping("/notification/check")
+    public ResponseEntity<List<NotificationResponse>> hasCheckedNewNotification(@AuthenticationPrincipal User user) {
+        List<NotificationResponse> responses = userService.hasCheckedNewNotification(user);
+        return ResponseEntity.ok().body(responses);
     }
 }

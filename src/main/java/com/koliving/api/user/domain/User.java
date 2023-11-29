@@ -47,7 +47,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @DynamicInsert
 @DynamicUpdate
 @Getter
-@ToString
+@ToString(of = "id")
 @EqualsAndHashCode(of = "id", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity implements UserDetails {
