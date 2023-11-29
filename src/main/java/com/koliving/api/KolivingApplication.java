@@ -12,6 +12,8 @@ import com.koliving.api.i18n.Language;
 import com.koliving.api.i18n.LanguageRepository;
 import com.koliving.api.location.domain.Location;
 import com.koliving.api.location.infra.LocationRepository;
+import com.koliving.api.report.application.ReportReasonRepository;
+import com.koliving.api.report.domain.ReportReason;
 import com.koliving.api.room.domain.Furnishing;
 import com.koliving.api.room.domain.FurnishingType;
 import com.koliving.api.room.domain.Like;
@@ -71,7 +73,8 @@ public class KolivingApplication {
         LikeRepository likeRepository,
         UserRepository userRepository,
         PasswordEncoder encoder,
-        NotificationRepository notificationRepository
+        NotificationRepository notificationRepository,
+        ReportReasonRepository reportReasonRepository
     ) {
         return args -> {
             initImageFiles(imageFileRepository);
@@ -80,7 +83,19 @@ public class KolivingApplication {
             initLanguages(languageRepository);
             User user = initUser(userRepository, encoder, notificationRepository);
             initRooms(roomRepository, locationRepository, furnishingRepository, imageFileRepository, likeRepository, user);
+            initReport(reportReasonRepository);
         };
+    }
+
+    private void initReport(ReportReasonRepository reportReasonRepository) {
+        reportReasonRepository.saveAll(
+            List.of(
+                ReportReason.of("Not a real Place"),
+                ReportReason.of("Inappropriate content"),
+                ReportReason.of("Incorrect information"),
+                ReportReason.of("Suspected scammer")
+            )
+        );
     }
 
     private User initUser(UserRepository userRepository, PasswordEncoder encoder, NotificationRepository notificationRepository) {
