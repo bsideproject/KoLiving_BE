@@ -9,13 +9,13 @@ import jakarta.validation.constraints.Size;
 @Schema(description = "회원가입 - 비밀번호 재설정")
 @PasswordMatches
 public record ResetPasswordDto(
-        @Schema(description = "비밀번호 (소문자, 대문자, 숫자, 특수기호 필수)", minLength = 8, maxLength = 20, example = "Koliving1!")
+        @Schema(description = "비밀번호 (문자, 숫자 포함. 특수문자 선택)", minLength = 6, maxLength = 30, example = "Koliving1")
         @NotBlank
-        @Size(min = 8, max = 20)
+        @Size(min = 6, max = 30)
         @PasswordConstraint
         String password,
 
-        @Schema(description = "비밀번호 (소문자, 대문자, 숫자, 특수기호 필수)", minLength = 8, maxLength = 20, example = "Koliving1!")
+        @Schema(description = "비밀번호 (문자, 숫자 포함. 특수문자 선택)", minLength = 6, maxLength = 30, example = "Koliving1")
         String passwordVerify
         ) {
 }
