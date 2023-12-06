@@ -99,8 +99,32 @@ public class MyController {
             ),
         })
     @GetMapping("/rooms/like")
-    public ResponseEntity<Page<RoomResponse>> getLikedRooms(Pageable pageable, @AuthenticationPrincipal User user) {
+    public ResponseEntity<Page<RoomResponse>> getLikeRooms(Pageable pageable, @AuthenticationPrincipal User user) {
         final Page<RoomResponse> responses = roomService.findLikeRoomByUser(pageable, user);
+
+        return ResponseEntity.ok()
+            .body(responses);
+    }
+
+
+    @Operation(
+        summary = "내 게시글 조회",
+        description = "내 게시글 리스트를 조회합니다",
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "내 게시글 리스트 조회 성공",
+                content = @Content(schema = @Schema(implementation = RoomResponse.class))
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "내 게시글 리스트 조회 실패",
+                content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+        })
+    @GetMapping("/rooms")
+    public ResponseEntity<Page<RoomResponse>> getMyRooms(Pageable pageable, @AuthenticationPrincipal User user) {
+        final Page<RoomResponse> responses = roomService.findRoomByUser(pageable, user);
 
         return ResponseEntity.ok()
             .body(responses);
