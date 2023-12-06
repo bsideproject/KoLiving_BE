@@ -10,4 +10,6 @@ public interface RoomRepositoryQueryDsl {
     Page<RoomResponse> search(Pageable pageable, RoomSearchCondition condition);
 
     Page<RoomResponse> likedRooms(Pageable pageable, Long userId);
+
+    Page<RoomResponse> roomsByUser(Pageable pageable, Long userId);
 }

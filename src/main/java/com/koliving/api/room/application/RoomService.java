@@ -2,7 +2,6 @@ package com.koliving.api.room.application;
 
 import static com.koliving.api.base.ServiceError.FORBIDDEN;
 import static com.koliving.api.base.ServiceError.RECORD_NOT_EXIST;
-import static com.koliving.api.base.ServiceError.UNAUTHORIZED;
 
 import com.google.common.collect.Sets;
 import com.koliving.api.base.ServiceError;
@@ -20,19 +19,16 @@ import com.koliving.api.room.application.dto.RoomSearchCondition;
 import com.koliving.api.room.domain.Furnishing;
 import com.koliving.api.room.domain.Like;
 import com.koliving.api.room.domain.Room;
-import com.koliving.api.room.infra.RoomContactEvent;
 import com.koliving.api.room.infra.FurnishingRepository;
 import com.koliving.api.room.infra.LikeRepository;
 import com.koliving.api.room.infra.RoomRepository;
 import com.koliving.api.user.domain.Notification;
 import com.koliving.api.user.domain.User;
-import com.koliving.api.user.infra.UserRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -145,6 +141,10 @@ public class RoomService {
         ;
     }
 
+    public Page<RoomResponse> findRoomByUser(Pageable pageable, User user) {
+        return roomRepository.roomsByUser(pageable, user.getId());
+    }
+
     public Page<RoomResponse> findLikeRoomByUser(Pageable pageable, User user) {
         return roomRepository.likedRooms(pageable, user.getId());
     }
@@ -159,10 +159,12 @@ public class RoomService {
         final Room room = getRoom(request.roomId());
         final Notification notification = Notification.of(user, room.getUser());
         room.getUser().addReceivedNotification(notification);
-        emailService.sendRoomContact(room.getUser().getEmail(), request.contactInfo(), request.message(), user, getRoomDetailUrl(room.getId()));
+        emailService.sendRoomContact(room.getUser().getEmail(), request.contactInfo(), request.message(), user,
+            getRoomDetailUrl(room.getId()));
     }
 
     public String getRoomDetailUrl(Long roomId) {
         return String.format("%s/room/%d", frontProperties.getOrigin(), roomId);
     }
+
 }

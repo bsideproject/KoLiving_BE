@@ -37,6 +37,7 @@ public class RoomRepositoryImpl implements RoomRepositoryQueryDsl {
             )
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
+            .orderBy(room.id.desc())
             .fetch();
 
         long count = queryFactory.selectFrom(room)
@@ -130,6 +131,7 @@ public class RoomRepositoryImpl implements RoomRepositoryQueryDsl {
             .where(like.user.id.eq(userId))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
+            .orderBy(room.id.desc())
             .fetch();
 
         long count = queryFactory.select(like.room)
@@ -137,6 +139,21 @@ public class RoomRepositoryImpl implements RoomRepositoryQueryDsl {
             .where(like.user.id.eq(userId))
             .fetch()
             .size();
+
+        return getRoomResponses(pageable, rooms, count);
+    }
+
+    @Override
+    public Page<RoomResponse> roomsByUser(Pageable pageable, Long userId) {
+        final List<Room> rooms = queryFactory.selectFrom(room)
+            .where(room.user.id.eq(userId))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+        final int count = queryFactory.selectFrom(room)
+            .where(room.user.id.eq(userId))
+            .fetch().size();
 
         return getRoomResponses(pageable, rooms, count);
     }
