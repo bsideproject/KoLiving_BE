@@ -10,6 +10,8 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -52,6 +54,8 @@ public class Room extends BaseEntity {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    private Boolean available = Boolean.FALSE;
+
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -82,7 +86,7 @@ public class Room extends BaseEntity {
     )
     private Set<Furnishing> furnishings = new HashSet<>();
 
-    @Column(name = "available_date", nullable = false)
+    @Column(name = "available_date")
     private LocalDate availableDate;
 
     @Lob
@@ -96,7 +100,7 @@ public class Room extends BaseEntity {
     )
     private Set<ImageFile> imageFiles;
 
-    private Room(Location location, RoomInfo roomInfo, Money deposit, Money monthlyRent, Maintenance maintenance, Set<Furnishing> furnishings, LocalDate availableDate, String description, Set<ImageFile> imageFiles) {
+    private Room(Location location, RoomInfo roomInfo, Money deposit, Money monthlyRent, Maintenance maintenance, Set<Furnishing> furnishings, LocalDate availableDate, boolean available, String description, Set<ImageFile> imageFiles) {
         validate(deposit, monthlyRent, imageFiles);
         this.location = location;
         this.roomInfo = roomInfo;
@@ -105,6 +109,7 @@ public class Room extends BaseEntity {
         this.maintenance = maintenance;
         this.furnishings = furnishings;
         this.availableDate = availableDate;
+        this.available = available;
         this.description = description;
         this.imageFiles = imageFiles;
     }
@@ -120,7 +125,7 @@ public class Room extends BaseEntity {
         String description,
         Set<ImageFile> imageFiles
     ) {
-        return new Room(location, info, deposit, monthlyRent, maintenance, furnishings, availableDate, description, imageFiles);
+        return new Room(location, info, deposit, monthlyRent, maintenance, furnishings, availableDate, Objects.isNull(availableDate), description, imageFiles);
     }
 
     private void validate(Money deposit, Money monthlyRent, Set<ImageFile> imageFiles) {

@@ -42,6 +42,9 @@ public record RoomResponse(
     @Schema(description = "방문 가능 일자")
     LocalDate availableDate,
 
+    @Schema(description = "즉시 방문 가능 여부")
+    Boolean available,
+
     @Schema(description = "방 설명 정보")
     String description,
 
@@ -62,6 +65,7 @@ public record RoomResponse(
             entity.getRoomInfo(),
             entity.getFurnishings(),
             entity.getAvailableDate(),
+            entity.getAvailable(),
             entity.getDescription(),
             WriterResponse.of(entity.getUser()),
             entity.getImageFiles()

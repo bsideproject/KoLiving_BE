@@ -87,7 +87,7 @@ public class RoomRepositoryImpl implements RoomRepositoryQueryDsl {
             return null;
         }
 
-        return room.availableDate.eq(localDate);
+        return room.availableDate.eq(localDate).or(room.available.isTrue());
     }
 
 
