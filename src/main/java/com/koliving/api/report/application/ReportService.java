@@ -3,6 +3,7 @@ package com.koliving.api.report.application;
 import com.koliving.api.base.ServiceError;
 import com.koliving.api.base.exception.KolivingServiceException;
 import com.koliving.api.email.EmailService;
+import com.koliving.api.email.IEmailService;
 import com.koliving.api.properties.FrontProperties;
 import com.koliving.api.report.application.dto.ReportReasonResponse;
 import com.koliving.api.report.application.dto.ReportRequest;
@@ -25,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReportService {
     private final ReportReasonRepository reportReasonRepository;
     private final RoomRepository roomRepository;
-    private final EmailService emailService;
+    private final IEmailService emailService;
     private final FrontProperties frontProperties;
 
     public List<ReportReasonResponse> getReasons() {
