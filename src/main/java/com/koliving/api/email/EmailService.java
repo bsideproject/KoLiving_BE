@@ -2,6 +2,7 @@ package com.koliving.api.email;
 
 import com.koliving.api.properties.EmailProperties;
 import com.koliving.api.properties.FrontProperties;
+import com.koliving.api.room.domain.Room;
 import com.koliving.api.room.infra.RoomContactEvent;
 import com.koliving.api.user.domain.User;
 import com.koliving.api.utils.HttpUtils;
@@ -76,7 +77,7 @@ public class EmailService implements IEmailService {
 
     @Async("mailExecutor")
     @Override
-    public void send(MailType type, String to, String link) {
+    public void sendMailAuth(MailType type, String to, String link) {
         try {
             Locale currentLocale = httpUtils.getLocaleForLanguage(LocaleContextHolder.getLocale());
 
@@ -98,6 +99,41 @@ public class EmailService implements IEmailService {
             helper.setSubject(subject);
             helper.setTo(to);
             helper.setText(mailContent, true);
+            helper.setFrom(emailProperties.getUsername());
+            helper.addInline("logo", new ClassPathResource("static/image/logo-black.jpg"));
+
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            log.error("failed to generate email", e);
+            throw new MailParseException("failed to generate email", e);
+        } catch (MailException e) {
+            log.error("failed to send email", e);
+            throw new MailSendException("Failed to send email", e);
+        }
+    }
+
+    @Async("mailExecutor")
+    @Override
+    public void sendRoomReport(String roomLink, String reportReason, User reporter) {
+        try {
+            Locale currentLocale = httpUtils.getLocaleForLanguage(LocaleContextHolder.getLocale());
+
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("title", "KOLIVING");
+            variables.put("roomLink", roomLink);
+            variables.put("userName", reporter.getFullName());
+            variables.put("userAge", reporter.getAge());
+            variables.put("userImageProfile", reporter.getImageProfile());
+            variables.put("userGender", reporter.getGender());
+            variables.put("userDescription", reporter.getDescription());
+            variables.put("reason", reportReason);
+
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            helper.setSubject(messageSource.getMessage("report_email_subject", null, currentLocale));
+            helper.setTo(emailProperties.getUsername());
+            helper.setText(emailTemplateUtil.generateEmail(MailType.REPORT, variables), true);
             helper.setFrom(emailProperties.getUsername());
             helper.addInline("logo", new ClassPathResource("static/image/logo-black.jpg"));
 

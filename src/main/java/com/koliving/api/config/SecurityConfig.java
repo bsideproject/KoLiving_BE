@@ -75,7 +75,8 @@ public class SecurityConfig {
             "/api-docs/**",
             "/swagger-ui/**",
             "/swagger-resources/**",
-            "/api/v1/rooms/search"
+            "/api/v1/rooms/search",
+            "/api/v1/locations"
         };
 
         AUTHORIZATION_WHITELIST = new String[]{
