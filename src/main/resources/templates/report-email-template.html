@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title th:value="${title}"></title>
+</head>
+<body style="margin: 0; font-family: 'Pretendard', sans-serif">
+<table
+    style="
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+        font-family: 'Pretendard', sans-serif;
+      "
+>
+  <tr>
+    <td
+        style="
+            display: block;
+            padding: 20px 0;
+            background: #FF8E00;
+            text-align: center;
+          "
+    >
+      <img
+          src="https://kr.object.ncloudstorage.com/backend-bucket/images/templates/house.svg"
+          alt="house"
+      />
+    </td>
+  </tr>
+  <tr>
+    <td style="display: block; padding: 20px; text-align: center">
+      <div
+          style="
+              color: #FF8E00;
+              text-align: center;
+              font-size: 18px;
+              font-weight: 600;
+            "
+      >
+      </div>
+      <div
+          style="
+              width: 50%;
+              display: block;
+              padding: 20px;
+              margin: 0 auto;
+              border-radius: 4px;
+              background: #FAFAFA;
+            "
+      >
+        <div
+            style="
+                width: 100%;
+                color: #212121;
+                text-align: center;
+                font-size: 18px;
+                font-weight: 600;
+                padding-bottom: 10px;
+              "
+        >
+          Reporter’s Profile
+        </div>
+        <div style="display: block; margin-bottom: 0px; text-align: center">
+          <div
+              style="
+                  width: 50px;
+                  height: 50px;
+                  border-radius: 45px;
+                  overflow: hidden;
+                  background: #BDBDBD;
+                  margin: 0 auto;
+                "
+          >
+            <img
+                style="width: 100%; height: 100%; object-fit: cover"
+                th:src="${userImageProfile}"
+            />
+          </div>
+          <div
+              style="
+                  color: #424242;
+                  font-size: 14px;
+                  font-style: normal;
+                  font-weight: 600;
+                  padding-top: 10px;
+                "
+              th:text="${userName}"
+          ></div>
+          <div
+              style="
+                  color: #757575;
+                  font-size: 12px;
+                  font-style: normal;
+                  font-weight: 400;
+                "
+          >
+            <span th:text="${userAge}"></span>
+            <span>years old | </span>
+            <span th:text="${userGender}"></span>
+          </div>
+        </div>
+        <hr style="width: 100%; border: 1px solid #eee" />
+        <p
+            style="
+                color: #757575;
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 400;
+              "
+            th:text="${userDescription}"
+        ></p>
+      </div>
+      <div
+          style="
+              width: 50%;
+              display: block;
+              padding: 20px;
+              margin: 0 auto;
+              border-radius: 4px;
+              background: rgba(255, 142, 0, 0.1);
+            "
+      >
+        <div
+            style="
+                color: #FF8E00;
+                text-align: center;
+                font-size: 18px;
+                font-weight: 600;
+                width: 100%;
+              "
+        >
+          Report Reason
+        </div>
+        <p
+            style="
+                color: #424242;
+                font-family: Pretendard;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 400;
+                margin: 0;
+              "
+            th:text="${reason}"
+        ></p>
+      </div>
+      <a
+          style="
+              display: block;
+              padding: 8px 10px;
+              margin: 0 auto;
+              border-radius: 2px;
+              border: 1px solid #FF8E00;
+              color: #FF8E00;
+              text-align: center;
+              font-size: 14px;
+              font-weight: 700;
+              width: 50%;
+              background-color: white;
+              text-decoration: none;
+            "
+          th:href="${roomLink}"
+          target="_blank"
+      >
+        <img
+            src="https://kr.object.ncloudstorage.com/backend-bucket/images/templates/house-cute.svg"
+            alt=""
+            style="width: 20px; height: auto; margin-right: 4px"
+        />
+        Go to room
+      </a>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

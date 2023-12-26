@@ -166,5 +166,4 @@ public class RoomService {
     public String getRoomDetailUrl(Long roomId) {
         return String.format("%s/room/%d", frontProperties.getOrigin(), roomId);
     }
-
 }

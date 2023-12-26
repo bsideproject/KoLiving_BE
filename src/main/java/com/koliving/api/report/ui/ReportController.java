@@ -5,6 +5,7 @@ import com.koliving.api.base.ErrorResponse;
 import com.koliving.api.report.application.ReportService;
 import com.koliving.api.report.application.dto.ReportReasonResponse;
 import com.koliving.api.report.application.dto.ReportRequest;
+import com.koliving.api.user.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,6 +15,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -70,7 +72,8 @@ public class ReportController {
         }
     )
     @PostMapping("/reasons")
-    public ResponseEntity<Void> report(@RequestBody ReportRequest request) {
+    public ResponseEntity<Void> report(@RequestBody ReportRequest request, @AuthenticationPrincipal User user) {
+        reportService.saveReport(request, user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

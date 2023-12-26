@@ -4,6 +4,7 @@ import static com.koliving.api.location.domain.LocationType.DONG;
 import static com.koliving.api.location.domain.LocationType.GU;
 
 import com.google.common.collect.Sets;
+import com.koliving.api.email.EmailService;
 import com.koliving.api.email.IEmailService;
 import com.koliving.api.email.MailType;
 import com.koliving.api.file.domain.ImageFile;
@@ -74,7 +75,8 @@ public class KolivingApplication {
         UserRepository userRepository,
         PasswordEncoder encoder,
         NotificationRepository notificationRepository,
-        ReportReasonRepository reportReasonRepository
+        ReportReasonRepository reportReasonRepository,
+        IEmailService emailService
     ) {
         return args -> {
             initImageFiles(imageFileRepository);
@@ -197,6 +199,8 @@ public class KolivingApplication {
                 Language.valueOf("ko", "auth_email_subject", "이메일 인증을 완료하세요"),
                 Language.valueOf("en", "contact_email_subject", "Someone is interested in your posts."),
                 Language.valueOf("ko", "contact_email_subject", "누군가 당신의 게시글에 관심이 있어요."),
+                Language.valueOf("en", "report_email_subject", "Some post has been reported."),
+                Language.valueOf("ko", "report_email_subject", "게시글 신고가 접수되었습니다."),
                 Language.valueOf("en", "auth_email_subtitle", "Click the link below to proceed with authentication"),
                 Language.valueOf("ko", "auth_email_subtitle", "아래 링크를 클릭하셔서 인증을 진행하세요"),
                 Language.valueOf("en", "contact_email_subtitle", "Possible roommate has shown interest in your room!"),

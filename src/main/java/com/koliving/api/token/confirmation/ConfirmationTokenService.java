@@ -53,7 +53,7 @@ public class ConfirmationTokenService implements IConfirmationTokenService {
         String authLinkParams = "?token=" + token + "&email=" + email;
         String authLinkUrl = authLinkPath + authLinkParams;
 
-        emailService.send(MailType.AUTH, email, authLinkUrl);
+        emailService.sendMailAuth(MailType.AUTH, email, authLinkUrl);
     }
 
     @Override

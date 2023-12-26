@@ -151,7 +151,7 @@ class ConfirmationTokenServiceTest {
 
         confirmationTokenService.sendEmail(recipientEmail, tokenValue, "/api/v1/sign-up/confirm");
 
-        verify(emailSender, times(1)).send(MailType.AUTH, recipientEmail, authLinkUrl);
+        verify(emailSender, times(1)).sendMailAuth(MailType.AUTH, recipientEmail, authLinkUrl);
     }
 
     @Test

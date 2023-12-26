@@ -53,7 +53,7 @@ class EmailServiceTest {
         when(messageSource.getMessage(anyString(), any(), any())).thenReturn("test");
         when(emailTemplateUtil.generateEmail(any(), any())).thenReturn("test");
 
-        emailService.send(MailType.AUTH, "to@test.com", "testLink");
+        emailService.sendMailAuth(MailType.AUTH, "to@test.com", "testLink");
 
         verify(mailSender, times(1)).send(any(MimeMessage.class));
     }
