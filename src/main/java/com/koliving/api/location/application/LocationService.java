@@ -6,6 +6,7 @@ import com.koliving.api.location.application.dto.LocationSaveRequest;
 import com.koliving.api.location.application.dto.LocationUpdateRequest;
 import com.koliving.api.location.domain.Location;
 import com.koliving.api.location.infra.LocationRepository;
+import java.util.Comparator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +47,7 @@ public class LocationService {
     public List<LocationResponse> findAll() {
         return locationRepository.findAll()
             .stream()
+            .sorted(Comparator.comparing(Location::getName))
             .map(LocationResponse::valueOf)
             .collect(Collectors.toList());
     }
